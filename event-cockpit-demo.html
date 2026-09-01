@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Event-Cockpit – Demo</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: '#0F0B1E',
+          card: '#1A1533',
+          card2: '#231C42',
+          magenta: '#FF2E63',
+          mint: '#00E5C0',
+          amber: '#FFB020',
+          ink: '#F5F3FF',
+          muted: '#9B95B8',
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  html, body { background: #0F0B1E; }
+  * { scrollbar-width: thin; scrollbar-color: #3a2f63 #0F0B1E; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0F0B1E; }
+  ::-webkit-scrollbar-thumb { background: #3a2f63; border-radius: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 1s linear infinite; }
+  @keyframes pulseGlow { 0%,100% { opacity: 1; } 50% { opacity: .55; } }
+  .pulse { animation: pulseGlow 1.6s ease-in-out infinite; }
+  .fade-in { animation: fadeIn .25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body class="bg-bg text-ink font-sans antialiased">
+<div id="root"></div>
+
+<script type="text/plain" id="app-source">
+const { useState, useEffect, useMemo, useRef } = React;
+const {
+  ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis,
+  CartesianGrid, Tooltip, Legend, Cell,
+} = Recharts;
+
+/* ============================== DATA ============================== */
+
+const LOCATIONS = ['Meier', 'Beach', 'Dreyspring'];
+const GENRES = ['Hip-Hop', '90er', 'Techno', 'Schlager', 'Live'];
+const EVENTREIHEN = ['BASSGEFLÜSTER', '90er NIGHT', 'Schlager Fieber'];
+const MONTHS = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+
+const REVENUE_BASE = [
+  { month: 'Jan', aktuell: 11200, vorjahr: 9800 },
+  { month: 'Feb', aktuell: 10800, vorjahr: 9600 },
+  { month: 'Mär', aktuell: 13400, vorjahr: 11900 },
+  { month: 'Apr', aktuell: 14100, vorjahr: 12500 },
+  { month: 'Mai', aktuell: 15900, vorjahr: 14200 },
+  { month: 'Jun', aktuell: 17200, vorjahr: 15100 },
+  { month: 'Jul', aktuell: 19800, vorjahr: 17600 },
+  { month: 'Aug', aktuell: 21400, vorjahr: 18900 },
+  { month: 'Sep', aktuell: 18300, vorjahr: 16200 },
+  { month: 'Okt', aktuell: 16700, vorjahr: 14800 },
+  { month: 'Nov', aktuell: 13100, vorjahr: 11600 },
+  { month: 'Dez', aktuell: 20400, vorjahr: 18100 },
+];
+
+const GENRE_BASE = [
+  { genre: 'Hip-Hop', db: 24800 },
+  { genre: '90er', db: 31200 },
+  { genre: 'Techno', db: 18600 },
+  { genre: 'Schlager', db: 27400 },
+  { genre: 'Live', db: 12900 },
+];
+
+const NEXT_EVENTS = [
+  { name: 'BASSGEFLÜSTER', date: 'Sa 12.09.2026', location: 'Meier', status: 'personal' },
+  { name: '90er NIGHT', date: 'Sa 19.09.2026', location: 'Beach', status: 'bereit' },
+  { name: 'Techno Tempel', date: 'Fr 25.09.2026', location: 'Dreyspring', status: 'grafik' },
+  { name: 'Schlager Fieber', date: 'Sa 03.10.2026', location: 'Meier', status: 'bereit' },
+  { name: 'Beach Deep House', date: 'Fr 09.10.2026', location: 'Beach', status: 'personal' },
+];
+
+const STATUS_META = {
+  grafik: { label: 'Grafik fehlt', color: 'bg-magenta' },
+  personal: { label: 'Personal offen', color: 'bg-amber' },
+  bereit: { label: 'Bereit', color: 'bg-mint' },
+};
+
+const TEMPLATES = [
+  { id: 1, name: 'BASSGEFLÜSTER', desc: 'Hip-Hop / Urban · Sa 22–5 Uhr · Eintritt 8€/6€ App', genre: 'Hip-Hop' },
+  { id: 2, name: '90er NIGHT', desc: '90er & 2000er Mix · Sa 22–4 Uhr · Eintritt 7€/5€ App', genre: '90er' },
+  { id: 3, name: 'Schlager Fieber', desc: 'Schlager Party · Fr 21–3 Uhr · Eintritt 6€/4€ App', genre: 'Schlager' },
+];
+
+const CHANNELS = [
+  { id: 'website', name: 'Club-Website', emoji: '🌐', connected: true },
+  { id: 'app', name: 'Club-App', emoji: '📱', connected: true },
+  { id: 'instagram', name: 'Instagram', emoji: '📸', connected: true },
+  { id: 'facebook', name: 'Facebook-Veranstaltung', emoji: '👍', connected: true },
+  { id: 'tiktok', name: 'TikTok', emoji: '🎵', connected: false },
+  { id: 'wa_group', name: 'WhatsApp-Promogruppe', emoji: '💬', connected: true },
+  { id: 'wa_channel', name: 'WhatsApp-Channel', emoji: '📢', connected: true },
+  { id: 'signage', name: 'Digital Signage', emoji: '🖥️', connected: true },
+  { id: 'presse', name: 'Presseverteiler', emoji: '📰', connected: false },
+  { id: 'ticketing', name: 'Ticketing-Anbieter', emoji: '🎟️', connected: true },
+];
+
+const HISTORY_INITIAL = [
+  { id: 'h1', text: '90er NIGHT – ausgespielt an 7 Kanäle', time: '20.08.2026, 14:10' },
+  { id: 'h2', text: 'Techno Tempel – ausgespielt an 6 Kanäle', time: '15.08.2026, 11:05' },
+  { id: 'h3', text: 'Beach Deep House – ausgespielt an 8 Kanäle', time: '09.08.2026, 09:40' },
+];
+
+const POSTCALC = {
+  event: '90er NIGHT',
+  date: '30.08.2026',
+  erloese: [
+    { label: 'Getränke', value: 7200 },
+    { label: 'Eintritt Abendkasse', value: 2850 },
+    { label: 'Tickets App (VVK)', value: 3100 },
+    { label: 'Sonstiges', value: 250 },
+  ],
+  kosten: [
+    { label: 'Personal (148 Std.)', value: 2960, ziel: 20, plan: 2600, vorjahr: 2450 },
+    { label: 'DJ-Gage + Hotel', value: 1800, ziel: 12, plan: 1500, vorjahr: 1400 },
+    { label: 'Werbung', value: 650, ziel: 5, plan: 700, vorjahr: 600 },
+    { label: 'GEMA', value: 380, ziel: 3, plan: 380, vorjahr: 360 },
+    { label: 'Pacht', value: 1200, ziel: 9, plan: 1200, vorjahr: 1150 },
+    { label: 'Nebenkosten', value: 340, ziel: 3, plan: 320, vorjahr: 300 },
+    { label: 'Reinigung', value: 220, ziel: 2, plan: 220, vorjahr: 210 },
+    { label: 'Wareneinsatz', value: 1670, ziel: 13, plan: 1750, vorjahr: 1600 },
+  ],
+  vergleich: {
+    umsatz: { plan: 14000, vorjahr: 12100, ist: 13400 },
+    db: { plan: 4600, dbProzentPlan: 32.9, vorjahr: 3450, dbProzentVorjahr: 28.5, ist: 4180, dbProzentIst: 31.2 },
+  },
+  learnings: [
+    'Personalquote lag mit 22,1 % über dem Zielkorridor von 20 % – Ursache: zusätzliche Springer-Schicht am Einlass.',
+    'VVK-Anteil ist auf 23,1 % des Umsatzes gestiegen (Vorjahr 17 %) – Online-Vorverkauf trägt zunehmend zum Ergebnis bei.',
+    'Bester Kanal war Instagram mit dem höchsten Anteil an Ticketverkäufen, vor Facebook und WhatsApp.',
+  ],
+};
+
+const TEAM = [
+  { name: 'Chiara', role: 'Personal', initials: 'CH', color: 'from-magenta to-purple-600' },
+  { name: 'Lars', role: 'Grafik', initials: 'LA', color: 'from-mint to-teal-600' },
+  { name: 'Jean', role: 'Kasse', initials: 'JE', color: 'from-amber to-orange-600' },
+  { name: 'Ken', role: 'Deko', initials: 'KE', color: 'from-purple-500 to-magenta' },
+];
+
+const LOCATION_DETAILS = [
+  { name: 'Meier', address: 'Bahnhofstraße 14, 70173 Stuttgart', capacity: 850 },
+  { name: 'Beach', address: 'Uferpromenade 3, 78462 Konstanz', capacity: 600 },
+  { name: 'Dreyspring', address: 'Industriestraße 22, 68159 Mannheim', capacity: 1200 },
+];
+
+/* ============================== HELPERS ============================== */
+
+function cx(...a) { return a.filter(Boolean).join(' '); }
+function fmtEUR(n) { return n.toLocaleString('de-DE', { maximumFractionDigits: 0 }) + ' €'; }
+function fmtNum(n) { return n.toLocaleString('de-DE'); }
+
+function hashStr(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) >>> 0; }
+  return h;
+}
+function filterMultiplier(filters) {
+  const key = filters.zeitraum + '|' + filters.location + '|' + filters.genre + '|' + filters.reihe;
+  const h = hashStr(key);
+  return 0.82 + (h % 1000) / 1000 * 0.42; // 0.82 - 1.24
+}
+
+/* ============================== SHARED UI ============================== */
+
+function Toast({ toast }) {
+  return (
+    <div className={cx(
+      'fade-in px-4 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2 min-w-[240px]',
+      toast.type === 'error' ? 'bg-magenta text-white' : 'bg-card2 border border-mint/40 text-ink'
+    )}>
+      <span className={toast.type === 'error' ? 'text-white' : 'text-mint'}>{toast.type === 'error' ? '⚠' : '✔'}</span>
+      <span>{toast.msg}</span>
+    </div>
+  );
+}
+
+function ToastStack({ toasts }) {
+  return (
+    <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-2 items-end">
+      {toasts.map(t => <Toast key={t.id} toast={t} />)}
+    </div>
+  );
+}
+
+function Card({ title, right, children, className }) {
+  return (
+    <div className={cx('bg-card rounded-2xl p-5 border border-white/5', className)}>
+      {(title || right) && (
+        <div className="flex items-center justify-between mb-4">
+          {title && <h3 className="text-sm font-semibold text-muted uppercase tracking-wide">{title}</h3>}
+          {right}
+        </div>
+      )}
+      {children}
+    </div>
+  );
+}
+
+function KpiTile({ label, value, sub, positive }) {
+  return (
+    <div className="bg-card rounded-2xl p-5 border border-white/5 flex flex-col gap-2">
+      <span className="text-xs font-medium text-muted uppercase tracking-wide">{label}</span>
+      <span className="text-3xl font-bold text-ink">{value}</span>
+      {sub && (
+        <span className={cx('text-xs font-semibold', positive ? 'text-mint' : 'text-magenta')}>{sub}</span>
+      )}
+    </div>
+  );
+}
+
+function Badge({ children, color = 'muted' }) {
+  const map = {
+    muted: 'bg-white/5 text-muted border-white/10',
+    mint: 'bg-mint/10 text-mint border-mint/30',
+    magenta: 'bg-magenta/10 text-magenta border-magenta/30',
+    amber: 'bg-amber/10 text-amber border-amber/30',
+  };
+  return <span className={cx('px-2.5 py-1 rounded-full text-xs font-semibold border', map[color])}>{children}</span>;
+}
+
+function ProgressBar({ percent, colorClass = 'bg-mint' }) {
+  return (
+    <div className="w-full h-2.5 rounded-full bg-white/5 overflow-hidden">
+      <div className={cx('h-full rounded-full transition-all duration-500', colorClass)} style={{ width: `${Math.max(0, Math.min(100, percent))}%` }} />
+    </div>
+  );
+}
+
+function Toggle({ checked, onChange, label }) {
+  return (
+    <button onClick={onChange} className="flex items-center gap-2 group">
+      <span className={cx('w-10 h-6 rounded-full relative transition-colors duration-200', checked ? 'bg-mint' : 'bg-white/10')}>
+        <span className={cx('absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all duration-200', checked ? 'left-[18px]' : 'left-0.5')} />
+      </span>
+      {label && <span className="text-sm text-ink">{label}</span>}
+    </button>
+  );
+}
+
+function Modal({ open, onClose, title, children }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/60 fade-in" onClick={onClose}>
+      <div className="bg-card2 rounded-2xl p-6 w-[520px] max-w-[90vw] border border-white/10 shadow-2xl fade-in" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-bold">{title}</h3>
+          <button onClick={onClose} className="text-muted hover:text-ink text-xl leading-none">×</button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function AccordionSection({ title, defaultOpen = true, children, badge }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="bg-card rounded-2xl border border-white/5 overflow-hidden">
+      <button onClick={() => setOpen(o => !o)} className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.02] transition-colors">
+        <div className="flex items-center gap-3">
+          <span className="text-base font-bold">{title}</span>
+          {badge}
+        </div>
+        <span className={cx('text-muted transition-transform duration-200 text-lg', open ? 'rotate-180' : '')}>⌄</span>
+      </button>
+      {open && <div className="px-5 pb-5 fade-in">{children}</div>}
+    </div>
+  );
+}
+
+function Select({ value, onChange, options }) {
+  return (
+    <select value={value} onChange={e => onChange(e.target.value)}
+      className="bg-card2 border border-white/10 text-ink text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-magenta cursor-pointer">
+      {options.map(o => <option key={o} value={o}>{o}</option>)}
+    </select>
+  );
+}
+
+/* ============================== SIDEBAR / HEADER ============================== */
+
+const NAV_ITEMS = [
+  { key: 'dashboard', label: 'Dashboard', icon: '📊' },
+  { key: 'planner', label: 'Eventplaner', icon: '🗓️' },
+  { key: 'ai', label: 'KI-Assets', icon: '✨' },
+  { key: 'distribution', label: 'Distribution', icon: '📡' },
+  { key: 'postcalc', label: 'Nachkalkulation', icon: '📈' },
+  { key: 'kiosk', label: 'Team-Screen', icon: '📺' },
+  { key: 'settings', label: 'Einstellungen', icon: '⚙️' },
+];
+
+function Sidebar({ screen, setScreen, tourActive }) {
+  return (
+    <div className="w-60 shrink-0 bg-card/60 border-r border-white/5 flex flex-col py-6 px-3">
+      <div className="flex items-center gap-2 px-3 mb-8">
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-magenta to-mint flex items-center justify-center font-black text-bg">EC</div>
+        <div>
+          <div className="font-bold text-ink leading-tight">Event-Cockpit</div>
+          <div className="text-[11px] text-muted leading-tight">Nightlife Operations</div>
+        </div>
+      </div>
+      <nav className="flex flex-col gap-1">
+        {NAV_ITEMS.map(item => (
+          <button key={item.key} onClick={() => setScreen(item.key)}
+            disabled={tourActive}
+            className={cx(
+              'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 text-left',
+              screen === item.key ? 'bg-gradient-to-r from-magenta/20 to-magenta/5 text-ink border border-magenta/30' : 'text-muted hover:text-ink hover:bg-white/[0.04]'
+            )}>
+            <span className="text-base">{item.icon}</span>
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </nav>
+      <div className="mt-auto px-3 pt-6 border-t border-white/5">
+        <div className="text-[11px] text-muted">Angemeldet als</div>
+        <div className="text-sm font-semibold text-ink">Chiara Weller</div>
+      </div>
+    </div>
+  );
+}
+
+function Header({ location, setLocation, onStartTour, title, subtitle }) {
+  return (
+    <div className="flex items-center justify-between px-8 py-5 border-b border-white/5">
+      <div>
+        <h1 className="text-2xl font-bold text-ink">{title}</h1>
+        {subtitle && <p className="text-sm text-muted mt-0.5">{subtitle}</p>}
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="flex bg-card rounded-xl p-1 border border-white/5">
+          {LOCATIONS.map(loc => (
+            <button key={loc} onClick={() => setLocation(loc)}
+              className={cx('px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-colors duration-150',
+                location === loc ? 'bg-magenta text-white' : 'text-muted hover:text-ink')}>
+              {loc}
+            </button>
+          ))}
+        </div>
+        <button onClick={onStartTour}
+          className="px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-mint to-mint/70 text-bg hover:opacity-90 transition-opacity duration-150 flex items-center gap-1.5">
+          <span>▶</span> Demo-Tour
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== SCREEN 1: DASHBOARD ============================== */
+
+function Dashboard({ location, filters, setFilters }) {
+  const mult = useMemo(() => filterMultiplier(filters), [filters]);
+
+  const revenueData = useMemo(() => REVENUE_BASE.map(r => ({
+    month: r.month,
+    aktuell: Math.round(r.aktuell * mult),
+    vorjahr: Math.round(r.vorjahr * (mult * 0.94)),
+  })), [mult]);
+
+  const genreData = useMemo(() => GENRE_BASE.map(g => ({ ...g, db: Math.round(g.db * mult) })), [mult]);
+
+  const kpis = useMemo(() => {
+    const umsatz = Math.round(184320 * mult);
+    const gaeste = Math.round(9847 * mult);
+    const events = Math.max(6, Math.round(42 * mult));
+    const proGast = umsatz / gaeste;
+    const delta = Math.round((mult - 1) * 100 + 12);
+    return { umsatz, gaeste, events, proGast, delta };
+  }, [mult]);
+
+  const GENRE_COLORS = ['#FF2E63', '#00E5C0', '#8B5CF6', '#FFB020', '#4FD1FF'];
+
+  return (
+    <div className="p-8 space-y-6">
+      <div className="flex flex-wrap items-center gap-3">
+        <Select value={filters.zeitraum} onChange={v => setFilters(f => ({ ...f, zeitraum: v }))}
+          options={['Jahr 2026', 'Q3 2026', 'Letzte 30 Tage', 'Letztes Jahr']} />
+        <Select value={filters.location} onChange={v => setFilters(f => ({ ...f, location: v }))}
+          options={['Alle Standorte', ...LOCATIONS]} />
+        <Select value={filters.genre} onChange={v => setFilters(f => ({ ...f, genre: v }))}
+          options={['Alle Genres', ...GENRES]} />
+        <Select value={filters.reihe} onChange={v => setFilters(f => ({ ...f, reihe: v }))}
+          options={['Alle Reihen', ...EVENTREIHEN]} />
+      </div>
+
+      <div className="grid grid-cols-4 gap-5">
+        <KpiTile label="Umsatz YTD" value={fmtEUR(kpis.umsatz)} sub={`${kpis.delta >= 0 ? '+' : ''}${kpis.delta}% vs. Vorjahr`} positive={kpis.delta >= 0} />
+        <KpiTile label="Gäste YTD" value={fmtNum(kpis.gaeste)} sub="seit Jahresbeginn" positive={true} />
+        <KpiTile label="Ø Umsatz / Gast" value={kpis.proGast.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'} sub="stabil" positive={true} />
+        <KpiTile label="Events" value={kpis.events} sub={`in ${filters.zeitraum}`} positive={true} />
+      </div>
+
+      <div className="grid grid-cols-3 gap-5">
+        <Card title="Umsatz pro Monat" className="col-span-2">
+          <ResponsiveContainer width="100%" height={260}>
+            <LineChart data={revenueData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#2A2350" />
+              <XAxis dataKey="month" stroke="#9B95B8" fontSize={12} />
+              <YAxis stroke="#9B95B8" fontSize={12} tickFormatter={v => `${v / 1000}k`} />
+              <Tooltip contentStyle={{ background: '#231C42', border: '1px solid #3a2f63', borderRadius: 10, color: '#F5F3FF' }}
+                formatter={v => fmtEUR(v)} />
+              <Legend wrapperStyle={{ fontSize: 12, color: '#9B95B8' }} />
+              <Line type="monotone" dataKey="aktuell" name="2026" stroke="#00E5C0" strokeWidth={3} dot={false} />
+              <Line type="monotone" dataKey="vorjahr" name="2025" stroke="#9B95B8" strokeWidth={2} strokeDasharray="4 4" dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        </Card>
+
+        <Card title="Nächste Events">
+          <div className="flex flex-col gap-3">
+            {NEXT_EVENTS.map(ev => {
+              const meta = STATUS_META[ev.status];
+              return (
+                <div key={ev.name} className="flex items-center justify-between gap-2 py-2 border-b border-white/5 last:border-0">
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-ink truncate">{ev.name}</div>
+                    <div className="text-xs text-muted">{ev.date} · {ev.location}</div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className={cx('w-2 h-2 rounded-full', meta.color)} />
+                    <span className="text-xs text-muted whitespace-nowrap">{meta.label}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      </div>
+
+      <Card title="Deckungsbeitrag nach Genre">
+        <ResponsiveContainer width="100%" height={240}>
+          <BarChart data={genreData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#2A2350" />
+            <XAxis dataKey="genre" stroke="#9B95B8" fontSize={12} />
+            <YAxis stroke="#9B95B8" fontSize={12} tickFormatter={v => `${v / 1000}k`} />
+            <Tooltip contentStyle={{ background: '#231C42', border: '1px solid #3a2f63', borderRadius: 10, color: '#F5F3FF' }}
+              formatter={v => fmtEUR(v)} />
+            <Bar dataKey="db" name="Deckungsbeitrag" radius={[8, 8, 0, 0]}>
+              {genreData.map((g, i) => <Cell key={g.genre} fill={GENRE_COLORS[i % GENRE_COLORS.length]} />)}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </Card>
+    </div>
+  );
+}
+
+/* ============================== SCREEN 2: EVENTPLANER ============================== */
+
+const DJ_STAGES = ['gewünscht', 'angefragt', 'bestätigt'];
+function nextStage(s) { return DJ_STAGES[(DJ_STAGES.indexOf(s) + 1) % DJ_STAGES.length]; }
+function stageColor(s) { return s === 'bestätigt' ? 'mint' : s === 'angefragt' ? 'amber' : 'muted'; }
+
+function Eventplaner({ addToast }) {
+  const [templateOpen, setTemplateOpen] = useState(false);
+
+  const [djs, setDjs] = useState([
+    { name: 'DJ NOVA (Headliner)', status: 'angefragt', gage: 1200, hotel: true },
+    { name: 'LUNA K. (Support)', status: 'bestätigt', gage: 350, hotel: false },
+  ]);
+  const [briefing, setBriefing] = useState('Warm-Up ab 22 Uhr Deep/Melodic, Peak-Time ab 00 Uhr Bass-lastig. Kein Explicit-Intro vor 23 Uhr.');
+  const [spotifyLinked, setSpotifyLinked] = useState(true);
+
+  const [personnel, setPersonnel] = useState([
+    { role: 'Abendleitung', soll: 1, ist: 1 },
+    { role: 'Kasse', soll: 2, ist: 1 },
+    { role: 'Türsteher', soll: 3, ist: 3 },
+    { role: 'Bar Station 1', soll: 2, ist: 2 },
+    { role: 'Bar Station 2', soll: 2, ist: 1 },
+    { role: 'Bar Station 3', soll: 2, ist: 2 },
+    { role: 'Runner', soll: 2, ist: 2 },
+    { role: 'Technik', soll: 1, ist: 1 },
+    { role: 'Nachtreinigung', soll: 2, ist: 2 },
+  ]);
+
+  const [grafikStatus, setGrafikStatus] = useState('in Arbeit');
+  const [eventText, setEventText] = useState('BASSGEFLÜSTER ist zurück – der Sound, der Meier zum Beben bringt. Mit DJ NOVA am Start und den härtesten Bässen der Stadt. Einlass 22 Uhr, ab 18 Jahren.');
+  const [textFreigegeben, setTextFreigegeben] = useState(true);
+  const [werbebudget, setWerbebudget] = useState(650);
+  const [budgetFreigegeben, setBudgetFreigegeben] = useState(true);
+  const [fotografGebucht, setFotografGebucht] = useState(true);
+  const [vvkPlan] = useState(250);
+  const [vvkIst, setVvkIst] = useState(140);
+
+  function adjustIst(idx, delta) {
+    setPersonnel(p => p.map((row, i) => i === idx ? { ...row, ist: Math.max(0, row.ist + delta) } : row));
+  }
+  function pushChiara(role) {
+    addToast(`Anfrage an Chiara gesendet für „${role}" ✔`);
+  }
+  function cycleDj(idx) {
+    setDjs(d => d.map((dj, i) => i === idx ? { ...dj, status: nextStage(dj.status) } : dj));
+  }
+
+  const djBestaetigt = djs[0].status === 'bestätigt';
+  const hotelGebucht = djs[0].hotel;
+  const grafikFertig = grafikStatus === 'fertig';
+  const personalKomplett = personnel.every(p => p.ist >= p.soll);
+  const ticketingOk = vvkIst / vvkPlan >= 0.5;
+
+  const checklist = [
+    { label: 'DJ bestätigt', done: djBestaetigt, weight: 12 },
+    { label: 'Grafik fertig', done: grafikFertig, weight: 10 },
+    { label: 'Personal komplett', done: personalKomplett, weight: 10 },
+    { label: 'Hotel gebucht', done: hotelGebucht, weight: 8 },
+    { label: 'VVK im Plan', done: ticketingOk, weight: 15 },
+    { label: 'Werbebudget freigegeben', done: budgetFreigegeben, weight: 15 },
+    { label: 'Fotograf/Videograf gebucht', done: fotografGebucht, weight: 15 },
+    { label: 'Eventtext freigegeben', done: textFreigegeben, weight: 15 },
+  ];
+  const readiness = checklist.reduce((sum, c) => sum + (c.done ? c.weight : 0), 0);
+  const openItems = checklist.filter(c => !c.done);
+
+  return (
+    <div className="p-8 space-y-6">
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <h2 className="text-2xl font-bold">BASSGEFLÜSTER</h2>
+            <Badge color="mint">Meier</Badge>
+          </div>
+          <p className="text-muted text-sm">Samstag, 12.09.2026 · Hip-Hop / Urban</p>
+        </div>
+        <button onClick={() => setTemplateOpen(true)}
+          className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-card2 border border-white/10 hover:border-magenta/50 transition-colors duration-150">
+          + Aus Vorlage anlegen
+        </button>
+      </div>
+
+      <Card>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-semibold text-ink">Event bereit</span>
+          <span className={cx('text-sm font-bold', readiness >= 80 ? 'text-mint' : readiness >= 50 ? 'text-amber' : 'text-magenta')}>{readiness}%</span>
+        </div>
+        <ProgressBar percent={readiness} colorClass={readiness >= 80 ? 'bg-mint' : readiness >= 50 ? 'bg-amber' : 'bg-magenta'} />
+        {openItems.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-3">
+            {openItems.map(o => <Badge key={o.label} color="amber">⏳ {o.label}</Badge>)}
+          </div>
+        )}
+      </Card>
+
+      <AccordionSection title="Rahmen">
+        <div className="grid grid-cols-4 gap-4 mb-4">
+          <div><div className="text-xs text-muted mb-1">Datum</div><div className="text-sm font-semibold">12.09.2026</div></div>
+          <div><div className="text-xs text-muted mb-1">Öffnungszeit</div><div className="text-sm font-semibold">22:00 Uhr</div></div>
+          <div><div className="text-xs text-muted mb-1">Eintritt</div><div className="text-sm font-semibold">8 € / App 6 €</div></div>
+          <div><div className="text-xs text-muted mb-1">Mindestalter</div><div className="text-sm font-semibold">18 Jahre</div></div>
+        </div>
+        <div className="flex gap-2">
+          <Badge color="amber">Vorfeiertag</Badge>
+          <Badge color="mint">Schulferien</Badge>
+        </div>
+      </AccordionSection>
+
+      <AccordionSection title="Programm">
+        <div className="space-y-4">
+          {djs.map((dj, i) => (
+            <div key={dj.name} className="flex items-center justify-between bg-card2 rounded-xl p-4">
+              <div>
+                <div className="font-semibold text-sm">{dj.name}</div>
+                <div className="text-xs text-muted mt-0.5">Gage: {fmtEUR(dj.gage)}</div>
+              </div>
+              <div className="flex items-center gap-4">
+                <Toggle checked={dj.hotel} onChange={() => setDjs(d => d.map((x, idx) => idx === i ? { ...x, hotel: !x.hotel } : x))} label="Hotel gebucht" />
+                <button onClick={() => cycleDj(i)}>
+                  <Badge color={stageColor(dj.status)}>{dj.status}</Badge>
+                </button>
+              </div>
+            </div>
+          ))}
+          <div className="flex items-center gap-3">
+            <Toggle checked={spotifyLinked} onChange={() => setSpotifyLinked(s => !s)} label="Spotify-Playlist verknüpft" />
+            {spotifyLinked && <span className="text-xs text-mint">open.spotify.com/playlist/bassgefluester-2609</span>}
+          </div>
+          <div>
+            <div className="text-xs text-muted mb-1.5">DJ-Briefing</div>
+            <textarea value={briefing} onChange={e => setBriefing(e.target.value)} rows={2}
+              className="w-full bg-card2 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-magenta resize-none" />
+          </div>
+        </div>
+      </AccordionSection>
+
+      <AccordionSection title="Personal">
+        <div className="space-y-2">
+          {personnel.map((row, i) => {
+            const ok = row.ist >= row.soll;
+            return (
+              <div key={row.role} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                <span className="text-sm font-medium w-40">{row.role}</span>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => adjustIst(i, -1)} className="w-6 h-6 rounded-md bg-card2 hover:bg-white/10 text-sm">−</button>
+                  <span className={cx('text-sm font-semibold w-14 text-center', ok ? 'text-mint' : 'text-magenta')}>{row.ist} / {row.soll}</span>
+                  <button onClick={() => adjustIst(i, 1)} className="w-6 h-6 rounded-md bg-card2 hover:bg-white/10 text-sm">+</button>
+                </div>
+                {ok ? <Badge color="mint">besetzt</Badge> : (
+                  <button onClick={() => pushChiara(row.role)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-magenta/10 text-magenta border border-magenta/30 hover:bg-magenta/20 transition-colors duration-150">
+                    Push an Chiara
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </AccordionSection>
+
+      <AccordionSection title="Marketing">
+        <div className="space-y-5">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium w-32">Grafik-Status</span>
+            <Select value={grafikStatus} onChange={setGrafikStatus} options={['offen', 'in Arbeit', 'fertig']} />
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs text-muted">Event-Text</span>
+              <Toggle checked={textFreigegeben} onChange={() => setTextFreigegeben(v => !v)} label="Freigegeben" />
+            </div>
+            <textarea value={eventText} onChange={e => setEventText(e.target.value)} rows={3}
+              className="w-full bg-card2 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-magenta resize-none" />
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Werbebudget</span>
+              <input type="number" value={werbebudget} onChange={e => setWerbebudget(Number(e.target.value))}
+                className="w-24 bg-card2 border border-white/10 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-magenta" />
+              <span className="text-sm text-muted">€</span>
+            </div>
+            <Toggle checked={budgetFreigegeben} onChange={() => setBudgetFreigegeben(v => !v)} label="Freigegeben" />
+          </div>
+          <Toggle checked={fotografGebucht} onChange={() => setFotografGebucht(v => !v)} label="Fotograf / Videograf gebucht" />
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs text-muted">Ticketing: VVK-Plan vs. VVK-Ist</span>
+              <span className="text-xs font-semibold text-ink">{vvkIst} / {vvkPlan}</span>
+            </div>
+            <ProgressBar percent={(vvkIst / vvkPlan) * 100} colorClass={ticketingOk ? 'bg-mint' : 'bg-amber'} />
+            <div className="flex gap-2 mt-2">
+              <button onClick={() => setVvkIst(v => Math.max(0, v - 10))} className="px-2.5 py-1 rounded-md bg-card2 text-xs hover:bg-white/10">−10</button>
+              <button onClick={() => setVvkIst(v => Math.min(vvkPlan, v + 10))} className="px-2.5 py-1 rounded-md bg-card2 text-xs hover:bg-white/10">+10</button>
+            </div>
+          </div>
+        </div>
+      </AccordionSection>
+
+      <AccordionSection title="Ziele">
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <div className="text-xs text-muted mb-2">Umsatzplan vs. Vorjahresumsatz</div>
+            <div className="flex items-center justify-between text-sm mb-1"><span>Plan</span><span className="font-semibold text-mint">{fmtEUR(9500)}</span></div>
+            <ProgressBar percent={100} colorClass="bg-mint" />
+            <div className="flex items-center justify-between text-sm mt-3 mb-1"><span>Vorjahr</span><span className="font-semibold text-muted">{fmtEUR(8200)}</span></div>
+            <ProgressBar percent={(8200/9500)*100} colorClass="bg-white/20" />
+          </div>
+          <div>
+            <div className="text-xs text-muted mb-2">Gästezahl Plan vs. Vorjahr</div>
+            <div className="flex items-center justify-between text-sm mb-1"><span>Plan</span><span className="font-semibold text-mint">480</span></div>
+            <ProgressBar percent={100} colorClass="bg-mint" />
+            <div className="flex items-center justify-between text-sm mt-3 mb-1"><span>Vorjahr</span><span className="font-semibold text-muted">410</span></div>
+            <ProgressBar percent={(410/480)*100} colorClass="bg-white/20" />
+          </div>
+        </div>
+      </AccordionSection>
+
+      <Modal open={templateOpen} onClose={() => setTemplateOpen(false)} title="Eventreihen-Vorlage wählen">
+        <div className="space-y-3">
+          {TEMPLATES.map(t => (
+            <button key={t.id} onClick={() => { setTemplateOpen(false); addToast(`Vorlage „${t.name}" übernommen ✔`); }}
+              className="w-full text-left bg-card rounded-xl p-4 border border-white/5 hover:border-magenta/40 transition-colors duration-150">
+              <div className="font-semibold text-sm">{t.name}</div>
+              <div className="text-xs text-muted mt-1">{t.desc}</div>
+            </button>
+          ))}
+        </div>
+      </Modal>
+    </div>
+  );
+}
+
+/* ============================== SCREEN 3: KI-ASSETS ============================== */
+
+function GradientTile({ label, ratio, title, gradient }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <div className={cx('rounded-xl overflow-hidden flex items-end p-4 relative', ratio)} style={{ background: gradient }}>
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="relative z-10">
+          <div className="text-xs font-semibold text-white/70 mb-1">{label}</div>
+          <div className="text-white font-black text-xl leading-tight drop-shadow">{title}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CopyBlock({ label, text, addToast }) {
+  function copy() {
+    if (navigator.clipboard) { navigator.clipboard.writeText(text).catch(() => {}); }
+    addToast('Text kopiert ✔');
+  }
+  return (
+    <div className="bg-card2 rounded-xl p-4 border border-white/5">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs font-semibold text-muted uppercase tracking-wide">{label}</span>
+        <button onClick={copy} className="text-xs font-semibold text-mint hover:text-mint/70 transition-colors duration-150">⧉ Kopieren</button>
+      </div>
+      <p className="text-sm text-ink/90 leading-relaxed">{text}</p>
+    </div>
+  );
+}
+
+function KiAssets({ addToast }) {
+  const [form, setForm] = useState({ name: 'BASSGEFLÜSTER', genre: 'Hip-Hop', zielgruppe: '18–27, feiert hart, liebt tiefe Bässe', tonalitaet: 'Energetisch' });
+  const [generating, setGenerating] = useState(false);
+  const [generated, setGenerated] = useState(true);
+  const [freigaben, setFreigaben] = useState({ ig: false, fb: false, flyer: false });
+
+  function generate() {
+    setGenerating(true);
+    setGenerated(false);
+    setTimeout(() => { setGenerating(false); setGenerated(true); addToast('Assets erzeugt ✔'); }, 1500);
+  }
+
+  const texts = {
+    ig: `🔊 BASSGEFLÜSTER ist zurück! Sa 12.09. ab 22 Uhr bei ${form.name === form.name ? 'uns' : ''} im Meier. DJ NOVA live an den Decks – bereit für den tiefsten Bass der Stadt? 🎧 Tickets in der App, VVK läuft! #Bassgefluester #ClubNight`,
+    fb: `BASSGEFLÜSTER – Samstag, 12. September 2026\nEinlass ab 22 Uhr | Eintritt 8 € / 6 € mit App-Ticket | Ab 18 Jahren\n\nHeadliner DJ NOVA bringt den härtesten Sound der Saison ins Meier. Support by LUNA K. Sichert euch jetzt euer Ticket im Vorverkauf – Plätze sind begrenzt.`,
+    presse: `Am 12. September 2026 verwandelt sich das Meier erneut in die Bühne für BASSGEFLÜSTER: Headliner DJ NOVA sorgt gemeinsam mit Support-Act LUNA K. für einen Abend voller elektronischer Bässe. Einlass ab 22 Uhr.`,
+  };
+
+  const gradients = {
+    ig: 'linear-gradient(160deg, #FF2E63 0%, #7A1FD1 60%, #0F0B1E 100%)',
+    fb: 'linear-gradient(135deg, #00E5C0 0%, #1F5FA8 100%)',
+    flyer: 'linear-gradient(200deg, #FFB020 0%, #FF2E63 55%, #1A1533 100%)',
+  };
+
+  return (
+    <div className="p-8 grid grid-cols-[340px_1fr] gap-6">
+      <Card title="Assets erzeugen" className="h-fit sticky top-8">
+        <div className="space-y-4">
+          <div>
+            <label className="text-xs text-muted block mb-1.5">Eventname</label>
+            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              className="w-full bg-card2 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-magenta" />
+          </div>
+          <div>
+            <label className="text-xs text-muted block mb-1.5">Genre</label>
+            <Select value={form.genre} onChange={v => setForm(f => ({ ...f, genre: v }))} options={GENRES} />
+          </div>
+          <div>
+            <label className="text-xs text-muted block mb-1.5">Zielgruppe</label>
+            <textarea value={form.zielgruppe} onChange={e => setForm(f => ({ ...f, zielgruppe: e.target.value }))} rows={2}
+              className="w-full bg-card2 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-magenta resize-none" />
+          </div>
+          <div>
+            <label className="text-xs text-muted block mb-1.5">Tonalität</label>
+            <Select value={form.tonalitaet} onChange={v => setForm(f => ({ ...f, tonalitaet: v }))} options={['Energetisch', 'Elegant', 'Verspielt', 'Straight']} />
+          </div>
+          <button onClick={generate} disabled={generating}
+            className="w-full py-3 rounded-xl font-semibold bg-gradient-to-r from-magenta to-mint text-bg hover:opacity-90 transition-opacity duration-150 flex items-center justify-center gap-2">
+            {generating ? <><span className="spin">⏳</span> Generiere…</> : '✨ Assets erzeugen'}
+          </button>
+        </div>
+      </Card>
+
+      <div className="space-y-6">
+        {generating && (
+          <div className="flex flex-col items-center justify-center h-80 gap-3 text-muted">
+            <span className="text-4xl spin">⚙️</span>
+            <span className="text-sm pulse">KI erstellt Grafiken & Texte für „{form.name}"…</span>
+          </div>
+        )}
+        {generated && !generating && (
+          <div className="fade-in space-y-6">
+            <Card title="Grafiken">
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <GradientTile label="Instagram Story · 9:16" ratio="aspect-[9/16]" title={form.name} gradient={gradients.ig} />
+                  <ApproveRow checked={freigaben.ig} onToggle={() => setFreigaben(f => ({ ...f, ig: !f.ig }))} />
+                </div>
+                <div>
+                  <GradientTile label="Facebook · 1:1" ratio="aspect-square" title={form.name} gradient={gradients.fb} />
+                  <ApproveRow checked={freigaben.fb} onToggle={() => setFreigaben(f => ({ ...f, fb: !f.fb }))} />
+                </div>
+                <div>
+                  <GradientTile label="Flyer A6" ratio="aspect-[3/4]" title={form.name} gradient={gradients.flyer} />
+                  <ApproveRow checked={freigaben.flyer} onToggle={() => setFreigaben(f => ({ ...f, flyer: !f.flyer }))} />
+                </div>
+              </div>
+            </Card>
+            <Card title="Texte">
+              <div className="grid grid-cols-3 gap-4">
+                <CopyBlock label="Instagram-Caption" text={texts.ig} addToast={addToast} />
+                <CopyBlock label="Facebook-Event-Text" text={texts.fb} addToast={addToast} />
+                <CopyBlock label="Presse-Kurztext" text={texts.presse} addToast={addToast} />
+              </div>
+            </Card>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ApproveRow({ checked, onToggle }) {
+  return (
+    <button onClick={onToggle} className="mt-2 w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-150 border"
+      style={{ borderColor: checked ? '#00E5C0' : 'rgba(255,255,255,0.1)', color: checked ? '#00E5C0' : '#9B95B8', background: checked ? 'rgba(0,229,192,0.08)' : 'transparent' }}>
+      {checked ? '✔ Freigegeben' : 'Freigeben'}
+    </button>
+  );
+}
+
+/* ============================== SCREEN 4: DISTRIBUTION ============================== */
+
+function Distribution({ addToast }) {
+  const [active, setActive] = useState(() => Object.fromEntries(CHANNELS.map(c => [c.id, c.connected])));
+  const [schedule, setSchedule] = useState(() => Object.fromEntries(CHANNELS.map(c => [c.id, 'sofort'])));
+  const [publishing, setPublishing] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [published, setPublished] = useState({});
+  const [history, setHistory] = useState(HISTORY_INITIAL);
+
+  function toggleActive(id) {
+    setActive(a => ({ ...a, [id]: !a[id] }));
+  }
+
+  function publish() {
+    setPublishing(true);
+    setProgress(0);
+    setPublished({});
+    let p = 0;
+    const timer = setInterval(() => {
+      p += 14;
+      setProgress(Math.min(100, p));
+      if (p >= 100) {
+        clearInterval(timer);
+        const now = new Date();
+        const ts = now.toLocaleDateString('de-DE') + ', ' + now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+        const done = {};
+        let count = 0;
+        CHANNELS.forEach(c => { if (active[c.id]) { done[c.id] = ts; count++; } });
+        setPublished(done);
+        setPublishing(false);
+        setHistory(h => [{ id: 'h' + Date.now(), text: `BASSGEFLÜSTER – ausgespielt an ${count} Kanäle`, time: ts }, ...h]);
+        addToast(`Erfolgreich an ${count} Kanäle ausgespielt ✔`);
+      }
+    }, 220);
+  }
+
+  return (
+    <div className="p-8 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Distribution</h2>
+          <p className="text-muted text-sm">BASSGEFLÜSTER · 12.09.2026</p>
+        </div>
+        <button onClick={publish} disabled={publishing}
+          className="px-6 py-3 rounded-xl font-bold bg-gradient-to-r from-magenta to-mint text-bg hover:opacity-90 transition-opacity duration-150 flex items-center gap-2">
+          {publishing ? <><span className="spin">⏳</span> Wird ausgespielt… {progress}%</> : '🚀 Jetzt ausspielen'}
+        </button>
+      </div>
+
+      {publishing && (
+        <Card><ProgressBar percent={progress} colorClass="bg-gradient-to-r from-magenta to-mint" /></Card>
+      )}
+
+      <Card title="Kanäle">
+        <div className="grid grid-cols-2 gap-4">
+          {CHANNELS.map(c => (
+            <div key={c.id} className={cx('flex items-center gap-4 p-4 rounded-xl border transition-colors duration-150',
+              active[c.id] ? 'bg-card2 border-white/10' : 'bg-card2/40 border-white/5 opacity-60')}>
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center text-xl shrink-0"
+                style={{ background: 'linear-gradient(135deg, #FF2E63, #00E5C0)' }}>{c.emoji}</div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold truncate">{c.name}</span>
+                  {!c.connected && <Badge color="magenta">getrennt</Badge>}
+                </div>
+                <div className="mt-1.5">
+                  <select value={schedule[c.id]} onChange={e => setSchedule(s => ({ ...s, [c.id]: e.target.value }))}
+                    disabled={!active[c.id]}
+                    className="bg-bg border border-white/10 rounded-md px-2 py-1 text-xs focus:outline-none">
+                    <option value="sofort">sofort</option>
+                    <option value="geplant">geplant · 20:00 Uhr</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex flex-col items-end gap-2 shrink-0">
+                <Toggle checked={active[c.id]} onChange={() => toggleActive(c.id)} />
+                {published[c.id] && <span className="text-[11px] text-mint font-semibold">✔ {published[c.id]}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card title="Zuletzt ausgespielt">
+        <div className="space-y-2">
+          {history.map(h => (
+            <div key={h.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0 text-sm">
+              <span className="text-ink">{h.text}</span>
+              <span className="text-muted text-xs">{h.time}</span>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/* ============================== SCREEN 5: NACHKALKULATION ============================== */
+
+function Nachkalkulation() {
+  const erloeseSum = POSTCALC.erloese.reduce((s, e) => s + e.value, 0);
+  const kostenSum = POSTCALC.kosten.reduce((s, k) => s + k.value, 0);
+  const db = erloeseSum - kostenSum;
+  const dbProz = (db / erloeseSum) * 100;
+
+  return (
+    <div className="p-8 space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold">{POSTCALC.event}</h2>
+        <p className="text-muted text-sm">{POSTCALC.date} · Nachkalkulation</p>
+      </div>
+
+      <div className="grid grid-cols-[1fr_320px] gap-6">
+        <div className="space-y-6">
+          <Card title="Erlöse">
+            <div className="space-y-2">
+              {POSTCALC.erloese.map(e => (
+                <div key={e.label} className="flex items-center justify-between py-1.5 text-sm">
+                  <span>{e.label}</span>
+                  <span className="font-semibold text-mint">{fmtEUR(e.value)}</span>
+                </div>
+              ))}
+              <div className="flex items-center justify-between pt-2 mt-2 border-t border-white/10 text-sm font-bold">
+                <span>Summe Erlöse</span>
+                <span className="text-mint">{fmtEUR(erloeseSum)}</span>
+              </div>
+            </div>
+          </Card>
+
+          <Card title="Kosten">
+            <div className="space-y-2">
+              {POSTCALC.kosten.map(k => {
+                const prozent = (k.value / erloeseSum) * 100;
+                const over = prozent > k.ziel;
+                return (
+                  <div key={k.label} className="flex items-center justify-between py-1.5 text-sm">
+                    <span>{k.label}</span>
+                    <div className="flex items-center gap-3">
+                      <span className={cx('text-xs font-semibold', over ? 'text-magenta' : 'text-muted')}>
+                        {prozent.toFixed(1)}% {over && '⚠'}
+                      </span>
+                      <span className="font-semibold w-20 text-right">{fmtEUR(k.value)}</span>
+                    </div>
+                  </div>
+                );
+              })}
+              <div className="flex items-center justify-between pt-2 mt-2 border-t border-white/10 text-sm font-bold">
+                <span>Summe Kosten</span>
+                <span className="text-magenta">{fmtEUR(kostenSum)}</span>
+              </div>
+            </div>
+          </Card>
+
+          <div className="bg-gradient-to-r from-magenta/15 to-mint/15 rounded-2xl p-6 border border-white/10 flex items-center justify-between">
+            <span className="text-lg font-bold">Deckungsbeitrag</span>
+            <span className="text-3xl font-black text-mint">{fmtEUR(db)} <span className="text-lg text-mint/70">/ {dbProz.toFixed(1)}%</span></span>
+          </div>
+
+          <Card title="Learnings">
+            <ul className="space-y-3">
+              {POSTCALC.learnings.map((l, i) => (
+                <li key={i} className="flex gap-2 text-sm text-ink/90">
+                  <span className="text-mint shrink-0">💡</span>
+                  <span>{l}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
+
+        <div className="space-y-6 h-fit sticky top-8">
+          <Card title="Vergleich Umsatz">
+            <CompareRow label="Plan" value={POSTCALC.vergleich.umsatz.plan} />
+            <CompareRow label="Vorjahr" value={POSTCALC.vergleich.umsatz.vorjahr} />
+            <CompareRow label="Ist" value={POSTCALC.vergleich.umsatz.ist} highlight />
+          </Card>
+          <Card title="Vergleich Deckungsbeitrag">
+            <CompareRow label="Plan" value={POSTCALC.vergleich.db.plan} sub={`${POSTCALC.vergleich.db.dbProzentPlan}%`} />
+            <CompareRow label="Vorjahr" value={POSTCALC.vergleich.db.vorjahr} sub={`${POSTCALC.vergleich.db.dbProzentVorjahr}%`} />
+            <CompareRow label="Ist" value={POSTCALC.vergleich.db.ist} sub={`${POSTCALC.vergleich.db.dbProzentIst}%`} highlight />
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CompareRow({ label, value, sub, highlight }) {
+  return (
+    <div className={cx('flex items-center justify-between py-2.5', !highlight && 'border-b border-white/5 last:border-0')}>
+      <span className={cx('text-sm', highlight ? 'font-bold text-ink' : 'text-muted')}>{label}</span>
+      <div className="text-right">
+        <div className={cx('text-sm font-bold', highlight ? 'text-mint' : 'text-ink')}>{fmtEUR(value)}</div>
+        {sub && <div className="text-xs text-muted">{sub}</div>}
+      </div>
+    </div>
+  );
+}
+
+/* ============================== SCREEN 6: TEAM-SCREEN (KIOSK) ============================== */
+
+function TeamScreen({ onBack }) {
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const gaesteHeute = 312, gaesteVorjahr = 278, ziel = 360;
+  const vvkVerkauft = 140, vvkGesamt = 250;
+  const bars = [
+    { name: 'Bar 1 · Eingang', umsatz: 3240 },
+    { name: 'Bar 2 · Terrasse', umsatz: 2860 },
+    { name: 'Bar 3 · Lounge', umsatz: 2010 },
+  ];
+  const zielProzent = (gaesteHeute / ziel) * 100;
+
+  return (
+    <div className="min-h-screen bg-bg flex flex-col p-10 relative">
+      <button onClick={onBack} className="absolute top-8 right-10 px-4 py-2 rounded-xl text-sm font-semibold bg-card2 border border-white/10 hover:border-magenta/50 transition-colors duration-150">
+        ← Zurück
+      </button>
+      <div className="text-center mb-10">
+        <div className="text-muted text-sm uppercase tracking-widest">BASSGEFLÜSTER · Meier</div>
+        <div className="text-6xl font-mono font-bold text-ink mt-2">{now.toLocaleTimeString('de-DE')}</div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-8 mb-10">
+        <div className="bg-card rounded-3xl p-8 text-center border border-white/5">
+          <div className="text-muted text-sm uppercase tracking-wide mb-2">Gäste heute</div>
+          <div className="text-7xl font-black text-mint">{gaesteHeute}</div>
+          <div className="text-sm text-muted mt-2">Vorjahr: {gaesteVorjahr}</div>
+        </div>
+        <div className="bg-card rounded-3xl p-8 text-center border border-white/5">
+          <div className="text-muted text-sm uppercase tracking-wide mb-2">VVK verkauft</div>
+          <div className="text-7xl font-black text-ink">{vvkVerkauft}<span className="text-3xl text-muted">/{vvkGesamt}</span></div>
+          <div className="text-sm text-muted mt-2">{Math.round((vvkVerkauft/vvkGesamt)*100)}% verkauft</div>
+        </div>
+        <div className="bg-card rounded-3xl p-8 text-center border border-white/5 flex flex-col justify-center">
+          <div className="text-muted text-sm uppercase tracking-wide mb-3">Zielerreichung</div>
+          <div className="text-5xl font-black text-magenta mb-3">{zielProzent.toFixed(0)}%</div>
+          <ProgressBar percent={zielProzent} colorClass="bg-magenta" />
+        </div>
+      </div>
+
+      <div className="bg-card rounded-3xl p-8 border border-white/5 mb-10">
+        <div className="text-muted text-sm uppercase tracking-wide mb-4">Barstationen · Ranking nach Umsatz</div>
+        <div className="space-y-4">
+          {bars.sort((a,b)=>b.umsatz-a.umsatz).map((b, i) => (
+            <div key={b.name} className="flex items-center gap-4">
+              <span className="text-2xl font-black text-muted w-8">{i+1}.</span>
+              <span className="text-lg font-semibold flex-1">{b.name}</span>
+              <span className="text-2xl font-bold text-mint">{fmtEUR(b.umsatz)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="text-center mt-auto">
+        <p className="text-2xl font-bold bg-gradient-to-r from-magenta to-mint bg-clip-text text-transparent">
+          Weiter so — noch {vvkGesamt - vvkVerkauft} Tickets bis ausverkauft! 🔥
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== SCREEN 7: EINSTELLUNGEN ============================== */
+
+function Einstellungen({ addToast }) {
+  const [channels, setChannels] = useState(CHANNELS);
+  function toggleConn(id) {
+    setChannels(cs => cs.map(c => c.id === id ? { ...c, connected: !c.connected } : c));
+    const c = channels.find(c => c.id === id);
+    addToast(c.connected ? `${c.name} getrennt` : `${c.name} verbunden ✔`);
+  }
+
+  return (
+    <div className="p-8 space-y-6">
+      <h2 className="text-2xl font-bold mb-2">Einstellungen</h2>
+
+      <Card title="Verbundene Kanäle">
+        <div className="grid grid-cols-2 gap-3">
+          {channels.map(c => (
+            <div key={c.id} className="flex items-center justify-between bg-card2 rounded-xl p-3.5">
+              <div className="flex items-center gap-3">
+                <span className="text-lg">{c.emoji}</span>
+                <span className="text-sm font-medium">{c.name}</span>
+              </div>
+              <button onClick={() => toggleConn(c.id)}>
+                <Badge color={c.connected ? 'mint' : 'magenta'}>{c.connected ? 'Verbunden' : 'Getrennt'}</Badge>
+              </button>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card title="Locations">
+        <div className="grid grid-cols-3 gap-4">
+          {LOCATION_DETAILS.map(l => (
+            <div key={l.name} className="bg-card2 rounded-xl p-4">
+              <div className="font-bold text-sm mb-1">{l.name}</div>
+              <div className="text-xs text-muted mb-1">{l.address}</div>
+              <div className="text-xs text-mint font-semibold">Kapazität: {l.capacity}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card title="Eventreihen-Vorlagen">
+        <div className="space-y-2">
+          {TEMPLATES.map(t => (
+            <div key={t.id} className="flex items-center justify-between bg-card2 rounded-xl p-4">
+              <div>
+                <div className="font-semibold text-sm">{t.name}</div>
+                <div className="text-xs text-muted mt-0.5">{t.desc}</div>
+              </div>
+              <button onClick={() => addToast(`„${t.name}" wird bearbeitet (Demo)`)}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-card border border-white/10 hover:border-magenta/50 transition-colors duration-150">
+                Bearbeiten
+              </button>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card title="Team-Mitglieder">
+        <div className="grid grid-cols-4 gap-4">
+          {TEAM.map(m => (
+            <div key={m.name} className="bg-card2 rounded-xl p-4 flex flex-col items-center text-center gap-2">
+              <div className={cx('w-12 h-12 rounded-full bg-gradient-to-br flex items-center justify-center font-bold text-bg', m.color)}>{m.initials}</div>
+              <div>
+                <div className="font-semibold text-sm">{m.name}</div>
+                <div className="text-xs text-muted">{m.role}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/* ============================== DEMO TOUR ============================== */
+
+const TOUR_STEPS = [
+  { screen: 'dashboard', text: 'Auf einen Blick: Umsatz, Gäste und welche Events noch Aufmerksamkeit brauchen — kein Excel mehr nötig.' },
+  { screen: 'planner', text: 'Jedes Event hat einen Fortschrittsbalken. Sofort sichtbar: was fehlt noch bis zur Türöffnung?' },
+  { screen: 'ai', text: 'Grafiken und Texte in Sekunden statt tagelanger Agentur-Abstimmung.' },
+  { screen: 'distribution', text: 'Ein Klick, alle Kanäle bespielt — Website, App, Social, Signage, Presse.' },
+  { screen: 'postcalc', text: 'Nach dem Event sofort sehen, was der Abend wirklich gebracht hat — nicht erst nächsten Monat vom Steuerberater.' },
+];
+
+function DemoTour({ step, onNext, onPrev, onEnd }) {
+  const s = TOUR_STEPS[step];
+  return (
+    <div className="fixed inset-0 z-[80] pointer-events-none">
+      <div className="absolute inset-0 bg-black/40 pointer-events-auto" onClick={onEnd} />
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[560px] max-w-[92vw] bg-card2 border border-magenta/40 rounded-2xl p-6 shadow-2xl pointer-events-auto fade-in">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs font-bold text-magenta uppercase tracking-wide">Demo-Tour · Schritt {step + 1}/{TOUR_STEPS.length}</span>
+          <button onClick={onEnd} className="text-muted hover:text-ink text-sm">Beenden ×</button>
+        </div>
+        <p className="text-base text-ink leading-relaxed mb-5">{s.text}</p>
+        <div className="flex items-center justify-between">
+          <div className="flex gap-1.5">
+            {TOUR_STEPS.map((_, i) => (
+              <span key={i} className={cx('w-2 h-2 rounded-full', i === step ? 'bg-magenta' : 'bg-white/15')} />
+            ))}
+          </div>
+          <div className="flex gap-2">
+            {step > 0 && <button onClick={onPrev} className="px-4 py-2 rounded-lg text-sm font-semibold bg-card border border-white/10 hover:border-white/30 transition-colors duration-150">Zurück</button>}
+            <button onClick={onNext} className="px-4 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-magenta to-mint text-bg hover:opacity-90 transition-opacity duration-150">
+              {step === TOUR_STEPS.length - 1 ? 'Fertig' : 'Weiter'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================== APP ============================== */
+
+const SCREEN_TITLES = {
+  dashboard: ['Dashboard', 'Alle Standorte im Überblick'],
+  planner: ['Eventplaner', 'Detailplanung pro Event'],
+  ai: ['KI-Assets', 'Grafiken & Texte automatisch erstellen'],
+  distribution: ['Distribution', 'Kanäle zentral bespielen'],
+  postcalc: ['Nachkalkulation', 'Was hat der Abend wirklich gebracht?'],
+  settings: ['Einstellungen', 'Kanäle, Locations, Team'],
+};
+
+function App() {
+  const [screen, setScreen] = useState('dashboard');
+  const [location, setLocation] = useState('Meier');
+  const [filters, setFilters] = useState({ zeitraum: 'Jahr 2026', location: 'Alle Standorte', genre: 'Alle Genres', reihe: 'Alle Reihen' });
+  const [toasts, setToasts] = useState([]);
+  const [tour, setTour] = useState({ active: false, step: 0 });
+
+  function addToast(msg, type = 'info') {
+    const id = Date.now() + Math.random();
+    setToasts(t => [...t, { id, msg, type }]);
+    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 3000);
+  }
+
+  function startTour() {
+    setTour({ active: true, step: 0 });
+    setScreen(TOUR_STEPS[0].screen);
+  }
+  function tourNext() {
+    if (tour.step === TOUR_STEPS.length - 1) { setTour({ active: false, step: 0 }); return; }
+    const next = tour.step + 1;
+    setTour({ active: true, step: next });
+    setScreen(TOUR_STEPS[next].screen);
+  }
+  function tourPrev() {
+    const prev = Math.max(0, tour.step - 1);
+    setTour({ active: true, step: prev });
+    setScreen(TOUR_STEPS[prev].screen);
+  }
+  function tourEnd() { setTour({ active: false, step: 0 }); }
+
+  if (screen === 'kiosk') {
+    return (
+      <>
+        <TeamScreen onBack={() => setScreen('dashboard')} />
+        <ToastStack toasts={toasts} />
+      </>
+    );
+  }
+
+  const [title, subtitle] = SCREEN_TITLES[screen] || ['', ''];
+
+  return (
+    <div className="flex min-h-screen">
+      <Sidebar screen={screen} setScreen={setScreen} tourActive={tour.active} />
+      <div className="flex-1 min-w-0">
+        <Header location={location} setLocation={setLocation} onStartTour={startTour} title={title} subtitle={subtitle} />
+        {screen === 'dashboard' && <Dashboard location={location} filters={filters} setFilters={setFilters} />}
+        {screen === 'planner' && <Eventplaner addToast={addToast} />}
+        {screen === 'ai' && <KiAssets addToast={addToast} />}
+        {screen === 'distribution' && <Distribution addToast={addToast} />}
+        {screen === 'postcalc' && <Nachkalkulation />}
+        {screen === 'settings' && <Einstellungen addToast={addToast} />}
+      </div>
+      {tour.active && <DemoTour step={tour.step} onNext={tourNext} onPrev={tourPrev} onEnd={tourEnd} />}
+      <ToastStack toasts={toasts} />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+<script>
+  (function () {
+    var src = document.getElementById('app-source').textContent;
+    var out = Babel.transform(src, { presets: [['react', { runtime: 'classic' }]] }).code;
+    var s = document.createElement('script');
+    s.text = out;
+    document.body.appendChild(s);
+  })();
+</script>
+</body>
+</html>
