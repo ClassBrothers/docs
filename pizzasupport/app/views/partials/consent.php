@@ -4,9 +4,8 @@
  *
  * Wir setzen von uns aus keine Marketing-Cookies. Notwendig ist allein das
  * Sitzungs-Cookie fuer den CSRF-Schutz. Zustimmungspflichtig sind bei uns
- * genau zwei Dinge: die Kartenkacheln von OpenStreetMap, die eine
- * Verbindung zu einem fremden Server aufbauen, und externe Einbettungen.
- * Beides bleibt aus, bis jemand aktiv zustimmt.
+ * genau zwei Dinge: die Kartenkacheln von OpenStreetMap und Google Analytics.
+ * Beides bleibt aus, bis jemand aktiv zustimmt - siehe main.js.
  *
  * Ablehnen ist genauso einfach wie Zustimmen – gleiche Groesse, gleiche
  * Ebene, kein Dark Pattern.
@@ -21,8 +20,8 @@ declare(strict_types=1);
       Klicks auf QR-Codes – läuft anonym auf unserem eigenen Server, ohne Cookie
       und ohne Deine IP-Adresse zu speichern. Zustimmung brauchen wir nur für
       Inhalte, die von fremden Servern kommen: die Kartenkacheln von
-      OpenStreetMap auf der Teilnehmerseite. Details stehen in den
-      <a href="/datenschutz.html">Datenschutzhinweisen</a>.
+      OpenStreetMap auf der Teilnehmerseite und Google Analytics. Details stehen
+      in den <a href="/datenschutz.html">Datenschutzhinweisen</a>.
     </p>
 
     <form class="consent-optionen" id="consent-form">
@@ -36,6 +35,12 @@ declare(strict_types=1);
         <label>
           <input type="checkbox" name="karte" id="consent-karte">
           <span><strong>Kartenkacheln</strong> – lädt die Karte von openstreetmap.org. Dabei erfährt deren Server Deine IP-Adresse.</span>
+        </label>
+      </div>
+      <div class="consent-option">
+        <label>
+          <input type="checkbox" name="analyse" id="consent-analyse">
+          <span><strong>Statistik (Google Analytics)</strong> – hilft uns zu verstehen, welche Seiten gelesen werden. Dabei setzt Google Cookies und erfährt Deine (gekürzte) IP-Adresse.</span>
         </label>
       </div>
     </form>

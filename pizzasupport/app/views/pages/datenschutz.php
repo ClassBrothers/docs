@@ -68,7 +68,8 @@ $fr = config('aufbewahrung');
       Ihre Entscheidung zum Einwilligungsbanner speichern wir im lokalen Speicher Ihres
       Browsers, damit wir nicht bei jedem Seitenaufruf erneut fragen müssen. Diese
       Information verlässt Ihren Browser nicht. Werbe- oder Marketing-Cookies setzen wir
-      nicht, auch nicht nach einer Einwilligung.
+      selbst nicht. Stimmen Sie im Banner Google Analytics zu, setzt ausschließlich Google
+      eigene Cookies zur Reichweitenmessung – siehe Nummer 7.
     </p>
 
     <h2>6. Reichweitenmessung</h2>
@@ -90,7 +91,31 @@ $fr = config('aufbewahrung');
       Signal „Do Not Track“ oder „Global Privacy Control“, zählen wir Sie gar nicht.
     </p>
 
-    <h2>7. Karte auf der Teilnehmerseite</h2>
+    <h2>7. Google Analytics</h2>
+    <p>
+      Zusätzlich zur eigenen, cookiefreien Zählung aus Nummer 6 können Sie der Nutzung von
+      Google Analytics zustimmen, einem Reichweitenmessungsdienst der Google Ireland
+      Limited, Gordon House, Barrow Street, Dublin 4, Irland. Google Analytics setzt dazu
+      Cookies auf Ihrem Gerät und verarbeitet unter anderem Ihre (von Google gekürzte)
+      IP-Adresse, besuchte Seiten, Verweildauer, groben Standort sowie Geräte- und
+      Browserinformationen.
+    </p>
+    <p>
+      Wir binden Google Analytics erst ein, nachdem Sie im Einwilligungsbanner aktiv
+      zugestimmt haben; vorher baut Ihr Browser keine Verbindung zu Google auf und es
+      werden keine entsprechenden Cookies gesetzt. Rechtsgrundlage ist Ihre Einwilligung
+      (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG), die Sie jederzeit über
+      „Cookie-Einstellungen“ im Fußbereich widerrufen können.
+    </p>
+    <p>
+      Dabei kann es zu einer Übermittlung an Server von Google in die USA kommen. Google
+      hat sich dem EU-U.S. Data Privacy Framework unterstellt, das ein angemessenes
+      Datenschutzniveau vorsieht. Wie lange Google die Daten speichert, legt Google in
+      eigenen Einstellungen fest; Einzelheiten dazu finden Sie in der
+      <a href="https://policies.google.com/privacy" rel="nofollow noopener" target="_blank">Datenschutzerklärung von Google</a>.
+    </p>
+
+    <h2>8. Karte auf der Teilnehmerseite</h2>
     <p>
       Auf der Seite „Wer ist dabei“ können Sie eine Karte laden, deren Kartenkacheln von
       openstreetmap.org stammen. Beim Laden übermittelt Ihr Browser Ihre IP-Adresse und
@@ -103,7 +128,7 @@ $fr = config('aufbewahrung');
       Ohne Einwilligung bleibt die vollständige Liste aller Teilnehmer nutzbar.
     </p>
 
-    <h2>8. Bestellformular der Gastronomie</h2>
+    <h2>9. Bestellformular der Gastronomie</h2>
     <p>
       Wenn Sie Kartons bestellen, verarbeiten wir: Vor- und Nachname, Name des Betriebs,
       Anschrift, E-Mail-Adresse, Telefonnummer, optional die Website, die Betriebsart sowie
@@ -118,7 +143,7 @@ $fr = config('aufbewahrung');
       Einwilligung den Zeitpunkt und den Zweck.
     </p>
 
-    <h2>9. Buchungsformular für Werbeflächen</h2>
+    <h2>10. Buchungsformular für Werbeflächen</h2>
     <p>
       Bei einer Werbebuchung verarbeiten wir Firmenname, Ansprechpartner, E-Mail-Adresse,
       Telefonnummer, Rechnungsanschrift, gegebenenfalls die Umsatzsteuer-Identifikationsnummer,
@@ -129,7 +154,7 @@ $fr = config('aufbewahrung');
       nicht über das Internet abrufbar.
     </p>
 
-    <h2>10. Empfehlung einer Pizzeria</h2>
+    <h2>11. Empfehlung einer Pizzeria</h2>
     <p>
       Über das Formular „Unterstütze Deine Lieblings-Pizzeria“ können Sie uns einen Betrieb
       nennen, den wir ansprechen sollen. Wir verarbeiten dann Name und Anschrift dieses
@@ -140,7 +165,7 @@ $fr = config('aufbewahrung');
       Ihre E-Mail-Adresse Ihre Einwilligung.
     </p>
 
-    <h2>11. Newsletter</h2>
+    <h2>12. Newsletter</h2>
     <p>
       Für den Newsletter verwenden wir das Double-Opt-in-Verfahren: Nach Ihrer Anmeldung
       erhalten Sie eine E-Mail mit einem Bestätigungslink. Erst nach dem Klick nehmen wir
@@ -152,7 +177,7 @@ $fr = config('aufbewahrung');
       automatisch.
     </p>
 
-    <h2>12. Kontaktformular</h2>
+    <h2>13. Kontaktformular</h2>
     <p>
       Ihre Angaben aus dem Kontaktformular verarbeiten wir zur Bearbeitung Ihrer Anfrage
       (Art. 6 Abs. 1 lit. b bzw. lit. f DSGVO). Wir bewahren die Anfragen auf, bis sie
@@ -160,7 +185,7 @@ $fr = config('aufbewahrung');
       Aufbewahrungspflichten bleiben unberührt.
     </p>
 
-    <h2>13. QR-Codes auf den Kartons</h2>
+    <h2>14. QR-Codes auf den Kartons</h2>
     <p>
       QR-Codes auf gedruckten Kartons führen technisch über eine Adresse auf pizzasupport.de
       und von dort auf die Seite des jeweiligen Inserenten. Beim Aufruf zählen wir den Klick
@@ -170,7 +195,7 @@ $fr = config('aufbewahrung');
       Herkunftsadresse nicht weiter.
     </p>
 
-    <h2>14. Formularschutz</h2>
+    <h2>15. Formularschutz</h2>
     <p>
       Zum Schutz vor automatisierten Einsendungen enthalten unsere Formulare ein für Menschen
       unsichtbares Feld und eine Zeitprüfung. Zusätzlich begrenzen wir die Zahl der
@@ -180,25 +205,28 @@ $fr = config('aufbewahrung');
       Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.
     </p>
 
-    <h2>15. Empfänger und Drittlandübermittlung</h2>
+    <h2>16. Empfänger und Drittlandübermittlung</h2>
     <p>
       Ihre Daten erhalten außer unserem Hosting-Anbieter keine Dritten, sofern das nicht zur
       Vertragserfüllung notwendig ist – etwa die Druckerei für die Auslieferungsadresse oder
       unser Steuerberater für Rechnungsunterlagen. Eine Übermittlung in Länder außerhalb der
-      EU und des EWR findet nicht statt. Eine Ausnahme ist der Abruf der Kartenkacheln, den
-      Sie selbst auslösen und der über die Server der OpenStreetMap Foundation läuft.
+      EU und des EWR findet grundsätzlich nicht statt. Ausnahmen sind der Abruf der
+      Kartenkacheln, den Sie selbst auslösen und der über die Server der OpenStreetMap
+      Foundation läuft, sowie – nach Ihrer Einwilligung – Google Analytics, das Daten auch
+      in die USA übermitteln kann (siehe Nummer 7).
     </p>
 
-    <h2>16. Speicherdauer</h2>
+    <h2>17. Speicherdauer</h2>
     <ul class="liste-check">
       <li>Bestellungen und Buchungen: für die Dauer der Geschäftsbeziehung, danach nach den handels- und steuerrechtlichen Fristen von sechs bzw. zehn Jahren</li>
       <li>Abgelehnte oder zurückgezogene Einträge: <?= (int) $fr['abgelehnte_eintraege'] ?> Tage</li>
       <li>Einzelwerte der Reichweitenmessung: <?= (int) $fr['analytics_roh'] ?> Tage, danach nur anonyme Tagessummen</li>
       <li>Zähler des Formularschutzes: <?= (int) $fr['rate_limit'] ?> Tage</li>
       <li>Newsletter: bis zur Abmeldung</li>
+      <li>Google Analytics: legt Google in eigenen Einstellungen fest, unabhängig von uns</li>
     </ul>
 
-    <h2>17. Ihre Rechte</h2>
+    <h2>18. Ihre Rechte</h2>
     <p>Sie haben jederzeit das Recht auf</p>
     <ul class="liste-check">
       <li>Auskunft über die zu Ihnen gespeicherten Daten (Art. 15 DSGVO)</li>
@@ -216,7 +244,7 @@ $fr = config('aufbewahrung');
       die Informationsfreiheit Baden-Württemberg, Lautenschlagerstraße 20, 70173 Stuttgart.
     </p>
 
-    <h2>18. Widerspruchsrecht</h2>
+    <h2>19. Widerspruchsrecht</h2>
     <p>
       Soweit wir Daten auf Grundlage berechtigter Interessen verarbeiten, können Sie dieser
       Verarbeitung aus Gründen, die sich aus Ihrer besonderen Situation ergeben, jederzeit
@@ -224,7 +252,7 @@ $fr = config('aufbewahrung');
       wir können zwingende schutzwürdige Gründe nachweisen, die Ihre Interessen überwiegen.
     </p>
 
-    <h2>19. Verschlüsselung</h2>
+    <h2>20. Verschlüsselung</h2>
     <p>
       Diese Website wird ausschließlich über HTTPS ausgeliefert. Besonders schutzwürdige
       Felder – Telefonnummern, Rechnungsanschriften und Umsatzsteuer-Identifikationsnummern –

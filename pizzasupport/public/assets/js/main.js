@@ -134,6 +134,7 @@
   var consentBox = document.getElementById('consent');
   if (consentBox) {
     var karteCheckbox = document.getElementById('consent-karte');
+    var analyseCheckbox = document.getElementById('consent-analyse');
 
     if (!consentLesen()) {
       consentBox.hidden = false;
@@ -143,9 +144,12 @@
       var knopf = e.target.closest('[data-consent]');
       if (!knopf) { return; }
       var art = knopf.getAttribute('data-consent');
-      var wert = { notwendig: true, karte: false, stand: new Date().toISOString() };
-      if (art === 'alle') { wert.karte = true; }
-      if (art === 'auswahl' && karteCheckbox) { wert.karte = karteCheckbox.checked; }
+      var wert = { notwendig: true, karte: false, analyse: false, stand: new Date().toISOString() };
+      if (art === 'alle') { wert.karte = true; wert.analyse = true; }
+      if (art === 'auswahl') {
+        if (karteCheckbox) { wert.karte = karteCheckbox.checked; }
+        if (analyseCheckbox) { wert.analyse = analyseCheckbox.checked; }
+      }
       consentSchreiben(wert);
       consentBox.hidden = true;
     });
@@ -155,10 +159,40 @@
       e.preventDefault();
       var c = consentLesen();
       if (karteCheckbox) { karteCheckbox.checked = !!(c && c.karte); }
+      if (analyseCheckbox) { analyseCheckbox.checked = !!(c && c.analyse); }
       consentBox.hidden = false;
       consentBox.scrollIntoView({ block: 'nearest' });
     });
   }
+
+  /* ------------------------------------------------------------------ */
+  /* Google Analytics: laedt erst, wenn im Consent-Banner zugestimmt     */
+  /* wurde. Vorher baut die Seite keinerlei Verbindung zu Google auf.    */
+  /* ------------------------------------------------------------------ */
+  var GA_MESSKENNUNG = 'G-H0S2ZPCEMT';
+  var gaGeladen = false;
+
+  function gaStarten() {
+    if (gaGeladen) { return; }
+    gaGeladen = true;
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', GA_MESSKENNUNG);
+
+    var skript = document.createElement('script');
+    skript.async = true;
+    skript.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_MESSKENNUNG;
+    document.head.appendChild(skript);
+  }
+
+  if (window.psConsent.erlaubt('analyse')) {
+    gaStarten();
+  }
+  document.addEventListener('ps:consent', function (e) {
+    if (e.detail && e.detail.analyse) { gaStarten(); }
+  });
 
   /* ------------------------------------------------------------------ */
   /* Mengenauswahl im Bestellformular                                    */

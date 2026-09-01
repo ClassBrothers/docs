@@ -130,12 +130,15 @@ function send_security_headers(string $nonce): void
         // Der Nonce deckt genau zwei Stellen ab: das eingebettete Critical CSS
         // und den kleinen Lader, der das restliche Stylesheet nachzieht.
         // 'unsafe-inline' braucht die Seite dadurch an keiner Stelle.
-        "script-src 'self' 'nonce-{$nonce}'",
+        // googletagmanager.com liefert gtag.js aus - nur nachdem im Consent-Banner
+        // zugestimmt wurde (siehe consent.php/main.js), nie vorher.
+        "script-src 'self' 'nonce-{$nonce}' https://www.googletagmanager.com",
         "style-src 'self' 'nonce-{$nonce}'",
-        // OpenStreetMap-Kacheln sind der einzige externe Host.
-        "img-src 'self' data: https://tile.openstreetmap.org https://*.tile.openstreetmap.org",
+        // OpenStreetMap-Kacheln und das Google-Analytics-Logo-Pixel sind die
+        // einzigen externen Hosts.
+        "img-src 'self' data: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://www.google-analytics.com",
         "font-src 'self'",
-        "connect-src 'self'",
+        "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com",
         "manifest-src 'self'",
         'upgrade-insecure-requests',
     ]);
