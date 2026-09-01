@@ -16,7 +16,7 @@
   /* Flaechen */
   --papier:#fdf7ed;--papier2:#f6ead6;--weiss:#fffdfa;
   --tinte:#3b302a;--tinte-hell:#716359;--linie:#e5d5bf;
-  --radius:22px;--radius-klein:14px;
+  --radius:15px;--radius-klein:8px;
   --schrift-kopf:"Fraunces",Georgia,"Times New Roman",serif;
   --schrift-ui:"Outfit",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --schrift-text:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -110,7 +110,7 @@ img{max-width:100%;height:auto}
    einmal durch, rein ueber transform - keine Layout-Kosten. */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
-  padding:.85rem 1.6rem;border-radius:999px;border:2px solid transparent;
+  padding:.85rem 1.6rem;border-radius:50px;border:2px solid transparent;
   font-family:var(--schrift-ui);font-weight:700;font-size:.98rem;line-height:1.2;
   text-decoration:none;cursor:pointer;text-align:center;position:relative;overflow:hidden;
   transition:transform .12s ease,background-color .15s ease,color .15s ease,box-shadow .15s ease;

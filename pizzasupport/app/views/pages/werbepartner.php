@@ -66,15 +66,16 @@ $f      = fortschritt();
 <section class="seiten-hero seiten-hero-seriös">
   <div class="wrap schmal">
     <p class="kicker">Für Unternehmen und Selbstständige</p>
-    <h1>Werbung auf Pizzakartons in Freiburg</h1>
+    <h1>Werbung auf Pizzakartons in Freiburg buchen</h1>
     <p class="hero-lead">
-      Werbung auf Pizzakartons in Freiburg erreicht Menschen dort, wo sie Zeit haben:
-      am eigenen Esstisch. Sie buchen eine feste Fläche auf Deckel oder Seite, wir
-      drucken sie in Vierfarbe, und die Freiburger Gastronomie gibt die Kartons
-      kostenlos aus. Ihr Budget bezahlt damit zwei Dinge gleichzeitig – Ihre Sichtbarkeit
-      und die Verpackung eines Betriebs aus der Nachbarschaft. Wer in Freiburg wirbt und
-      dabei etwas zurückgeben will, findet dafür kaum eine direktere Fläche als den Karton,
-      der abends auf dem Tisch liegt.
+      Werbung auf Pizzakartons in Freiburg erreicht Menschen beim Essen
+      in sympathischem Kontext. Sie buchen eine feste Fläche auf Deckel oder Seite,
+      wir drucken sie in 4c, liefern sie aus und die Freiburger Gastronomie gibt
+      die Kartons an tausende Gäste weiter.<br>
+      Ihr Budget bezahlt damit zwei Dinge gleichzeitig: die sympathische Wahrnehmung
+      Ihrer Marke und die Unterstützung von Gastro und Gästen. Wer in Freiburg wirbt
+      und dabei etwas zurückgeben will, findet dafür kaum eine direktere Fläche als
+      den Pizzakarton, der abends auf dem Tisch liegt.
     </p>
     <div class="hero-aktionen">
       <a class="btn btn-primaer btn-gross" href="#buchen">Fläche buchen</a>
@@ -87,8 +88,8 @@ $f      = fortschritt();
   <div class="wrap">
     <h2 id="preise-titel">Welche Flächen gibt es und was kosten sie?</h2>
     <p class="band-lead">
-      Feste Pakete, keine Abrechnung nach Quadratzentimetern. Alle Preise gelten für die
-      vollständige Auflage, nicht pro Karton.
+      Die Auflage beträgt 42.000 Kartons. Aktuell wird die erste Auflage gebucht,
+      deren Veröffentlichung für November 2026 geplant ist.
     </p>
 
     <div class="tabelle-wrap">
@@ -143,17 +144,17 @@ $f      = fortschritt();
     <div class="ideen-raster ideen-teaser">
 
       <article class="idee">
-        <p class="idee-claim">„Wir suchen Dich. Nicht Deinen Lebenslauf.“</p>
-        <p>Ein Sanitärbetrieb sucht einen Monteur – mit QR-Code zu einem Formular mit drei Feldern.</p>
+        <p class="idee-claim">„Heißhunger auf nen neuen Job?“</p>
+        <p>Ein Unternehmen sucht neue Mitarbeiter – mit QR-Code zu einem Formular mit drei Feldern.</p>
       </article>
 
       <article class="idee">
-        <p class="idee-claim">„Jetzt ne Cola wär nice.“</p>
-        <p>Ein Kino druckt einen Getränkegutschein. Der Satz trifft genau den Moment, in dem der Karton aufgeht.</p>
+        <p class="idee-claim">„Jetzt ne Cola wär nice?“</p>
+        <p>Ein Kino druckt einen Getränkegutschein, der im Kino gegen eine kostenlose Cola eingelöst werden kann.</p>
       </article>
 
       <article class="idee">
-        <p class="idee-claim">„Ausbildung ab September. Ja, wirklich bezahlt.“</p>
+        <p class="idee-claim">„Iss auf und dann starte Deine Ausbildung!“</p>
         <p>Die Zielgruppe für Ausbildungsplätze sitzt abends direkt vor diesem Karton.</p>
       </article>
 
@@ -167,7 +168,7 @@ $f      = fortschritt();
 
 <section class="band band-hell" aria-labelledby="ablauf-titel">
   <div class="wrap">
-    <h2 id="ablauf-titel">Wie läuft eine Buchung ab?</h2>
+    <h2 id="ablauf-titel">Wie buche ich eine Werbefläche?</h2>
     <ol class="schritte schritte-vier">
       <li>
         <span class="schritt-nr" aria-hidden="true">1</span>

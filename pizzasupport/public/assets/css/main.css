@@ -47,12 +47,12 @@
 .karton-deckel{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:.6rem;margin-bottom:.6rem}
 .flaeche{
   display:flex;flex-direction:column;justify-content:center;align-items:center;
-  border-radius:999px;padding:.75rem .6rem;text-align:center;
+  border-radius:50px;padding:.75rem .6rem;text-align:center;
   font-family:var(--schrift-ui);font-weight:700;font-size:.8rem;line-height:1.25;color:var(--charcoal);
   background:var(--weiss);border:1.5px solid var(--linie);box-shadow:var(--schatten-sm);
   animation:schweben 5.4s ease-in-out infinite;
 }
-.flaeche::before{content:"";width:.5rem;height:.5rem;border-radius:50%;background:var(--olivgold);margin-bottom:.3rem}
+.flaeche::before{content:"";width:.5rem;height:.5rem;border-radius:3%;background:var(--olivgold);margin-bottom:.3rem}
 .flaeche small{display:block;font-family:var(--schrift-text);font-weight:500;font-size:.72rem;color:var(--tinte-hell);margin-top:.1rem}
 .flaeche-gross{grid-row:span 2;animation-delay:.2s}
 .flaeche-gross::before{background:var(--orange)}
@@ -488,3 +488,119 @@
 
 /* Fällt die Karte aus, steht hier ein Hinweis statt einer leeren Fläche. */
 .karte-fehler{display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;color:var(--tinte-hell)}
+
+
+/* Werbeflächen im Hero: Rundung zurücknehmen */
+:root {
+  --radius-flaeche: 6px;
+}
+.flaeche,
+.flaeche-klein,
+.flaeche-mittel,
+.flaeche-gross,
+.flaeche-seite {
+  border-radius: var(--radius-flaeche);
+}
+
+
+/* Echte Seitenverhältnisse der Druckflächen */
+.flaeche-gross  { aspect-ratio: 88 / 136; }   /* hochkant */
+.flaeche-mittel { aspect-ratio: 1 / 1; }      /* quadratisch */
+.flaeche-klein  { aspect-ratio: 88 / 40; }    /* quer */
+.flaeche-seite  { aspect-ratio: 93 / 23; }    /* schmaler Streifen */
+
+
+:root {
+  /* Zentrale Stellschrauben – hier drehen, nicht weiter unten */
+  --holz-bild:      url('/assets/img/holz-tisch.png');
+  --holz-abdunkeln: 0.12;   /* wie stark das Holz zurücktritt: 0 bis 1 */
+  --radius-bild:    10px;
+}
+
+/* --- Hintergrund: Holztisch mit Leseschutz --- */
+.hero {
+  position: relative;
+  background-image: var(--holz-bild);
+  background-size: cover;
+  background-position: center;
+  isolation: isolate;
+}
+
+/*
+ * Der Verlauf liegt über dem Holz und wird zur Textseite hin dichter.
+ * Ohne ihn steht die Überschrift auf Maserung und verliert an Kontrast.
+ */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    100deg,
+    rgba(255, 250, 244, 0.94) 0%,
+    rgba(255, 250, 244, 0.88) 38%,
+    rgba(255, 250, 244, 0.35) 68%,
+    rgba(255, 250, 244, 0.15) 100%
+  );
+}
+
+/* Auf schmalen Bildschirmen steht der Text über dem Bild – dort dichter */
+@media (max-width: 780px) {
+  .hero::before {
+    background: rgba(255, 250, 244, 0.90);
+  }
+}
+
+/* --- Das Bild --- */
+.hero-bild {
+  margin: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.hero-bild img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-bild);
+  /* Weicher Schatten, damit das Bild auf dem Holz aufliegt statt zu schweben */
+  box-shadow: 0 18px 40px -18px rgba(60, 30, 10, 0.45);
+}
+
+/* --- Dezente Bewegung als Ersatz für die alte Karton-Animation --- */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-bild img {
+    animation: hero-schweben 7s ease-in-out infinite;
+  }
+}
+
+/* Milchglas hinter dem Hero-Text */
+.hero-text {
+  position: relative;
+  padding: 2rem 2.25rem;
+  border-radius: 14px;
+  background: rgba(255, 250, 244, 0.66);
+  -webkit-backdrop-filter: blur(10px) saturate(115%);
+  backdrop-filter: blur(10px) saturate(115%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 30px -14px rgba(60, 30, 10, 0.55);
+}
+
+/* Ältere Browser können nicht blurren – dort dichter füllen */
+@supports not (backdrop-filter: blur(1px)) {
+  .hero-text { background: rgba(255, 250, 244, 0.92); }
+}
+
+@media (max-width: 780px) {
+  .hero-text { padding: 1.5rem 1.25rem; }
+}
+
+/* Buttons: Rundung */
+:root { --radius-btn: 8px; }
+
+.btn,
+.btn.btn-primaer,
+.btn.btn-sekundaer,
+.btn.btn-gross {
+  border-radius: var(--radius-btn);
+}

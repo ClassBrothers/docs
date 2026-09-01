@@ -53,7 +53,7 @@ $faq = [
 ];
 
 $meta['titel']        = 'Kostenlose Pizzakartons für Freiburg | Pizza Support';
-$meta['beschreibung'] = 'Pizza Support liefert Freiburger Gastronomie kostenlose Pizzakartons, finanziert durch Werbung aus der Nachbarschaft. Unverbindlich eintragen und beim Startschuss dabei sein.';
+$meta['beschreibung'] = 'Pizza Support liefert der Freiburger Gastronomie kostenlose Pizzakartons, finanziert durch Werbung auf Pizzakartons. Unverbindlich eintragen und beim Startschuss dabei sein.';
 $meta['jsonld'] = [
     jsonld_faq($faq),
     [
@@ -77,19 +77,18 @@ $f       = fortschritt();
 <section class="hero">
   <div class="wrap hero-innen">
     <div class="hero-text">
-      <p class="kicker">Für die Gastronomie in Freiburg und drumherum</p>
-      <h1>Kostenlose Pizzakartons für <span class="akzent">Freiburg</span></h1>
+      <p class="kicker">Unterstützung für Gastronomie und Gäste</p>
+      <h1>Kostenlose Pizzakartons für Freiburg</h1>
       <p class="hero-lead">
-        Kostenlose Pizzakartons für Freiburg klingen nach Haken – hier ist keiner.
-        Wir drucken 32er-Kartons in Vierfarbdruck, Unternehmen und Privatleute aus der
-        Stadt buchen die Flächen darauf, und die Rechnung ist damit bezahlt. Für Deinen
-        Betrieb bleibt: null Einkaufspreis, kein Vertrag, keine Mindestlaufzeit. Wer in
-        Freiburg Pizza aus dem Ofen holt, bekommt die Kartons umsonst –
-        <a href="#bestellen">hier trägst Du Deinen Bedarf ein</a>.
+        Seit die Verpackungssteuer gilt, zahlt man bei jeder Bestellung drauf.
+        Wir ändern was: Unternehmen aus der Region buchen Werbeflächen auf
+        Pizzakartons und die Gastronomie bekommt sie umsonst. Lebensmittelecht,
+        hygienisch zugelassen und eine Aktion, über die man spricht.<br>
+        <a href="#bestellen">Hier bekommst Du Pizzakartons kostenlos.</a>.
       </p>
       <div class="hero-aktionen">
-        <a class="btn btn-primaer btn-gross" href="#bestellen">Jetzt bestellen</a>
-        <a class="btn btn-sekundaer btn-gross" href="/werbepartner.html">Ich will eine Werbefläche</a>
+        <a class="btn btn-primaer btn-gross" href="#bestellen">Kartons bestellen</a>
+        <a class="btn btn-sekundaer btn-gross" href="/werbepartner.html">Werbefläche sichern</a>
       </div>
       <p class="hero-fuss">
         Bestelle jetzt und sei dabei, wenn wir versenden. Unverbindlich bis zum Startschuss.
@@ -97,38 +96,12 @@ $f       = fortschritt();
     </div>
 
     <aside class="hero-karton" aria-label="Werbeflächen auf dem Karton">
-      <div class="karton-skizze">
-        <svg class="karton-illustration" viewBox="0 0 200 160" width="200" height="160" aria-hidden="true" focusable="false">
-          <defs>
-            <linearGradient id="karton-deckelfarbe" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#f7e5c4"/><stop offset="100%" stop-color="#efd4a4"/>
-            </linearGradient>
-          </defs>
-          <ellipse cx="100" cy="152" rx="74" ry="7" fill="rgba(60,35,20,.08)"/>
-          <rect x="18" y="80" width="164" height="64" rx="6" fill="#ebce9b"/>
-          <rect x="18" y="122" width="164" height="10" rx="3" fill="#d3b071"/>
-          <path d="M18,80 L182,80 L178,12 L22,12 Z" fill="url(#karton-deckelfarbe)"/>
-          <ellipse cx="100" cy="108" rx="58" ry="30" fill="#e0a33c"/>
-          <ellipse cx="100" cy="108" rx="46" ry="23" fill="#f2c568"/>
-          <circle cx="82" cy="98" r="6" fill="#c1440e"/>
-          <circle cx="116" cy="102" r="6" fill="#c1440e"/>
-          <circle cx="100" cy="118" r="6" fill="#c1440e"/>
-          <g stroke="rgba(255,255,255,.85)" stroke-width="2.4" stroke-linecap="round" fill="none">
-            <path class="karton-dampf" d="M78,72 q0,-6 5,-11 t0,-11"/>
-            <path class="karton-dampf" d="M100,68 q0,-6 5,-11 t0,-11"/>
-            <path class="karton-dampf" d="M122,72 q0,-6 5,-11 t0,-11"/>
-          </g>
-        </svg>
-        <div class="karton-deckel">
-          <span class="flaeche flaeche-gross">Deckel groß<small>88 × 136 mm</small></span>
-          <span class="flaeche flaeche-mittel">Deckel mittel<small>88 × 88 mm</small></span>
-          <span class="flaeche flaeche-klein">Deckel klein<small>88 × 40 mm</small></span>
-        </div>
-        <div class="karton-seite">
-          <span class="flaeche flaeche-seite">Seite · 93 × 23 mm</span>
-        </div>
-        <p class="karton-boden">Unten drunter: die <strong>Fun Area</strong> ab <?= e(preis(790)) ?> für alle, die keinen Betrieb, aber etwas zu sagen haben.</p>
-      </div>
+      <figure class="hero-bild">
+        <img src="/assets/img/pizzakarton-mit-werbung.png"
+             alt="Pizzakarton mit Werbefläche auf dem Deckel"
+             width="1000" height="1000"
+             fetchpriority="high" decoding="async">
+      </figure>
     </aside>
   </div>
 </section>
@@ -137,38 +110,41 @@ $f       = fortschritt();
 
 <section class="band band-hell" id="story" aria-labelledby="story-titel">
   <div class="wrap schmal">
-    <h2 id="story-titel">Warum verschenkt jemand Pizzakartons?</h2>
+    <h2 id="story-titel">Warum sind die Pizzakartons kostenlos?</h2>
     <p>
-      Weil wir seit Jahren mit Gastronomen zu tun haben und wissen, wie die Rechnung
-      am Monatsende aussieht. Wareneinsatz rauf, Energie rauf, Personal schwer zu
-      finden. Und dann kam in Freiburg die Verpackungssteuer dazu. Kein Weltuntergang,
-      aber bei ein paar hundert Kartons in der Woche summiert sich das zu einer
-      Position, die vorher nicht im Plan stand.
+      Kostenlose Pizzakartons bringen Pizzerien und Restaurants finanzielle Unterstützung.
+      Die 50ct, die man in Freiburg für die Verpackungssteuer abgeben muss, werden durch
+      den Wegfall des Einkaufspreises des Pizzakartons reduziert.
+      Als Kreativagentur lieben wir die Gastro, arbeiten mit Eventagenturen und wissen,
+      wie die finanzielle Belastung in der Gastro aussieht. Und dann kam in Freiburg die
+      Verpackungssteuer dazu. Bei ein paar hundert Kartons in der Woche summiert sich
+      das schnell zu einer Position, die vorher nicht im Plan stand und die für Gast und
+      Gastro erstmal Mehrkosten bedeutet.
     </p>
     <p>
-      Wir haben nicht vor, darüber zu streiten. Die Stadt hat ihre Gründe, und weniger
-      Müll auf der Straße will hier niemand ernsthaft bekämpfen. Uns interessiert die
-      andere Seite: Wenn der Karton sowieso Geld kostet, machen wir eben den Einkauf
-      umsonst. Auf dem Deckel ist Platz, den ein Fliesenleger aus Haslach, eine
-      Kanzlei in der Wiehre oder das Fitnessstudio in Zähringen gut gebrauchen kann.
-      Diese Fläche bezahlt den Karton. Mehr ist der Trick nicht.
+      Wie mit unseren Werbemotiven auf Pizzakartons halten wir es auch hier: Keine Politik.
+      Wir haben ein Problem gesehen und eine Lösung gefunden. Der Deckel des Pizzakartons ist
+      eine super Werbefläche, die einfach ungenutzt ist. Sympathische Werbefläche auf Pizzakartons,
+      mit der regionale Unternehmen die Gastronomie vor Ort unterstützen können.
+      Eine Win-Win Situation für alle. Die Werbung bezahlt den Karton und macht eine
+      Einsparung für Gast und Gastro möglich.
     </p>
     <p>
-      Getragen wird das Ganze von der <?= e(config('firma.name')) ?> hier in Freiburg,
-      gastronomisch beraten von der <?= e(config('partner_gastro')) ?> – Leuten, die
-      selbst wissen, wie voll eine Küche am Freitagabend ist.
-      <a href="/ueber-uns.html">Mehr über uns und was danach kommt.</a>
+      Initiiert wird die Aktion "PizzaSupport" von der <?= e(config('firma.name')) ?> hier in Freiburg
+      in Kooperation mit der Eventagentur <?= e(config('partner_gastro')) ?>. Von der Gastro für die Gastro.
+      <a href="/ueber-uns.html">Mehr dazu hier.</a>
     </p>
   </div>
 </section>
 
 <section class="band" id="startschuss" aria-labelledby="startschuss-titel">
   <div class="wrap">
-    <h2 id="startschuss-titel">Wie kommt der Karton in Deine Küche?</h2>
+    <h2 id="startschuss-titel">Wie bekomme ich kostenlose Pizzakartons?</h2>
     <p class="band-lead">
-      Wir nennen das Startschuss-Prinzip. Gedruckt wird erst, wenn beide Seiten stehen –
-      genug Betriebe mit Bedarf und genug gebuchte Werbung. So zahlt niemand für eine
-      Auflage, die halbleer bleibt.
+      Gedruckt wird erst, wenn beide Seiten stehen. Sobald sich genug Pizzerien und Restaurants
+      mit Bedarf an Pizzakartons eingetragen haben und wir entsprechende Unternehmen als
+      Werbepartner gewonnen haben, geht es los. Wir glauben fest dran, aber Du kennst ja Einsteins
+      Spruch mit dem Universum.
     </p>
 
     <ol class="schritte">
