@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 649" role="img" aria-labelledby="logo-titel">
+  <title id="logo-titel">Pizza Support – gemeinschaftliches Projekt für Ess-Kultur</title>
+
+  <defs>
+    <linearGradient id="wortGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FDF3DC"/>
+      <stop offset="0.55" stop-color="#F9DFA4"/>
+      <stop offset="1" stop-color="#F3A83C"/>
+    </linearGradient>
+    <linearGradient id="kaeseGrad" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#FBD24E"/>
+      <stop offset="1" stop-color="#F2A32B"/>
+    </linearGradient>
+    <clipPath id="badgeClip">
+      <path d="M120 208 Q118 150 190 143 L500 118 L810 143 Q882 150 880 208 L880 452 Q882 512 810 519 L500 545 L190 519 Q118 512 120 452 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- Strahlenkranz hinter dem Schild -->
+  <g opacity="0.95">
+    <g stroke="#F5B335" stroke-linecap="round" fill="none">
+      <path d="M250 120 L120 44" stroke-width="16"/>
+      <path d="M300 96 L216 24" stroke-width="12"/>
+      <path d="M382 78 L340 12" stroke-width="10"/>
+      <path d="M742 92 L830 26" stroke-width="12"/>
+      <path d="M800 128 L906 62" stroke-width="16"/>
+    </g>
+    <g stroke="#F07E22" stroke-linecap="round" fill="none" opacity="0.9">
+      <path d="M212 156 L64 108" stroke-width="11"/>
+      <path d="M838 168 L954 116" stroke-width="11"/>
+    </g>
+    <g fill="#F9C846">
+      <circle cx="905" cy="120" r="7"/>
+      <circle cx="86" cy="168" r="6"/>
+      <circle cx="946" cy="196" r="5"/>
+    </g>
+  </g>
+
+  <!-- Schildkörper -->
+  <path d="M120 208 Q118 150 190 143 L500 118 L810 143 Q882 150 880 208 L880 452 Q882 512 810 519 L500 545 L190 519 Q118 512 120 452 Z"
+        fill="#173A5E" stroke="#F07E22" stroke-width="22" stroke-linejoin="round"/>
+
+  <!-- Innenleben des Schildes -->
+  <g clip-path="url(#badgeClip)">
+    <path d="M150 470 Q500 300 850 470 L850 560 L150 560 Z" fill="#1E6E7E" opacity="0.55"/>
+    <g fill="none" stroke="#2E8B9C" stroke-width="14" opacity="0.55">
+      <path d="M188 452 Q500 262 812 452"/>
+      <path d="M214 486 Q500 316 786 486"/>
+    </g>
+    <g fill="none" stroke="#F5B335" stroke-width="13" stroke-linecap="round" opacity="0.85">
+      <path d="M264 300 Q392 196 520 214"/>
+      <path d="M300 336 Q420 244 540 258"/>
+    </g>
+  </g>
+
+  <!-- Stern über dem Wortbild -->
+  <path d="M500 128 L520 188 L583 188 L532 224 L551 284 L500 248 L449 284 L468 224 L417 188 L480 188 Z"
+        fill="#FFFDF2" stroke="#F5B335" stroke-width="7" stroke-linejoin="round"/>
+
+  <!-- Pizzastück oben rechts -->
+  <g transform="translate(690 92) rotate(14)">
+    <path d="M0 0 L152 34 L74 168 Z" fill="url(#kaeseGrad)" stroke="#B9631A" stroke-width="9" stroke-linejoin="round"/>
+    <path d="M0 0 L152 34 L142 58 L8 26 Z" fill="#E98B2B" stroke="#B9631A" stroke-width="8" stroke-linejoin="round"/>
+    <circle cx="58" cy="62" r="13" fill="#C8402C"/>
+    <circle cx="104" cy="88" r="11" fill="#C8402C"/>
+    <circle cx="66" cy="120" r="10" fill="#C8402C"/>
+    <path d="M88 52 a11 11 0 1 1 0.1 0" fill="none" stroke="#3E7A3C" stroke-width="7"/>
+  </g>
+
+  <!-- Tomate -->
+  <g transform="translate(600 74)">
+    <circle cx="0" cy="0" r="27" fill="#C8402C"/>
+    <path d="M-9 -24 q9 -12 18 0" fill="none" stroke="#3E7A3C" stroke-width="7" stroke-linecap="round"/>
+  </g>
+
+  <!-- Basilikumblatt -->
+  <path d="M900 258 q34 -22 54 4 q-26 34 -54 -4 Z" fill="#3E7A3C"/>
+
+  <!-- Wortmarke. textLength haelt die Schrift im Schild, unabhaengig davon,
+       welche Schriftart der Betrachter tatsaechlich zur Verfuegung hat. -->
+  <g font-family="Verdana,'DejaVu Sans',Tahoma,sans-serif" font-weight="700" text-anchor="middle">
+    <text x="500" y="386" font-size="118" textLength="672" lengthAdjust="spacingAndGlyphs"
+          fill="url(#wortGrad)" stroke="#173A5E" stroke-width="20" paint-order="stroke fill"
+          stroke-linejoin="round">PIZZA SUPPORT</text>
+    <text x="500" y="386" font-size="118" textLength="672" lengthAdjust="spacingAndGlyphs"
+          fill="url(#wortGrad)">PIZZA SUPPORT</text>
+  </g>
+
+  <!-- Untertitel -->
+  <g font-family="Verdana,'DejaVu Sans',Tahoma,sans-serif" font-weight="700" text-anchor="middle">
+    <text x="500" y="452" font-size="30" textLength="588" lengthAdjust="spacingAndGlyphs"
+          fill="#FFFDF2">GEMEINSCHAFTLICHES PROJEKT FÜR ESS-KULTUR</text>
+  </g>
+
+  <!-- Sternenreihe -->
+  <g fill="#FFFDF2" transform="translate(500 494)">
+    <g id="ministern" transform="translate(0 0) scale(0.9)">
+      <path d="M0 -14 L4 -4 L15 -4 L6 3 L9 14 L0 7 L-9 14 L-6 3 L-15 -4 L-4 -4 Z"/>
+    </g>
+    <use href="#ministern" x="-104" opacity="0.85"/>
+    <use href="#ministern" x="-54" opacity="0.92"/>
+    <use href="#ministern" x="54" opacity="0.92"/>
+    <use href="#ministern" x="104" opacity="0.85"/>
+  </g>
+</svg>

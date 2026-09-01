@@ -1,0 +1,76 @@
+# ---------------------------------------------------------------------------
+# pizzasupport.de – Apache-Konfiguration
+# DocumentRoot muss auf dieses Verzeichnis (public/) zeigen.
+# Fuer nginx liegt eine Beispielkonfiguration in docs/nginx.conf.example.
+# ---------------------------------------------------------------------------
+
+Options -Indexes -MultiViews
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # HTTPS erzwingen. Wer hinter einem Proxy terminiert, ergaenzt die
+    # zweite Bedingung entsprechend.
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+    # www abschneiden – eine kanonische Domain, keine doppelten Inhalte.
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+    # Vorhandene Dateien und Verzeichnisse direkt ausliefern.
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Alles Uebrige an den Front Controller.
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# --- Caching --------------------------------------------------------------
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css                "access plus 1 year"
+    ExpiresByType application/javascript  "access plus 1 year"
+    ExpiresByType image/svg+xml           "access plus 1 year"
+    ExpiresByType image/webp              "access plus 1 year"
+    ExpiresByType image/avif              "access plus 1 year"
+    ExpiresByType image/png               "access plus 1 year"
+    ExpiresByType image/jpeg              "access plus 1 year"
+    ExpiresByType font/woff2              "access plus 1 year"
+    ExpiresByType text/html               "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Assets tragen einen Versionsparameter, sie duerfen unveraenderlich sein.
+    <FilesMatch "\.(css|js|woff2|svg|png|jpe?g|webp|avif|ico)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    <FilesMatch "\.(php|html)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+# --- Kompression ----------------------------------------------------------
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml \
+        application/javascript application/json application/xml image/svg+xml
+</IfModule>
+<IfModule mod_brotli.c>
+    AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/xml \
+        application/javascript application/json application/xml image/svg+xml
+</IfModule>
+
+# --- Zugriffsschutz -------------------------------------------------------
+# Versteckte Dateien und alles, was nach Konfiguration riecht.
+<FilesMatch "^\.|(\.env|\.sqlite|\.sqlite-wal|\.sqlite-shm|\.md|\.sql|\.log|\.ini)$">
+    Require all denied
+</FilesMatch>
+
+# PHP-Ausfuehrung im Upload-Verzeichnis unterbinden, falls es je
+# versehentlich unter den Web-Root wandert.
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
