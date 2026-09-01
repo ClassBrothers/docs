@@ -49,6 +49,16 @@ $aktuell = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <meta name="theme-color" content="#241C18">
 
+<?php if ($meta['body_klasse'] === 'seite-startseite'): ?>
+  <?php /* Hintergrundbild des Hero-Bereichs steckt in main.css und wuerde sonst
+           erst nach dessen Laden entdeckt - das kostet auf der Startseite direkt
+           LCP-Zeit. Der Preload laeuft parallel zum CSS.
+           Bewusst ohne asset()-Versionierung: main.css ist eine statische Datei
+           ohne eigenes Cache-Busting und referenziert den blanken Pfad - nur so
+           trifft der Preload denselben Cache-Eintrag wie der spaetere CSS-Request. */ ?>
+  <link rel="preload" href="/assets/img/holz-tisch.jpg" as="image" fetchpriority="high">
+<?php endif; ?>
+
 <?php /* Critical CSS: nur was ueber der Falz gebraucht wird. */ ?>
 <style nonce="<?= e($nonce) ?>"><?php readfile(APP_ROOT . '/public/assets/css/critical.css'); ?></style>
 
@@ -74,7 +84,14 @@ $aktuell = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 <header class="kopf" id="kopf">
   <div class="wrap kopf-innen">
     <a class="kopf-logo" href="/" aria-label="Pizza Support, zur Startseite">
-      <img src="<?= e(asset($logo['src'])) ?>" width="<?= (int) $logo['width'] ?>" height="<?= (int) $logo['height'] ?>" alt="<?= e($logo['alt']) ?>" fetchpriority="high" decoding="async">
+      <?php if (str_ends_with($logo['src'], '.png')): ?>
+        <picture>
+          <source srcset="<?= e(asset(substr($logo['src'], 0, -4) . '.webp')) ?>" type="image/webp">
+          <img src="<?= e(asset($logo['src'])) ?>" width="<?= (int) $logo['width'] ?>" height="<?= (int) $logo['height'] ?>" alt="<?= e($logo['alt']) ?>" fetchpriority="high" decoding="async">
+        </picture>
+      <?php else: ?>
+        <img src="<?= e(asset($logo['src'])) ?>" width="<?= (int) $logo['width'] ?>" height="<?= (int) $logo['height'] ?>" alt="<?= e($logo['alt']) ?>" fetchpriority="high" decoding="async">
+      <?php endif; ?>
     </a>
 
     <button class="kopf-toggle" type="button" aria-expanded="false" aria-controls="hauptnav" aria-label="Menü öffnen">

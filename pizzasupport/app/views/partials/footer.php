@@ -3,7 +3,15 @@
   <div class="wrap fuss-innen">
 
     <div class="fuss-spalte fuss-marke">
-      <img class="fuss-logo" src="<?= e(asset(config('logo.src'))) ?>" width="1000" height="649" alt="Pizza Support" loading="lazy" decoding="async">
+      <?php $fussLogo = config('logo.src'); ?>
+      <?php if (str_ends_with($fussLogo, '.png')): ?>
+        <picture>
+          <source srcset="<?= e(asset(substr($fussLogo, 0, -4) . '.webp')) ?>" type="image/webp">
+          <img class="fuss-logo" src="<?= e(asset($fussLogo)) ?>" width="260" height="168" alt="Pizza Support" loading="lazy" decoding="async">
+        </picture>
+      <?php else: ?>
+        <img class="fuss-logo" src="<?= e(asset($fussLogo)) ?>" width="260" height="168" alt="Pizza Support" loading="lazy" decoding="async">
+      <?php endif; ?>
       <p>Kostenlose Pizzakartons für die Freiburger Gastronomie, finanziert durch Unternehmen aus der Nachbarschaft.</p>
       <p class="fuss-initiator">
         Ein Projekt der <?= e(config('firma.name')) ?> mit gastronomischer Unterstützung der

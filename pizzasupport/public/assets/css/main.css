@@ -512,7 +512,7 @@
 
 :root {
   /* Zentrale Stellschrauben – hier drehen, nicht weiter unten */
-  --holz-bild:      url('/assets/img/holz-tisch.png');
+  --holz-bild:      url('/assets/img/holz-tisch.jpg');
   --holz-abdunkeln: 0.12;   /* wie stark das Holz zurücktritt: 0 bis 1 */
   --radius-bild:    10px;
 }

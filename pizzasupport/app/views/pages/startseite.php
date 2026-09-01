@@ -97,10 +97,13 @@ $f       = fortschritt();
 
     <aside class="hero-karton" aria-label="Werbeflächen auf dem Karton">
       <figure class="hero-bild">
-        <img src="/assets/img/pizzakarton-mit-werbung.png"
-             alt="Pizzakarton mit Werbefläche auf dem Deckel"
-             width="1000" height="1000"
-             fetchpriority="high" decoding="async">
+        <picture>
+          <source srcset="<?= e(asset('/assets/img/pizzakarton-mit-werbung.webp')) ?>" type="image/webp">
+          <img src="<?= e(asset('/assets/img/pizzakarton-mit-werbung.png')) ?>"
+               alt="Pizzakarton mit Werbefläche auf dem Deckel"
+               width="472" height="529"
+               fetchpriority="high" decoding="async">
+        </picture>
       </figure>
     </aside>
   </div>

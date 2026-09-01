@@ -33,9 +33,9 @@ return [
     // Wird im Header/Footer und in den OG-Tags verwendet.
     // Liegt hier, damit ein Austausch der Logodatei ein Einzeiler bleibt.
     'logo' => [
-        'src'    => '/assets/img/logo-pizzasupport.svg',
-        'width'  => 1000,
-        'height' => 649,
+        'src'    => '/assets/img/logo-pizzasupport.png',
+        'width'  => 260,
+        'height' => 168,
         'alt'    => 'Pizza Support – gemeinschaftliches Projekt für Ess-Kultur',
     ],
 
