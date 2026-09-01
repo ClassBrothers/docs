@@ -408,32 +408,47 @@
   .stoerer::after{content:"Lieblings-Pizzeria empfehlen";font-weight:700}
 }
 
-/* --- Modal ------------------------------------------------------------ */
-.modal{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:1rem}
+/* --- Modal --------------------------------------------------------------
+   Aufgeteilt in einen nicht scrollenden Rahmen (.modal-box) und einen
+   scrollenden Innenbereich (.modal-inhalt): so bleibt der Schließen-Knopf
+   immer sichtbar, egal wie weit der Inhalt darunter gescrollt ist - wichtig
+   auf kleinen Bildschirmen, wo Formular plus Text nicht auf einmal passen.
+   dvh ist die zweite (progressive) Deklaration, damit Browser ohne
+   Unterstuetzung beim vh-Wert bleiben, statt die Regel zu verwerfen. -------- */
+.modal{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
 .modal[hidden]{display:none}
-.modal-hinter{position:absolute;inset:0;background:rgba(20,14,10,.6)}
+.modal-hinter{position:fixed;inset:0;background:rgba(20,14,10,.6)}
 .modal-box{
-  position:relative;z-index:1;width:min(100%,560px);max-height:90vh;overflow-y:auto;
-  background:var(--flaeche-hell);border-radius:var(--radius-karte);padding:1.75rem;box-shadow:0 20px 60px rgba(0,0,0,.35);
+  position:relative;z-index:1;width:min(100%,560px);
+  max-height:90vh;max-height:90dvh;
+  display:flex;flex-direction:column;overflow:hidden;
+  background:var(--flaeche-hell);border-radius:var(--radius-karte);box-shadow:0 20px 60px rgba(0,0,0,.35);
 }
-.modal-box h2{margin-top:0;font-size:1.4rem}
+.modal-inhalt{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1.75rem}
+.modal-box h2{margin-top:0;font-size:1.4rem;padding-right:2.25rem}
 .modal-vorspann{color:var(--textfarbe-gedaempft);font-size:.97rem}
 .modal-zu{
-  position:absolute;top:.6rem;right:.75rem;width:36px;height:36px;
+  position:absolute;top:.6rem;right:.75rem;z-index:2;width:36px;height:36px;flex:none;
   border:0;background:none;font-size:1.6rem;line-height:1;cursor:pointer;color:var(--textfarbe-gedaempft);border-radius:50%;
 }
 .modal-zu:hover{background:var(--flaeche-hell-zwei);color:var(--textfarbe)}
 .modal .formular{box-shadow:none;padding:0;border:0;background:transparent}
 
-/* --- Consent ---------------------------------------------------------- */
-.consent{position:fixed;inset:auto 0 0 0;z-index:130;padding:1rem}
+/* --- Consent ------------------------------------------------------------
+   Gleicher Aufbau wie .modal: eigener Hintergrund zum Wegklicken, eigener
+   scrollender Innenbereich, .modal-zu fuer den Schließen-Knopf mitbenutzt. */
+.consent{position:fixed;inset:0;z-index:130;display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
 .consent[hidden]{display:none}
+.consent-hinter{position:fixed;inset:0;background:rgba(20,14,10,.6)}
 .consent-box{
-  width:min(100%,640px);margin-inline:auto;background:var(--flaeche-weiss);
-  border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);padding:1.5rem;
-  box-shadow:0 -4px 30px rgba(0,0,0,.18);
+  position:relative;z-index:1;width:min(100%,640px);
+  max-height:90vh;max-height:90dvh;
+  display:flex;flex-direction:column;overflow:hidden;
+  background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
 }
-.consent-box h2{font-size:1.15rem;margin-top:0}
+.consent-inhalt{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1.5rem}
+.consent-box h2{font-size:1.15rem;margin-top:0;padding-right:2.25rem}
 .consent-box p{font-size:.92rem;color:var(--textfarbe-gedaempft)}
 .consent-optionen{display:grid;gap:.6rem;margin:1rem 0}
 .consent-option label{display:flex;gap:.6rem;align-items:flex-start;font-size:.9rem;cursor:pointer}
@@ -441,6 +456,14 @@
 .consent-knoepfe{display:flex;flex-wrap:wrap;gap:.6rem}
 .consent-knoepfe .btn{flex:1 1 auto;padding:.7rem 1rem;font-size:.92rem}
 .consent-fuss{font-size:.82rem;margin:.9rem 0 0}
+
+@media (max-width:480px){
+  .modal,.consent{padding:.5rem}
+  .modal-box,.consent-box{max-height:95vh;max-height:95dvh;border-radius:var(--radius-knopf)}
+  .modal-inhalt,.consent-inhalt{padding:1.15rem}
+  .modal-box h2,.consent-box h2{font-size:1.15rem}
+  .modal-zu{top:.35rem;right:.45rem}
+}
 
 /* --- Fuss ------------------------------------------------------------- */
 .fuss{background:linear-gradient(155deg,var(--flaeche-dunkel) 0%,var(--flaeche-dunkel-weich) 100%);color:var(--text-auf-dunkel);padding:3rem 0 1.5rem;margin-top:0}

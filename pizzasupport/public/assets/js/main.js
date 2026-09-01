@@ -136,14 +136,9 @@
     var karteCheckbox = document.getElementById('consent-karte');
     var analyseCheckbox = document.getElementById('consent-analyse');
 
-    if (!consentLesen()) {
-      consentBox.hidden = false;
-    }
-
-    consentBox.addEventListener('click', function (e) {
-      var knopf = e.target.closest('[data-consent]');
-      if (!knopf) { return; }
-      var art = knopf.getAttribute('data-consent');
+    // Schließen (Kreuz, Klick daneben, Escape) zählt wie "Nur Notwendiges" -
+    // ein Dialog, den man einfach zumacht, ist nie eine Zustimmung.
+    function consentEntscheidung(art) {
       var wert = { notwendig: true, karte: false, analyse: false, stand: new Date().toISOString() };
       if (art === 'alle') { wert.karte = true; wert.analyse = true; }
       if (art === 'auswahl') {
@@ -152,6 +147,24 @@
       }
       consentSchreiben(wert);
       consentBox.hidden = true;
+      document.body.style.overflow = '';
+    }
+
+    if (!consentLesen()) {
+      consentBox.hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+
+    consentBox.addEventListener('click', function (e) {
+      var knopf = e.target.closest('[data-consent]');
+      if (!knopf) { return; }
+      consentEntscheidung(knopf.getAttribute('data-consent'));
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !consentBox.hidden) {
+        consentEntscheidung('ablehnen');
+      }
     });
 
     document.addEventListener('click', function (e) {
@@ -161,6 +174,7 @@
       if (karteCheckbox) { karteCheckbox.checked = !!(c && c.karte); }
       if (analyseCheckbox) { analyseCheckbox.checked = !!(c && c.analyse); }
       consentBox.hidden = false;
+      document.body.style.overflow = 'hidden';
       consentBox.scrollIntoView({ block: 'nearest' });
     });
   }
