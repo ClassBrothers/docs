@@ -20,7 +20,10 @@ function fortschritt(): array
         "SELECT COALESCE(SUM(summe_cent), 0) FROM werbebuchungen WHERE status = 'freigegeben'", [], 0
     );
     $kartons = (int) db_value(
-        "SELECT COALESCE(SUM(menge), 0) FROM gastro_bestellungen WHERE status = 'freigegeben'", [], 0
+        "SELECT COALESCE(SUM(bp.menge), 0)
+           FROM bestellpositionen bp
+           JOIN gastro_bestellungen g ON g.id = bp.bestellung_id
+          WHERE g.status = 'freigegeben'", [], 0
     );
 
     // Schwellenwerte fuer den Startschuss rechnen immer mit den echten,

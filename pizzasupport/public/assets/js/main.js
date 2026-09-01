@@ -195,27 +195,115 @@
   });
 
   /* ------------------------------------------------------------------ */
-  /* Mengenauswahl im Bestellformular                                    */
+  /* Mengen je Format im Bestellformular                                 */
   /* ------------------------------------------------------------------ */
-  var mengeBox = document.querySelector('[data-menge]');
-  if (mengeBox) {
-    var mengeFeld = mengeBox.querySelector('input[type="number"]');
-    var mengeKnoepfe = mengeBox.querySelectorAll('[data-menge-wert]');
+  var formateListe = document.querySelector('[data-formate-liste]');
+  if (formateListe) {
+    var formatMin  = parseInt(formateListe.getAttribute('data-format-min'), 10) || 0;
+    var gesamtMin  = parseInt(formateListe.getAttribute('data-gesamt-min'), 10) || 0;
+    var gesamtMax  = parseInt(formateListe.getAttribute('data-gesamt-max'), 10) || 0;
+    var summeBox   = document.querySelector('[data-mengen-summe]');
+    var summeWertEl     = summeBox ? summeBox.querySelector('[data-mengen-summe-wert]') : null;
+    var summeHinweisEl  = summeBox ? summeBox.querySelector('[data-mengen-summe-hinweis]') : null;
 
-    function mengeSpiegeln() {
-      Array.prototype.forEach.call(mengeKnoepfe, function (k) {
-        k.classList.toggle('ist-aktiv', k.getAttribute('data-menge-wert') === mengeFeld.value);
+    function summeAktualisieren() {
+      if (!summeWertEl) { return; }
+      var gesamt = 0;
+      Array.prototype.forEach.call(formateListe.querySelectorAll('input[type="number"]'), function (f) {
+        var n = parseInt(f.value, 10);
+        if (!isNaN(n) && n > 0) { gesamt += n; }
       });
+      summeWertEl.textContent = gesamt.toLocaleString('de-DE') + ' Kartons';
+      if (gesamt === 0) {
+        summeHinweisEl.textContent = 'Trag oben ein, wie viele Kartons Du brauchst.';
+      } else if (gesamt < gesamtMin) {
+        summeHinweisEl.textContent = 'Noch ' + (gesamtMin - gesamt).toLocaleString('de-DE') + ' bis zur Mindestmenge von ' + gesamtMin.toLocaleString('de-DE') + '.';
+      } else if (gesamt > gesamtMax) {
+        summeHinweisEl.textContent = 'Für mehr als ' + gesamtMax.toLocaleString('de-DE') + ' melde Dich bitte direkt bei uns.';
+      } else {
+        summeHinweisEl.textContent = 'Menge passt.';
+      }
     }
 
-    Array.prototype.forEach.call(mengeKnoepfe, function (k) {
-      k.addEventListener('click', function () {
-        mengeFeld.value = k.getAttribute('data-menge-wert');
-        mengeSpiegeln();
+    Array.prototype.forEach.call(formateListe.querySelectorAll('[data-menge-gruppe]'), function (gruppe) {
+      var feld     = gruppe.querySelector('input[type="number"]');
+      var knoepfe  = gruppe.querySelectorAll('[data-menge-wert]');
+
+      function spiegeln() {
+        Array.prototype.forEach.call(knoepfe, function (k) {
+          k.classList.toggle('ist-aktiv', k.getAttribute('data-menge-wert') === feld.value);
+        });
+      }
+      function pruefen() {
+        var n = parseInt(feld.value, 10);
+        feld.setCustomValidity(
+          feld.value !== '' && n > 0 && n < formatMin
+            ? 'Mindestens ' + formatMin + ' Stück, sonst leer lassen.'
+            : ''
+        );
+      }
+
+      Array.prototype.forEach.call(knoepfe, function (k) {
+        k.addEventListener('click', function () {
+          feld.value = k.getAttribute('data-menge-wert');
+          spiegeln();
+          pruefen();
+          summeAktualisieren();
+        });
       });
+      feld.addEventListener('input', function () {
+        spiegeln();
+        pruefen();
+        summeAktualisieren();
+      });
+      spiegeln();
+      pruefen();
     });
-    mengeFeld.addEventListener('input', mengeSpiegeln);
-    mengeSpiegeln();
+
+    summeAktualisieren();
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Versandzuschlag ausserhalb Freiburgs, anhand der eingetragenen PLZ  */
+  /* ------------------------------------------------------------------ */
+  var versandBox = document.querySelector('[data-versand-zuschlag]');
+  var plzFeld    = document.getElementById('g-plz');
+  if (versandBox && plzFeld) {
+    var plzVon = parseInt(versandBox.getAttribute('data-plz-von'), 10);
+    var plzBis = parseInt(versandBox.getAttribute('data-plz-bis'), 10);
+    var versandCheckbox = versandBox.querySelector('input[type="checkbox"]');
+
+    function versandPruefen() {
+      var plz = parseInt(plzFeld.value, 10);
+      var ausserhalb = plzFeld.value.length === 5 && !isNaN(plz) && (plz < plzVon || plz > plzBis);
+      versandBox.hidden = !ausserhalb;
+      if (!ausserhalb && versandCheckbox) { versandCheckbox.checked = false; }
+    }
+    plzFeld.addEventListener('input', versandPruefen);
+    versandPruefen();
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Buchen-Knopf beim Werbepartner: Button-Lösung nach § 312j BGB.      */
+  /* Der statische Text im HTML ist die rechtssichere Vorgabe für         */
+  /* Privatpersonen; nur bei erkennbarer Unternehmensbuchung wird auf     */
+  /* den freundlicheren Text wechselt - das braucht kein JavaScript,      */
+  /* also bleibt ohne Skript die sichere Formulierung stehen.             */
+  /* ------------------------------------------------------------------ */
+  var buchenKnopf = document.querySelector('[data-buchen-knopf]');
+  if (buchenKnopf) {
+    var artFelder = document.querySelectorAll('input[name="art"]');
+    var knopfBeschriften = function () {
+      var gewaehlt = document.querySelector('input[name="art"]:checked');
+      var istUnternehmen = gewaehlt && gewaehlt.value === 'unternehmen';
+      buchenKnopf.textContent = buchenKnopf.getAttribute(
+        istUnternehmen ? 'data-label-unternehmen' : 'data-label-privat'
+      );
+    };
+    Array.prototype.forEach.call(artFelder, function (f) {
+      f.addEventListener('change', knopfBeschriften);
+    });
+    knopfBeschriften();
   }
 
   /* ------------------------------------------------------------------ */

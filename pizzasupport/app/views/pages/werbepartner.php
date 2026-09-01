@@ -441,7 +441,13 @@ $f      = fortschritt();
           <?php if (isset($fehler['datenschutz_ok'])): ?><p class="feld-meldung"><?= e($fehler['datenschutz_ok']) ?></p><?php endif; ?>
         </div>
 
-        <button class="btn btn-primaer btn-gross btn-block" type="submit">Fläche verbindlich reservieren</button>
+        <?php /* Als Verbraucher-Buchung (Fun Area) sicherer Vorschlag ohne JavaScript:
+                 die Button-Lösung nach § 312j BGB verlangt eine eindeutige
+                 Zahlungspflicht-Formulierung. Nur wenn erkennbar ein Unternehmen bucht,
+                 wechselt das Skript auf den freundlicheren Text - B2B braucht das nicht. */ ?>
+        <button class="btn btn-primaer btn-gross btn-block" type="submit" data-buchen-knopf
+                data-label-privat="Zahlungspflichtig buchen"
+                data-label-unternehmen="Fläche verbindlich reservieren">Zahlungspflichtig buchen</button>
         <p class="formular-fuss">
           Die Reservierung ist bis zum Startschuss kostenfrei und jederzeit widerrufbar.
           Pflichtfelder sind mit <span class="pflicht" aria-hidden="true">*</span> markiert.

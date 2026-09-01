@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 $formate = $formate ?? config('karton_formate');
 $mengen  = $mengen  ?? config('mengen');
+$porto   = $porto   ?? config('porto');
 $fehler  = $fehler  ?? [];
 $altw    = $altw    ?? [];
 $erfolg  = $erfolg  ?? null;
@@ -22,8 +23,7 @@ foreach ($formate as $fm) {
         $standardFormat = $fm['id'];
     }
 }
-$gewaehltesFormat = alt($altw, 'format', $standardFormat);
-$gewaehlteMenge   = alt($altw, 'menge', (string) $mengen['presets'][0]);
+$altMengen = $altw['menge'] ?? [];
 ?>
 <section class="band band-bestellen" id="bestellen" aria-labelledby="bestellen-titel">
   <div class="wrap">
@@ -152,50 +152,65 @@ $gewaehlteMenge   = alt($altw, 'menge', (string) $mengen['presets'][0]);
 
       <fieldset class="konfigurator">
         <legend>Format und Menge</legend>
+        <p class="feld-hilfe">
+          Trag bei jedem Format ein, wie viele Kartons Du davon brauchst. Du kannst auch
+          mehrere Formate mischen – leer lassen heißt, Du bestellst davon keins.
+          Die Erstauflage läuft auf <?= e($standardFormat) ?> × <?= e($standardFormat) ?> ×
+          <?= (int) config('karton_hoehe_cm') ?> cm. Die übrigen Größen produzieren wir, sobald
+          dafür genug Bedarf zusammenkommt.
+        </p>
 
-        <div class="feld<?= isset($fehler['format']) ? ' feld-fehler' : '' ?>">
-          <span class="feld-label">Kartongröße <span class="pflicht" aria-hidden="true">*</span></span>
-          <div class="wahl-gitter" role="radiogroup" aria-label="Kartongröße">
+        <div class="feld<?= isset($fehler['menge']) ? ' feld-fehler' : '' ?>">
+          <div class="formate-liste" data-formate-liste
+               data-format-min="<?= (int) $mengen['format_min'] ?>"
+               data-gesamt-min="<?= (int) $mengen['min'] ?>"
+               data-gesamt-max="<?= (int) $mengen['max'] ?>">
             <?php foreach ($formate as $fm): ?>
-              <label class="wahl">
-                <input type="radio" name="format" value="<?= e($fm['id']) ?>" required
-                       <?= $gewaehltesFormat === $fm['id'] ? 'checked' : '' ?>>
-                <span class="wahl-inhalt">
+              <div class="format-zeile">
+                <div class="format-zeile-kopf">
                   <strong><?= e($fm['label']) ?></strong>
-                  <small><?= e($fm['hinweis']) ?></small>
-                  <?php if (!empty($fm['sofort'])): ?>
-                    <em class="wahl-badge">läuft als Erstes</em>
-                  <?php endif; ?>
-                </span>
-              </label>
+                  <small><?= e($fm['hinweis']) ?><?= !empty($fm['sofort']) ? ' · läuft als Erstes' : '' ?></small>
+                </div>
+                <div class="menge-wahl" data-menge-gruppe="<?= e($fm['id']) ?>">
+                  <?php foreach ($mengen['presets'] as $p): ?>
+                    <button type="button" class="menge-knopf" data-menge-wert="<?= (int) $p ?>">
+                      <?= zahl((int) $p) ?>
+                    </button>
+                  <?php endforeach; ?>
+                  <label class="feld-optional" for="g-menge-<?= e($fm['id']) ?>">Anzahl</label>
+                  <input type="number" id="g-menge-<?= e($fm['id']) ?>" name="menge[<?= e($fm['id']) ?>]"
+                         min="0" max="<?= (int) $mengen['max'] ?>" step="<?= (int) $mengen['step'] ?>"
+                         value="<?= e(alt($altMengen, $fm['id'])) ?>" inputmode="numeric" placeholder="0">
+                </div>
+              </div>
             <?php endforeach; ?>
           </div>
           <p class="feld-hilfe">
-            Die Erstauflage läuft auf <?= e($standardFormat) ?> × <?= e($standardFormat) ?> × <?= (int) config('karton_hoehe_cm') ?> cm.
-            Die übrigen Größen produzieren wir, sobald dafür genug Bedarf zusammenkommt –
-            trag ruhig ein, was Du wirklich brauchst.
-          </p>
-          <?php if (isset($fehler['format'])): ?><p class="feld-meldung"><?= e($fehler['format']) ?></p><?php endif; ?>
-        </div>
-
-        <div class="feld<?= isset($fehler['menge']) ? ' feld-fehler' : '' ?>">
-          <label for="g-menge">Wie viele Kartons brauchst Du? <span class="pflicht" aria-hidden="true">*</span></label>
-          <div class="menge-wahl" data-menge>
-            <?php foreach ($mengen['presets'] as $p): ?>
-              <button type="button" class="menge-knopf<?= $gewaehlteMenge === (string) $p ? ' ist-aktiv' : '' ?>" data-menge-wert="<?= (int) $p ?>">
-                <?= zahl((int) $p) ?>
-              </button>
-            <?php endforeach; ?>
-            <input type="number" id="g-menge" name="menge" required
-                   min="<?= (int) $mengen['min'] ?>" max="<?= (int) $mengen['max'] ?>" step="<?= (int) $mengen['step'] ?>"
-                   value="<?= e($gewaehlteMenge) ?>" inputmode="numeric" aria-describedby="g-menge-hilfe">
-          </div>
-          <p class="feld-hilfe" id="g-menge-hilfe">
-            Ab <?= zahl((int) $mengen['min']) ?> Stück, in Schritten von <?= (int) $mengen['step'] ?>.
-            Mehr als <?= zahl((int) $mengen['max']) ?> geht auch – dann schreib uns kurz direkt.
-            Je mehr Du abnimmst, desto schneller ist die Schwelle erreicht.
+            Je Format mindestens <?= zahl((int) $mengen['format_min']) ?> Stück, in Schritten von
+            <?= (int) $mengen['step'] ?>. Insgesamt braucht es mindestens <?= zahl((int) $mengen['min']) ?>
+            Kartons; mehr als <?= zahl((int) $mengen['max']) ?> geht auch – dann schreib uns kurz direkt.
           </p>
           <?php if (isset($fehler['menge'])): ?><p class="feld-meldung"><?= e($fehler['menge']) ?></p><?php endif; ?>
+          <div class="summe" data-mengen-summe aria-live="polite">
+            <span class="summe-label">Gesamt</span>
+            <span class="summe-wert" data-mengen-summe-wert>0 Kartons</span>
+            <span class="summe-hinweis" data-mengen-summe-hinweis></span>
+          </div>
+        </div>
+
+        <div class="feld feld-check" data-versand-zuschlag
+             data-plz-von="<?= e($porto['plz_von']) ?>" data-plz-bis="<?= e($porto['plz_bis']) ?>" hidden>
+          <label>
+            <input type="checkbox" id="g-versand-zuschlag" name="versand_zuschlag_ok" value="1"
+                   <?= alt($altw, 'versand_zuschlag_ok') ? 'checked' : '' ?>>
+            <span>
+              Außerhalb <?= e($porto['frei_in']) ?> berechnen wir eine Portopauschale von
+              <?= e(preis((int) $porto['pauschale_cent'], false)) ?> € netto zzgl.
+              <?= (int) config('mwst_prozent') ?> % MwSt. je angefangene <?= zahl((int) $porto['je_kartons']) ?>
+              Kartons. Damit bin ich einverstanden. <span class="pflicht" aria-hidden="true">*</span>
+            </span>
+          </label>
+          <?php if (isset($fehler['versand_zuschlag_ok'])): ?><p class="feld-meldung"><?= e($fehler['versand_zuschlag_ok']) ?></p><?php endif; ?>
         </div>
 
         <div class="feld">

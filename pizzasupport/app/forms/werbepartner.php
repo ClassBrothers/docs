@@ -165,7 +165,11 @@ mail_send(
     . ($d['motiv_spaeter'] || empty($upload['pfad'])
         ? "Ihr Motiv reichen Sie später ein – wir melden uns rechtzeitig vor der Druckfreigabe.\n\n"
         : 'Ihr Motiv (' . ($upload['name'] ?? '') . ") ist bei uns eingegangen und wird geprüft.\n\n")
-    . 'Den aktuellen Projektstand sehen Sie hier: ' . url('/teilnehmer.html')
+    . 'Den aktuellen Projektstand sehen Sie hier: ' . url('/teilnehmer.html') . "\n"
+    . ($d['art'] === 'privat'
+        ? "\n" . str_repeat('-', 40) . "\nWIDERRUFSBELEHRUNG\n" . str_repeat('-', 40) . "\n\n"
+          . widerrufsbelehrung_text() . "\n"
+        : '')
     . mail_signatur(),
     (string) env('MAIL_TO_OPS')
 );

@@ -54,12 +54,15 @@ return [
     ],
     'karton_hoehe_cm' => 3,
 
-    // Mengenlogik: drei Schnellauswahlen plus freie Eingabe.
+    // Mengenlogik: drei Schnellauswahlen plus freie Eingabe. Eine Bestellung
+    // darf mehrere Formate mischen - format_min gilt je gewaehltem Format,
+    // min/max/step gelten fuer die Summe aller Formate zusammen.
     'mengen' => [
-        'presets' => [300, 500, 1000],
-        'min'     => 300,
-        'max'     => 10000,
-        'step'    => 50,
+        'presets'    => [300, 500, 1000],
+        'format_min' => 100,
+        'min'        => 300,
+        'max'        => 10000,
+        'step'       => 50,
     ],
 
     // -----------------------------------------------------------------
@@ -69,7 +72,9 @@ return [
     // -----------------------------------------------------------------
     'porto' => [
         'frei_in'        => 'Freiburg im Breisgau',
-        'pauschale_cent' => 900,   // 9,00 EUR netto je Staffel
+        'plz_von'        => '79098',   // Freiburg im Breisgau, PLZ-Bereich
+        'plz_bis'        => '79117',
+        'pauschale_cent' => 1000,  // 10,00 EUR netto je Staffel
         'je_kartons'     => 300,
     ],
 

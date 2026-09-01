@@ -28,6 +28,7 @@ require APP_ROOT . '/app/lib/mail.php';
 require APP_ROOT . '/app/lib/stats.php';
 require APP_ROOT . '/app/lib/analytics.php';
 require APP_ROOT . '/app/lib/upload.php';
+require APP_ROOT . '/app/lib/widerruf.php';
 
 /** Zugriff auf die Konfiguration, punktgetrennt: config('startschuss.betriebe') */
 function config(?string $pfad = null, $default = null)
@@ -91,6 +92,17 @@ function firma_email_link(): string
 function werbeformat(string $id): ?array
 {
     foreach (config('werbeformate', []) as $f) {
+        if ($f['id'] === $id) {
+            return $f;
+        }
+    }
+    return null;
+}
+
+/** Ein Kartonformat aus der Konfiguration holen. */
+function kartonformat(string $id): ?array
+{
+    foreach (config('karton_formate', []) as $f) {
         if ($f['id'] === $id) {
             return $f;
         }

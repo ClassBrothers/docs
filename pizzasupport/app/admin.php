@@ -157,10 +157,19 @@ function admin_seite(?string $meldung): void
     echo '<h2>Gastro-Bestellungen</h2><div class="tabelle-wrap"><table><thead><tr>'
        . '<th>Betrieb</th><th>Kontakt</th><th>Menge</th><th>Karte</th><th>Status</th><th>Aktion</th></tr></thead><tbody>';
     foreach (db_all('SELECT * FROM gastro_bestellungen ORDER BY id DESC LIMIT 200') as $z) {
+        $positionen = db_all('SELECT format, menge FROM bestellpositionen WHERE bestellung_id = ? ORDER BY format', [(int) $z['id']]);
+        $gesamt = 0;
+        $zeilen = [];
+        foreach ($positionen as $p) {
+            $gesamt += (int) $p['menge'];
+            $fm = kartonformat((string) $p['format']);
+            $zeilen[] = zahl((int) $p['menge']) . '× ' . ($fm['label'] ?? $p['format'] . ' cm');
+        }
         echo '<tr>'
            . '<td><strong>' . e($z['betrieb']) . '</strong><br><small>' . e($z['strasse']) . ', ' . e($z['plz']) . ' ' . e($z['ort']) . '<br>' . e($z['betriebsart']) . '</small></td>'
            . '<td><small>' . e($z['vorname']) . ' ' . e($z['nachname']) . '<br>' . e($z['email']) . '<br>' . e((string) decrypt_field($z['telefon_enc'])) . '</small></td>'
-           . '<td>' . zahl((int) $z['menge']) . '<br><small>' . e($z['format']) . ' cm</small></td>'
+           . '<td><strong>' . zahl($gesamt) . '</strong><br><small>' . e(implode(', ', $zeilen)) . '</small>'
+           . ((int) $z['versand_zuschlag_ok'] ? '<br><small>+ Versandzuschlag</small>' : '') . '</td>'
            . '<td>' . ((int) $z['karte_ok'] ? 'ja' : 'nein') . '</td>'
            . '<td>' . admin_status($z['status']) . '</td>'
            . '<td class="aktionen">'
