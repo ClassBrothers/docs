@@ -2,28 +2,39 @@
    Wird inline ausgeliefert, main.css laedt asynchron nach. */
 
 :root{
-  /* Trattoria-Palette: San-Marzano-Rot, Basilikum, Olivenoel, dazu
-     Terracotta als warmer Zusatzakzent. Eine Stelle, ein Wert je Farbe -
-     wer hier etwas aendert, aendert es ueberall. */
-  --tomate:#bc3127;--tomate-dunkel:#a32219;--tomate-hell:#e35b4a;
-  --basilikum:#2e7d4f;--basilikum-dunkel:#1f5e39;--basilikum-hell:#4ca46f;
-  --olivgold:#e0a33c;--olivgold-hell:#f2c568;
-  --terracotta:#c1440e;
-  /* Orange/Gelb bleiben als Akzente aus dem Logo erhalten. */
-  --orange:#f07e22;--orange-dunkel:#d36610;--gelb:#f7c94b;
+  /* Farbklima der Vorgängerversion (pizzakartons.de, Datei style.css) -
+     Werte 1:1 aus deren :root uebernommen, nicht neu geschaetzt. Namen
+     richten sich nach Verwendungszweck, nicht nach Farbton: wer den
+     Akzent aendern will, aendert --akzent (und dessen -dunkel/-hell/-rgb
+     Geschwister) und trifft damit automatisch jede Stelle im Projekt. */
+  --akzent:#c8342a;--akzent-dunkel:#a32219;--akzent-hell:#e35b4a;--akzent-rgb:200,52,42;
+  --akzent-sekundaer:#2e7d4f;--akzent-sekundaer-dunkel:#1f5e39;--akzent-sekundaer-hell:#4ca46f;--akzent-sekundaer-rgb:46,125,79;
+  --akzent-waerme:#e0a33c;--akzent-waerme-hell:#f2c568;--akzent-waerme-rgb:224,163,60;
+  --akzent-glut:#c1440e;
   /* Dunkle Flaeche: Holzofen-Charcoal statt Navy. */
-  --charcoal:#241c18;--charcoal-weich:#34281f;
+  --flaeche-dunkel:#241c18;--flaeche-dunkel-weich:#34281f;
   /* Flaechen */
-  --papier:#fdf7ed;--papier2:#f6ead6;--weiss:#fffdfa;
-  --tinte:#3b302a;--tinte-hell:#716359;--linie:#e5d5bf;
-  --radius:15px;--radius-klein:8px;
+  --flaeche-hell:#fdf7ed;--flaeche-hell-zwei:#f6ead6;--flaeche-weiss:#fffdfa;
+  --textfarbe:#3b302a;--textfarbe-gedaempft:#7d6e63;--rahmenfarbe:#e5d5bf;
+  /* Text auf Akzentflaechen (Buttons) - je Akzent eigens gegen den
+     Hintergrund geprueft: auf dem roten Verlauf faellt selbst
+     naheliegendes Schwarz nur auf 3,9:1, darum hier weiss wie schon in
+     der Vorgängerversion (5,1-5,3:1). Auf dem helleren Gold-Ton
+     funktioniert dunkler Text weiterhin (7,5:1). */
+  --text-auf-akzent:#fff;--text-auf-akzent-warm:#2b1c00;
+  /* Text auf dunklem Grund (dunkle Baender, Fusszeile) - drei Stufen
+     von hell/betont bis gedaempft, damit Hierarchie erhalten bleibt. */
+  --text-auf-dunkel-hell:#eef3f8;--text-auf-dunkel:#c9d7e6;--text-auf-dunkel-gedaempft:#9db2c8;
+  /* Rundungen: eine Stelle je Einsatzzweck. Schaltflaechen dezent,
+     Karten/Kacheln minimal staerker, Badges/Pillen vollstaendig rund. */
+  --radius-knopf:8px;--radius-karte:15px;--radius-badge:999px;
   --schrift-kopf:"Fraunces",Georgia,"Times New Roman",serif;
   --schrift-ui:"Outfit",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --schrift-text:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --schatten-sm:0 2px 10px rgba(60,35,20,.06);
   --schatten:0 6px 28px rgba(60,35,20,.09);
   --schatten-lg:0 18px 56px rgba(60,35,20,.16);
-  --schatten-warm:0 12px 36px rgba(200,52,42,.22);
+  --schatten-warm:0 12px 36px rgba(var(--akzent-rgb),.22);
   --federn:.5s cubic-bezier(.34,1.4,.5,1);
   --wrap:1180px;
 }
@@ -57,7 +68,7 @@ html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 
 body{
-  margin:0;background:var(--papier);color:var(--tinte);
+  margin:0;background:var(--flaeche-hell);color:var(--textfarbe);
   font-family:var(--schrift-text);font-size:1.0625rem;line-height:1.65;
   -webkit-font-smoothing:antialiased;
   /* Zarte Papierstruktur, rein farblich, kein zusaetzliches Bild. */
@@ -67,7 +78,7 @@ body{
 }
 
 h1,h2,h3{
-  font-family:var(--schrift-kopf);font-weight:800;line-height:1.15;color:var(--charcoal);margin:0 0 .5em;
+  font-family:var(--schrift-kopf);font-weight:800;line-height:1.15;color:var(--flaeche-dunkel);margin:0 0 .5em;
   /* SOFT/WONK sind in der Schriftdatei bereits fest eingebrannt (siehe
      LIESMICH.md), diese Zeile ist nur fuer Systeme mit voller Fraunces-
      Installation gedacht und schadet sonst nicht. */
@@ -76,60 +87,68 @@ h1,h2,h3{
 }
 h1{font-size:clamp(2.15rem,1.3rem + 3.6vw,3.75rem)}
 h2{font-size:clamp(1.6rem,1.25rem + 1.6vw,2.5rem)}
-h3{font-size:1.25rem;color:var(--tinte);font-weight:700}
+h3{font-size:1.25rem;color:var(--textfarbe);font-weight:700}
 p{margin:0 0 1.1em}
-a{color:var(--tomate);text-decoration-thickness:.08em;text-underline-offset:.18em}
-a:hover{color:var(--tomate-dunkel)}
+a{color:var(--akzent);text-decoration-thickness:.08em;text-underline-offset:.18em}
+a:hover{color:var(--akzent-dunkel)}
 img{max-width:100%;height:auto}
 
-:focus-visible{outline:3px solid var(--charcoal);outline-offset:3px;border-radius:4px}
+:focus-visible{outline:3px solid var(--flaeche-dunkel);outline-offset:3px;border-radius:4px}
+
+/* Tri-Colore-Element aus der Vorgängerversion: schmaler Streifen in den
+   Landesfarben, oben auf der Seite und am Kopf der Fusszeile. */
+.tricolore-bar{height:5px;background:linear-gradient(90deg,
+  var(--akzent-sekundaer) 0%,var(--akzent-sekundaer) 33.33%,
+  #fbf7f0 33.33%,#fbf7f0 66.66%,
+  var(--akzent) 66.66%,var(--akzent) 100%);}
 
 .wrap{width:min(100% - 2.5rem,var(--wrap));margin-inline:auto}
 .schmal{width:min(100% - 2.5rem,760px)}
 .zentriert{text-align:center}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-.skip-link{position:absolute;left:-9999px;top:0;z-index:200;background:var(--charcoal);color:#fff;padding:.75rem 1.25rem;border-radius:0 0 var(--radius-klein) 0}
+.skip-link{position:absolute;left:-9999px;top:0;z-index:200;background:var(--flaeche-dunkel);color:#fff;padding:.75rem 1.25rem;border-radius:0 0 var(--radius-knopf) 0}
 .skip-link:focus{left:0}
 
 /* --- Kopf ------------------------------------------------------------- */
-.kopf{background:var(--weiss);border-bottom:1px solid var(--linie);position:sticky;top:0;z-index:60}
+.kopf{background:var(--flaeche-weiss);border-bottom:1px solid var(--rahmenfarbe);position:sticky;top:0;z-index:60}
 .kopf-innen{display:flex;align-items:center;gap:1rem;min-height:76px;flex-wrap:nowrap}
 .kopf-logo{display:block;flex:0 0 auto;line-height:0}
 .kopf-logo img{width:auto;height:52px}
 .kopf-nav{margin-left:auto;display:flex;align-items:center;gap:1.25rem;min-width:0}
 .kopf-nav ul{display:flex;gap:1.1rem;list-style:none;margin:0;padding:0;flex-wrap:wrap}
-.kopf-nav a{font-family:var(--schrift-ui);color:var(--tinte);text-decoration:none;font-weight:600;font-size:.9rem;white-space:nowrap}
-.kopf-nav a:hover,.kopf-nav a[aria-current="page"]{color:var(--tomate)}
+.kopf-nav a{font-family:var(--schrift-ui);color:var(--textfarbe);text-decoration:none;font-weight:600;font-size:.9rem;white-space:nowrap}
+.kopf-nav a:hover,.kopf-nav a[aria-current="page"]{color:var(--akzent)}
 .kopf-toggle{display:none}
 
 /* Der CTA im Kopf darf nie umbrechen und nie aus der Zeile rutschen. */
 .kopf-cta{flex:0 0 auto;white-space:nowrap;padding:.6rem 1.1rem;font-size:.9rem}
 
 /* --- Knoepfe ------------------------------------------------------------
-   Pill-Form mit Sheen-Effekt beim Hover: ein heller Streifen laeuft
-   einmal durch, rein ueber transform - keine Layout-Kosten. */
+   Dezente Rundung statt Pill-Form, mit Sheen-Effekt beim Hover: ein
+   heller Streifen laeuft einmal durch, rein ueber transform - keine
+   Layout-Kosten. */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
-  padding:.85rem 1.6rem;border-radius:50px;border:2px solid transparent;
+  padding:.85rem 1.6rem;border-radius:var(--radius-knopf);border:2px solid transparent;
   font-family:var(--schrift-ui);font-weight:700;font-size:.98rem;line-height:1.2;
   text-decoration:none;cursor:pointer;text-align:center;position:relative;overflow:hidden;
   transition:transform .12s ease,background-color .15s ease,color .15s ease,box-shadow .15s ease;
 }
 .btn-primaer{
-  background:linear-gradient(135deg,var(--orange),var(--terracotta));color:#231204;
-  box-shadow:0 6px 20px rgba(240,126,34,.28);
+  background:linear-gradient(135deg,var(--akzent),var(--akzent-glut));color:var(--text-auf-akzent);
+  box-shadow:0 6px 20px rgba(var(--akzent-rgb),.28);
 }
 .btn-primaer::after{
   content:"";position:absolute;inset:0;
   background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);
   transform:translateX(-120%);
 }
-.btn-primaer:hover{color:#231204;transform:translateY(-2px);box-shadow:0 10px 28px rgba(240,126,34,.34)}
+.btn-primaer:hover{color:var(--text-auf-akzent);transform:translateY(-2px);box-shadow:0 10px 28px rgba(var(--akzent-rgb),.34)}
 .btn-primaer:hover::after{animation:knopf-glanz .8s ease}
-.btn-sekundaer{background:transparent;color:var(--charcoal);border-color:var(--linie)}
-.btn-sekundaer:hover{border-color:var(--tomate);color:var(--tomate);transform:translateY(-2px);box-shadow:var(--schatten)}
-.btn-hell{background:var(--gelb);color:#2b1c00}
-.btn-hell:hover{background:var(--olivgold-hell);color:#2b1c00;transform:translateY(-2px)}
+.btn-sekundaer{background:transparent;color:var(--flaeche-dunkel);border-color:var(--rahmenfarbe)}
+.btn-sekundaer:hover{border-color:var(--akzent);color:var(--akzent);transform:translateY(-2px);box-shadow:var(--schatten)}
+.btn-hell{background:var(--akzent-waerme);color:var(--text-auf-akzent-warm)}
+.btn-hell:hover{background:var(--akzent-waerme-hell);color:var(--text-auf-akzent-warm);transform:translateY(-2px)}
 .btn-gross{padding:1rem 2rem;font-size:1.03rem}
 .btn-block{width:100%}
 @keyframes knopf-glanz{to{transform:translateX(120%)}}
@@ -140,7 +159,7 @@ img{max-width:100%;height:auto}
 
 /* --- Hero ------------------------------------------------------------- */
 .hero{
-  background:linear-gradient(180deg,var(--papier2) 0%,var(--papier) 100%);
+  background:linear-gradient(180deg,var(--flaeche-hell-zwei) 0%,var(--flaeche-hell) 100%);
   padding:clamp(2.75rem,1rem + 6vw,4.75rem) 0;position:relative;overflow:hidden;
 }
 /* Feines Karo-Raster, rein aus Verlaeufen erzeugt und rechts oben
@@ -148,20 +167,20 @@ img{max-width:100%;height:auto}
 .hero::before{
   content:"";position:absolute;inset:0;pointer-events:none;opacity:.06;
   background-image:
-    repeating-linear-gradient(0deg,var(--tomate) 0 22px,transparent 22px 44px),
-    repeating-linear-gradient(90deg,var(--tomate) 0 22px,transparent 22px 44px);
+    repeating-linear-gradient(0deg,var(--akzent) 0 22px,transparent 22px 44px),
+    repeating-linear-gradient(90deg,var(--akzent) 0 22px,transparent 22px 44px);
   -webkit-mask-image:radial-gradient(ellipse 60% 70% at 85% 40%,#000 0%,transparent 72%);
   mask-image:radial-gradient(ellipse 60% 70% at 85% 40%,#000 0%,transparent 72%);
 }
-.hero-innen{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(1.5rem,4vw,3.5rem);align-items:center;position:relative;z-index:1}
-.kicker{font-family:var(--schrift-ui);font-weight:700;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tomate);margin:0 0 .6rem}
-.hero-lead{font-size:clamp(1.05rem,1rem + .3vw,1.2rem);color:var(--tinte-hell);max-width:36em}
+.hero-innen{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(1.5rem,4vw,3.5rem);align-items:center;position:relative;z-index:1}
+.kicker{font-family:var(--schrift-ui);font-weight:700;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--akzent);margin:0 0 .6rem}
+.hero-lead{font-size:clamp(1.05rem,1rem + .3vw,1.2rem);color:var(--textfarbe-gedaempft);max-width:36em}
 .hero-aktionen{display:flex;flex-wrap:wrap;gap:.85rem;margin:1.6rem 0 .9rem}
 .hero-aktionen.zentriert{justify-content:center}
-.hero-fuss{font-size:.95rem;color:var(--tinte-hell);margin:0}
+.hero-fuss{font-size:.95rem;color:var(--textfarbe-gedaempft);margin:0}
 
 /* Akzentwort im Titel: Unterstreichung zieht sich einmal beim Laden auf. */
-.akzent{position:relative;display:inline-block;color:var(--tomate);z-index:1}
+.akzent{position:relative;display:inline-block;color:var(--akzent);z-index:1}
 .akzent::after{
   content:"";position:absolute;left:-2%;right:-2%;bottom:.06em;height:.22em;
   background:linear-gradient(90deg,rgba(224,163,60,.45),rgba(224,163,60,.18));
@@ -184,7 +203,7 @@ img{max-width:100%;height:auto}
   .hero-text > *{opacity:1;transform:none;animation:none}
 }
 
-.seiten-hero{background:var(--papier2);padding:clamp(2.25rem,1rem + 4vw,3.75rem) 0;border-bottom:1px solid var(--linie)}
+.seiten-hero{background:var(--flaeche-hell-zwei);padding:clamp(2.25rem,1rem + 4vw,3.75rem) 0;border-bottom:1px solid var(--rahmenfarbe)}
 
 @media (max-width:900px){
   .hero-innen{grid-template-columns:1fr}
@@ -198,22 +217,22 @@ img{max-width:100%;height:auto}
   .kopf-logo img{height:44px}
   .kopf-toggle{
     display:inline-flex;align-items:center;justify-content:center;
-    margin-left:auto;width:44px;height:44px;background:none;border:1px solid var(--linie);
-    border-radius:var(--radius-klein);cursor:pointer;
+    margin-left:auto;width:44px;height:44px;background:none;border:1px solid var(--rahmenfarbe);
+    border-radius:var(--radius-knopf);cursor:pointer;
   }
-  .burger,.burger::before,.burger::after{display:block;width:20px;height:2px;background:var(--charcoal);border-radius:2px}
+  .burger,.burger::before,.burger::after{display:block;width:20px;height:2px;background:var(--flaeche-dunkel);border-radius:2px}
   .burger{position:relative}
   .burger::before,.burger::after{content:"";position:absolute;left:0}
   .burger::before{top:-6px}.burger::after{top:6px}
   .kopf-nav{
     display:none;position:absolute;left:0;right:0;top:100%;
     flex-direction:column;align-items:stretch;gap:.25rem;
-    background:var(--weiss);border-bottom:1px solid var(--linie);
+    background:var(--flaeche-weiss);border-bottom:1px solid var(--rahmenfarbe);
     padding:.75rem 1.25rem 1.25rem;box-shadow:var(--schatten);
   }
   .kopf-nav.ist-offen{display:flex}
   .kopf-nav ul{display:flex;flex-direction:column;gap:0;width:100%}
-  .kopf-nav ul a{display:block;padding:.7rem 0;border-bottom:1px solid var(--linie)}
+  .kopf-nav ul a{display:block;padding:.7rem 0;border-bottom:1px solid var(--rahmenfarbe)}
   .kopf-cta{margin-top:.75rem;width:100%}
 }
 @media (max-width:520px){

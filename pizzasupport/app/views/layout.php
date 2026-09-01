@@ -79,6 +79,8 @@ $aktuell = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 </head>
 <body class="<?= e($meta['body_klasse']) ?>">
 
+<div class="tricolore-bar" aria-hidden="true"></div>
+
 <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
 
 <header class="kopf" id="kopf">

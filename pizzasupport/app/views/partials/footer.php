@@ -1,5 +1,6 @@
 <?php declare(strict_types=1); ?>
 <footer class="fuss">
+  <div class="tricolore-bar" aria-hidden="true"></div>
   <div class="wrap fuss-innen">
 
     <div class="fuss-spalte fuss-marke">
