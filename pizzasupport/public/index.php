@@ -47,6 +47,28 @@ if (isset($formulare[$pfad])) {
 }
 
 // -----------------------------------------------------------------------
+// Seiten
+//
+// Steht hier oben, weil sowohl die Sitemap als auch das eigentliche
+// Routing weiter unten dieselbe Liste brauchen - eine neue Zeile hier
+// macht die Seite automatisch erreichbar UND automatisch Teil der
+// Sitemap, ohne dass an zweiter Stelle etwas nachgepflegt werden muss.
+// -----------------------------------------------------------------------
+$seiten = [
+    '/'                                => 'startseite',
+    '/werbepartner.html'               => 'werbepartner',
+    '/werbeideen.html'                 => 'werbeideen',
+    '/teilnehmer.html'                 => 'teilnehmer',
+    '/verpackungssteuer-freiburg.html' => 'verpackungssteuer',
+    '/ueber-uns.html'                  => 'ueber-uns',
+    '/kontakt.html'                    => 'kontakt',
+    '/impressum.html'                  => 'impressum',
+    '/datenschutz.html'                => 'datenschutz',
+    '/agb.html'                        => 'agb',
+    '/newsletter-bestaetigt.html'      => 'newsletter-bestaetigt',
+];
+
+// -----------------------------------------------------------------------
 // Maschinenlesbares
 // -----------------------------------------------------------------------
 switch ($pfad) {
@@ -55,10 +77,19 @@ switch ($pfad) {
         header('X-Robots-Tag: noindex');
         echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
-        $stand = date('Y-m-d');
-        foreach (config('sitemap', []) as $eintrag) {
+        $stand      = date('Y-m-d');
+        $ausschluss = config('sitemap_ausschluss', []);
+        $prioritaeten = config('sitemap_prioritaeten', []);
+        foreach (array_keys($seiten) as $seitenpfad) {
+            if (in_array($seitenpfad, $ausschluss, true)) {
+                continue;
+            }
+            // Ohne Eintrag in sitemap_prioritaeten greift eine ruhige
+            // Voreinstellung, damit eine neue Seite nicht fehlt, nur weil
+            // noch niemand eine Prioritaet dafuer festgelegt hat.
+            $eintrag = $prioritaeten[$seitenpfad] ?? ['prio' => '0.5', 'freq' => 'monthly'];
             echo "  <url>\n"
-               . '    <loc>' . e(url($eintrag['pfad'])) . "</loc>\n"
+               . '    <loc>' . e(url($seitenpfad)) . "</loc>\n"
                . '    <lastmod>' . $stand . "</lastmod>\n"
                . '    <changefreq>' . e($eintrag['freq']) . "</changefreq>\n"
                . '    <priority>' . e($eintrag['prio']) . "</priority>\n"
@@ -113,23 +144,6 @@ if ($pfad === '/admin' || str_starts_with($pfad, '/admin/')) {
     require APP_ROOT . '/app/admin.php';
     exit;
 }
-
-// -----------------------------------------------------------------------
-// Seiten
-// -----------------------------------------------------------------------
-$seiten = [
-    '/'                                => 'startseite',
-    '/werbepartner.html'               => 'werbepartner',
-    '/werbeideen.html'                 => 'werbeideen',
-    '/teilnehmer.html'                 => 'teilnehmer',
-    '/verpackungssteuer-freiburg.html' => 'verpackungssteuer',
-    '/ueber-uns.html'                  => 'ueber-uns',
-    '/kontakt.html'                    => 'kontakt',
-    '/impressum.html'                  => 'impressum',
-    '/datenschutz.html'                => 'datenschutz',
-    '/agb.html'                        => 'agb',
-    '/newsletter-bestaetigt.html'      => 'newsletter-bestaetigt',
-];
 
 // Alte oder getippte Adressen sauber auf die kanonische Fassung leiten.
 $umleitungen = [

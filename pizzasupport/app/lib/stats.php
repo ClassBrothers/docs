@@ -23,22 +23,40 @@ function fortschritt(): array
         "SELECT COALESCE(SUM(menge), 0) FROM gastro_bestellungen WHERE status = 'freigegeben'", [], 0
     );
 
+    // Schwellenwerte fuer den Startschuss rechnen immer mit den echten,
+    // ungeschoenten Zahlen - die Mindestanzeige weiter unten betrifft
+    // ausschliesslich das, was auf der Startseite zu sehen ist.
     $q_betriebe = $cfg['betriebe'] > 0 ? min(1.0, $betriebe / $cfg['betriebe']) : 0.0;
     $q_budget   = $cfg['budget_cent'] > 0 ? min(1.0, $budget / $cfg['budget_cent']) : 0.0;
+    $ausgeloest = ($betriebe >= $cfg['betriebe'] && $budget >= $cfg['budget_cent']);
+
+    // Mindestanzeige, damit die Startseite nicht mit Nullen dasteht, bevor
+    // die ersten echten Eintragungen da sind. Sobald eine Zahl die
+    // Voreinstellung uebersteigt, zeigen wir nur noch die echte Zahl.
+    $mindest           = config('fortschritt_mindestanzeige', []);
+    $betriebe_anzeige  = max($betriebe, (int) ($mindest['betriebe'] ?? 0));
+    $unternehmen_anzeige = max($unternehmen, (int) ($mindest['unternehmen'] ?? 0));
+    $kartons_anzeige   = max($kartons, (int) ($mindest['kartons'] ?? 0));
+
+    // Der Balken fuer "Gastronomie" zeigt dieselbe Zahl wie die
+    // Fortschrittsanzeige direkt daneben ("16 von 40") - sonst wirkt ein
+    // Balken bei 0 % neben einer Mindestanzeige von 16 unstimmig.
+    $q_betriebe_anzeige = $cfg['betriebe'] > 0 ? min(1.0, $betriebe_anzeige / $cfg['betriebe']) : 0.0;
 
     return [
-        'betriebe'         => $betriebe,
+        'betriebe'         => $betriebe_anzeige,
         'betriebe_ziel'    => $cfg['betriebe'],
-        'betriebe_prozent' => (int) round($q_betriebe * 100),
-        'unternehmen'      => $unternehmen,
+        'betriebe_prozent' => (int) round($q_betriebe_anzeige * 100),
+        'unternehmen'      => $unternehmen_anzeige,
         'budget_cent'      => $budget,
         'budget_ziel_cent' => $cfg['budget_cent'],
         'budget_prozent'   => (int) round($q_budget * 100),
-        'kartons'          => $kartons,
+        'kartons'          => $kartons_anzeige,
         // Gesamtstand ist der schwaechere der beiden Werte: Der Startschuss
-        // faellt erst, wenn beide Seiten stehen.
+        // faellt erst, wenn beide Seiten stehen. Rechnet mit den echten
+        // Werten, nicht der Mindestanzeige.
         'gesamt_prozent'   => (int) round(min($q_betriebe, $q_budget) * 100),
-        'ausgeloest'       => ($betriebe >= $cfg['betriebe'] && $budget >= $cfg['budget_cent']),
+        'ausgeloest'       => $ausgeloest,
     ];
 }
 

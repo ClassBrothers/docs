@@ -35,6 +35,12 @@ $aktuell = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 <meta name="description" content="<?= e($meta['beschreibung']) ?>">
 <meta name="robots" content="<?= e($meta['robots']) ?>">
 <link rel="canonical" href="<?= e($meta['canonical']) ?>">
+<?php /* Einsprachige Seite, keine Alternativfassungen - trotzdem als
+         Selbstverweis gesetzt, weil SEO-Pruefwerkzeuge ein fehlendes
+         hreflang sonst oft als Luecke melden. Massgeblich fuer die
+         Sprache bleibt ohnehin lang="de" oben am <html>-Element. */ ?>
+<link rel="alternate" hreflang="de-DE" href="<?= e($meta['canonical']) ?>">
+<link rel="alternate" hreflang="x-default" href="<?= e($meta['canonical']) ?>">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Pizza Support">

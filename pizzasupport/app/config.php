@@ -155,14 +155,45 @@ return [
         'newsletter_unbestaetigt' => 14,
     ],
 
-    // Seiten, die in die Sitemap duerfen. Rechtstexte fehlen hier bewusst.
-    'sitemap' => [
-        ['pfad' => '/',                                'prio' => '1.0', 'freq' => 'weekly'],
-        ['pfad' => '/werbepartner.html',               'prio' => '0.9', 'freq' => 'weekly'],
-        ['pfad' => '/werbeideen.html',                 'prio' => '0.7', 'freq' => 'monthly'],
-        ['pfad' => '/teilnehmer.html',                 'prio' => '0.8', 'freq' => 'daily'],
-        ['pfad' => '/verpackungssteuer-freiburg.html', 'prio' => '0.8', 'freq' => 'monthly'],
-        ['pfad' => '/ueber-uns.html',                  'prio' => '0.6', 'freq' => 'monthly'],
-        ['pfad' => '/kontakt.html',                    'prio' => '0.5', 'freq' => 'monthly'],
+    // -----------------------------------------------------------------
+    // Sitemap: wird in public/index.php automatisch aus der Routing-Liste
+    // ($seiten) gebaut, damit eine neue Seite dort ohne weiteren Eingriff
+    // auch in der Sitemap auftaucht. Hier stehen nur zwei Dinge, die sich
+    // nicht automatisch ableiten lassen:
+    // -----------------------------------------------------------------
+
+    // Pfade, die trotz Route nicht in die Sitemap sollen - Rechtstexte
+    // bringen keinen Suchverkehr und die Bestaetigungsseite ist rein
+    // transaktional.
+    'sitemap_ausschluss' => [
+        '/impressum.html',
+        '/datenschutz.html',
+        '/agb.html',
+        '/newsletter-bestaetigt.html',
+    ],
+
+    // Priority/Changefreq je Seite. Was hier fehlt, bekommt die
+    // Voreinstellung weiter unten in public/index.php - eine neu
+    // hinzugefuegte Seite braucht also keinen Eintrag, kann aber bei
+    // Bedarf einen bekommen.
+    'sitemap_prioritaeten' => [
+        '/'                                => ['prio' => '1.0', 'freq' => 'weekly'],
+        '/werbepartner.html'               => ['prio' => '0.9', 'freq' => 'weekly'],
+        '/werbeideen.html'                 => ['prio' => '0.7', 'freq' => 'monthly'],
+        '/teilnehmer.html'                 => ['prio' => '0.8', 'freq' => 'daily'],
+        '/verpackungssteuer-freiburg.html' => ['prio' => '0.8', 'freq' => 'monthly'],
+        '/ueber-uns.html'                  => ['prio' => '0.6', 'freq' => 'monthly'],
+        '/kontakt.html'                    => ['prio' => '0.5', 'freq' => 'monthly'],
+    ],
+
+    // Mindestanzeige fuer die Fortschrittszahlen auf der Startseite, damit
+    // die Seite zum Start nicht mit Nullen dasteht. Sobald die echten
+    // Zahlen darueber liegen, zeigen wir ausschliesslich die echten Zahlen -
+    // die Schwellen fuer den Startschuss selbst (oben unter 'startschuss')
+    // rechnen immer mit den echten Werten, unabhaengig von dieser Anzeige.
+    'fortschritt_mindestanzeige' => [
+        'betriebe'    => 16,
+        'unternehmen' => 5,
+        'kartons'     => 5500,
     ],
 ];
