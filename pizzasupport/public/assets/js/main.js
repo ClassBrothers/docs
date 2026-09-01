@@ -453,3 +453,77 @@
   });
 
 }());
+
+/* ---------------------------------------------------------------------------
+ * Ausgehende Links
+ *
+ * Öffnet jeden Link, der auf eine fremde Domain zeigt, in einem neuen Tab und
+ * setzt die Sicherheitsattribute. Gilt automatisch auch für Links, die später
+ * dazukommen – niemand muss daran denken.
+ *
+ * Steuerung über Attribute im HTML:
+ *   data-intern   -> Link wird komplett in Ruhe gelassen
+ *   data-follow   -> neuer Tab ja, aber ohne nofollow (für eigene Projekte)
+ *
+ * Einsetzen: Inhalt ans Ende der bestehenden Haupt-JS-Datei anhängen.
+ * Nicht als <script> direkt in die Seite schreiben – die Content-Security-Policy
+ * blockiert Inline-Skripte.
+ * ------------------------------------------------------------------------- */
+
+(function () {
+  'use strict';
+
+  function eigeneDomain(hostname) {
+    return hostname.replace(/^www\./, '').toLowerCase();
+  }
+
+  function linksAufbereiten(bereich) {
+    var eigen = eigeneDomain(window.location.hostname);
+    var links = (bereich || document).querySelectorAll('a[href]');
+
+    Array.prototype.forEach.call(links, function (a) {
+      if (a.hasAttribute('data-intern')) return;
+      if (a.hasAttribute('data-extern-geprueft')) return;
+
+      var url;
+      try {
+        url = new URL(a.getAttribute('href'), window.location.href);
+      } catch (e) {
+        return;
+      }
+
+      // mailto:, tel:, javascript: und Sprungmarken bleiben unberührt
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+      if (eigeneDomain(url.hostname) === eigen) return;
+
+      a.setAttribute('target', '_blank');
+
+      var rel = (a.getAttribute('rel') || '').split(/\s+/).filter(Boolean);
+      var noetig = a.hasAttribute('data-follow')
+        ? ['noopener', 'noreferrer']
+        : ['nofollow', 'noopener', 'noreferrer'];
+
+      noetig.forEach(function (wert) {
+        if (rel.indexOf(wert) === -1) rel.push(wert);
+      });
+      a.setAttribute('rel', rel.join(' '));
+
+      // Hinweis für Screenreader, damit der Tabwechsel nicht überrascht
+      if (!a.hasAttribute('aria-label')) {
+        var text = (a.textContent || '').trim();
+        if (text) a.setAttribute('aria-label', text + ' (öffnet in neuem Tab)');
+      }
+
+      a.setAttribute('data-extern-geprueft', '');
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { linksAufbereiten(); });
+  } else {
+    linksAufbereiten();
+  }
+
+  // Falls Inhalte nachgeladen werden, lässt sich das erneut anstoßen:
+  window.externeLinksPruefen = linksAufbereiten;
+})();

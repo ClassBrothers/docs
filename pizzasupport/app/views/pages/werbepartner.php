@@ -132,6 +132,39 @@ $f      = fortschritt();
   </div>
 </section>
 
+<section class="band" aria-labelledby="ideen-titel">
+  <div class="wrap">
+    <h2 id="ideen-titel">Und was steht dann drauf?</h2>
+    <p class="hero-lead">
+      Die häufigste Frage, die uns Unternehmen stellen. Hier drei Antworten von Betrieben
+      aus der Region.
+    </p>
+
+    <div class="ideen-raster ideen-teaser">
+
+      <article class="idee">
+        <p class="idee-claim">„Wir suchen Dich. Nicht Deinen Lebenslauf.“</p>
+        <p>Ein Sanitärbetrieb sucht einen Monteur – mit QR-Code zu einem Formular mit drei Feldern.</p>
+      </article>
+
+      <article class="idee">
+        <p class="idee-claim">„Jetzt ne Cola wär nice.“</p>
+        <p>Ein Kino druckt einen Getränkegutschein. Der Satz trifft genau den Moment, in dem der Karton aufgeht.</p>
+      </article>
+
+      <article class="idee">
+        <p class="idee-claim">„Ausbildung ab September. Ja, wirklich bezahlt.“</p>
+        <p>Die Zielgruppe für Ausbildungsplätze sitzt abends direkt vor diesem Karton.</p>
+      </article>
+
+    </div>
+
+    <p>
+      <a href="/werbeideen.html" class="btn btn-sekundaer">Alle Ideen ansehen</a>
+    </p>
+  </div>
+</section>
+
 <section class="band band-hell" aria-labelledby="ablauf-titel">
   <div class="wrap">
     <h2 id="ablauf-titel">Wie läuft eine Buchung ab?</h2>
@@ -178,7 +211,7 @@ $f      = fortschritt();
         <p class="danke-weiter">
           Eine Bestätigung liegt in Ihrem Postfach. Kommt sie nicht an, schauen Sie bitte
           kurz im Spam-Ordner nach oder schreiben Sie uns an
-          <a href="mailto:<?= e(config('firma.email')) ?>"><?= e(config('firma.email')) ?></a>.
+          <a href="mailto:<?= e(firma_email_link()) ?>"><?= e(config('firma.email')) ?></a>.
         </p>
       </div>
     <?php endif; ?>

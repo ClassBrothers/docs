@@ -350,6 +350,28 @@
 }
 @media (prefers-reduced-motion:reduce){.psk-kachel,.psk-marker{transition:none}}
 
+/* --- Werbeideen --------------------------------------------------------
+   Kartenraster fuer die Ideen-Seite. Baut auf demselben Karten-Look wie
+   .karte auf, mit einer betonten Zitat-Zeile (.idee-claim) obendran. */
+.ideen-raster{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:1.75rem}
+.idee{
+  background:var(--weiss);border:1px solid var(--linie);border-left:4px solid var(--tomate);
+  border-radius:var(--radius);padding:1.5rem;transition:transform .2s ease,box-shadow .2s ease;
+}
+.idee:hover{transform:translateY(-3px);box-shadow:var(--schatten)}
+.idee-claim{
+  font-family:var(--schrift-kopf);font-weight:700;font-size:1.15rem;line-height:1.3;
+  color:var(--charcoal);margin:0 0 .65rem;
+}
+.idee p:not(.idee-claim):not(.idee-meta){color:var(--tinte-hell);font-size:.96rem;margin:0 0 .9rem}
+.idee-meta{
+  display:inline-block;font-family:var(--schrift-ui);font-weight:700;font-size:.72rem;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--basilikum-dunkel);
+  background:rgba(46,125,79,.09);padding:.3rem .65rem;border-radius:999px;margin:0;
+}
+.ideen-teaser .idee{border-left-color:var(--olivgold)}
+@media (prefers-reduced-motion:reduce){.idee{transition:none}}
+
 /* --- Kontakt ---------------------------------------------------------- */
 .kontakt-raster{display:grid;grid-template-columns:1.3fr .7fr;gap:2rem;align-items:start}
 .kontakt-daten{background:var(--papier2);border-radius:var(--radius);padding:1.5rem}
@@ -420,7 +442,7 @@
 .fuss li{margin-bottom:.45rem}
 .fuss a{color:#e6eef6}
 .fuss a:hover{color:var(--gelb)}
-.fuss p{font-size:.92rem}
+.fuss p{font-size:.84rem}
 .fuss-logo{height:56px;width:auto;margin-bottom:.9rem;background:#fff;border-radius:8px;padding:.35rem .5rem}
 .fuss-initiator{font-size:.86rem;color:#9db2c8}
 .fuss-unten{border-top:1px solid rgba(255,255,255,.15);margin-top:2.5rem;padding-top:1.25rem}
@@ -433,6 +455,13 @@
 .band-recht h2{font-size:1.25rem;margin-top:2rem}
 .band-recht p,.band-recht li{font-size:.97rem}
 .band-recht code{background:var(--papier2);padding:.1em .35em;border-radius:3px;font-size:.9em}
+.adressblock{padding:.9rem 1.1rem;background:var(--papier2);border-radius:var(--radius-klein);font-style:normal}
+.muster-widerruf{
+  margin:1.25rem 0;padding:1.25rem 1.4rem;background:var(--weiss);
+  border:1.5px dashed var(--linie);border-radius:var(--radius-klein);
+}
+.muster-widerruf p{margin:0 0 .9rem}
+.muster-widerruf p:last-child{margin-bottom:0}
 
 /* --- Umbrueche -------------------------------------------------------- */
 @media (max-width:960px){

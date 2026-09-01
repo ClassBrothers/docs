@@ -4,7 +4,7 @@
 
     <div class="fuss-spalte fuss-marke">
       <img class="fuss-logo" src="<?= e(asset(config('logo.src'))) ?>" width="1000" height="649" alt="Pizza Support" loading="lazy" decoding="async">
-      <p>Kostenlose Pizzakartons für die Freiburger Gastronomie, bezahlt von Werbung aus der Nachbarschaft.</p>
+      <p>Kostenlose Pizzakartons für die Freiburger Gastronomie, finanziert durch Unternehmen aus der Nachbarschaft.</p>
       <p class="fuss-initiator">
         Ein Projekt der <?= e(config('firma.name')) ?> mit gastronomischer Unterstützung der
         <?= e(config('partner_gastro')) ?>.
@@ -16,6 +16,7 @@
       <ul>
         <li><a href="/#bestellen">Kartons bestellen</a></li>
         <li><a href="/werbepartner.html">Werbefläche buchen</a></li>
+        <li><a href="/werbeideen.html">Werbeideen ansehen</a></li>
         <li><a href="/teilnehmer.html">Wer schon dabei ist</a></li>
         <li><a href="/teilnehmer.html#newsletter">Auf dem Laufenden bleiben</a></li>
       </ul>
@@ -34,7 +35,7 @@
     <div class="fuss-spalte">
       <h2>Direkt erreichbar</h2>
       <p>
-        <a href="mailto:<?= e(config('firma.email')) ?>"><?= e(config('firma.email')) ?></a><br>
+        <a href="mailto:<?= e(firma_email_link()) ?>"><?= e(config('firma.email')) ?></a><br>
         <?= e(config('firma.plz_ort')) ?>
       </p>
     </div>
@@ -43,12 +44,10 @@
 
   <div class="wrap fuss-unten">
     <p class="fuss-services">
-      Aus der gleichen Werkstatt: <a href="https://class-brothers.com" rel="nofollow noopener">Class&nbsp;Brothers</a> für
-      <a href="https://class-brothers.com" rel="nofollow noopener">SEO</a>,
-      <a href="https://class-brothers.com" rel="nofollow noopener">KI-Assistenz</a> und
-      <a href="https://class-brothers.com" rel="nofollow noopener">Coaching</a>,
-      <a href="https://webdesign-freiburg.info" rel="nofollow noopener">Webdesign Freiburg</a> für Websites,
-      <a href="https://badische-entertainment.de" rel="nofollow noopener">Badische Entertainment</a> für Events.
+      Ein Projekt der <a href="https://class-brothers.com" rel="nofollow noopener">Class&nbsp;Brothers GmbH</a> – Agentur für
+      <a href="https://class-brothers.com/seo" rel="nofollow noopener">SEO</a> und
+      <a href="https://webdesign-freiburg.info" rel="nofollow noopener">Webdesign Freiburg</a>, in Zusammenarbeit mit der
+      <a href="https://badische-entertainment.com" rel="nofollow noopener">Badische Entertainment GmbH – Eventagentur und Gastroconsulting</a>.
     </p>
     <p class="fuss-recht">
       <a href="/impressum.html">Impressum</a>

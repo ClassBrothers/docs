@@ -10,21 +10,14 @@ $fr = config('aufbewahrung');
   <div class="wrap schmal">
     <h1>Datenschutzerklärung</h1>
 
-    <div class="hinweis hinweis-todo" role="note">
-      <strong>Vor dem Livegang zu prüfen:</strong> Dieser Text beschreibt die tatsächliche
-      Verarbeitung dieser Website vollständig und technisch korrekt. Die Angaben zum
-      Verantwortlichen stammen aus <code>app/config.php</code> und enthalten noch Platzhalter.
-      Ergänzen Sie außerdem Ihren Hosting-Dienstleister im Abschnitt „Hosting“ und lassen Sie
-      den Text vor Veröffentlichung juristisch abnehmen.
-    </div>
-
     <h2>1. Verantwortlicher</h2>
     <p>
       Verantwortlich für die Datenverarbeitung auf dieser Website ist:<br>
       <?= e(config('firma.name')) ?><br>
       <?= e(config('firma.strasse')) ?><br>
       <?= e(config('firma.plz_ort')) ?><br>
-      E-Mail: <a href="mailto:<?= e(config('firma.email')) ?>"><?= e(config('firma.email')) ?></a><br>
+      Vertreten durch: <?= e(config('firma.gf')) ?><br>
+      E-Mail: <a href="mailto:<?= e(firma_email_link()) ?>"><?= e(config('firma.email')) ?></a><br>
       Telefon: <?= e(config('firma.telefon')) ?>
     </p>
     <p>
@@ -44,11 +37,13 @@ $fr = config('aufbewahrung');
 
     <h2>3. Hosting</h2>
     <p>
-      Diese Website wird bei einem Dienstleister in Deutschland betrieben. Mit diesem besteht
-      ein Vertrag über Auftragsverarbeitung nach Art. 28 DSGVO.
-      <em>PLATZHALTER: Name und Anschrift des Hosting-Anbieters eintragen.</em>
-      Rechtsgrundlage ist unser berechtigtes Interesse an einem sicheren und zuverlässigen
-      Betrieb der Website (Art. 6 Abs. 1 lit. f DSGVO).
+      Diese Website wird gehostet von ALL-INKL.COM – Neue Medien Münnich,
+      Inhaber: René Münnich, Hauptstraße 68, 02742 Friedersdorf, Deutschland. Der Anbieter
+      verarbeitet in unserem Auftrag die Daten, die beim Aufruf der Website anfallen, und
+      stellt Speicherplatz, Datenbank und E-Mail-Versand bereit. Die Server stehen in
+      Deutschland. Mit dem Anbieter besteht ein Vertrag über Auftragsverarbeitung nach
+      Art. 28 DSGVO. Rechtsgrundlage ist unser berechtigtes Interesse an einem sicheren und
+      zuverlässigen Betrieb der Website (Art. 6 Abs. 1 lit. f DSGVO).
     </p>
 
     <h2>4. Server-Logfiles</h2>
@@ -216,7 +211,7 @@ $fr = config('aufbewahrung');
     </ul>
     <p>
       Eine formlose E-Mail an
-      <a href="mailto:<?= e(config('firma.email')) ?>"><?= e(config('firma.email')) ?></a>
+      <a href="mailto:<?= e(firma_email_link()) ?>"><?= e(config('firma.email')) ?></a>
       genügt. Zuständige Aufsichtsbehörde ist der Landesbeauftragte für den Datenschutz und
       die Informationsfreiheit Baden-Württemberg, Lautenschlagerstraße 20, 70173 Stuttgart.
     </p>
@@ -238,7 +233,7 @@ $fr = config('aufbewahrung');
     </p>
 
     <p class="klein">
-      Stand dieser Erklärung: <?= date('m/Y') ?>. Wir passen sie an, wenn sich die
+      Stand dieser Erklärung: 09/2026. Wir passen sie an, wenn sich die
       Verarbeitung ändert. <a href="/">Zurück zur Startseite</a>
     </p>
   </div>

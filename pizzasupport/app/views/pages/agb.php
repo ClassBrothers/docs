@@ -5,23 +5,19 @@ $meta['beschreibung'] = 'AGB für Werbebuchungen und die Abgabe von Pizzakartons
 $meta['robots']       = 'noindex,nofollow';
 $meta['stoerer']      = false;
 $st = config('startschuss');
+$porto = config('porto');
+$mailAnzeige = (string) config('firma.email');
+$mailLink    = firma_email_link();
 ?>
 <section class="band band-recht">
   <div class="wrap schmal">
     <h1>Allgemeine Geschäftsbedingungen</h1>
 
-    <div class="hinweis hinweis-todo" role="note">
-      <strong>Vor dem Livegang zu prüfen:</strong> Dieser Text bildet die Abläufe ab, wie sie
-      auf der Website beschrieben sind, und ist als Arbeitsgrundlage gedacht – nicht als
-      geprüfte Rechtsdokumentation. Lassen Sie ihn vor Veröffentlichung anwaltlich abnehmen,
-      insbesondere die Abschnitte zu Zahlung, Widerruf und Haftung.
-    </div>
-
     <h2>§ 1 Geltungsbereich und Vertragspartner</h2>
     <p>
       Diese Bedingungen gelten für alle Verträge zwischen der <?= e(config('firma.name')) ?>
       (nachfolgend „wir“) und Werbepartnern über die Buchung von Werbeflächen auf
-      Pizzakartons sowie für die unentgeltliche Abgabe dieser Kartons an gastronomische
+      Pizzakartons sowie für die Abgabe dieser Kartons an gastronomische
       Betriebe. Abweichende Bedingungen des Vertragspartners werden nicht Vertragsbestandteil,
       es sei denn, wir stimmen ihnen schriftlich zu.
     </p>
@@ -35,7 +31,8 @@ $st = config('startschuss');
     </p>
     <p>
       Mit Erreichen beider Schwellen versenden wir Auftragsbestätigungen und Teilrechnungen.
-      Ab diesem Zeitpunkt ist die Buchung verbindlich. Die Kartons werden voraussichtlich
+      Ab diesem Zeitpunkt ist die Buchung verbindlich. Die Kartons werden aus
+      produktionstechnischen Gründen voraussichtlich
       <?= e($st['lieferwochen']) ?> Wochen nach Produktionsstart ausgeliefert. Feste
       Kalendertermine sagen wir nicht zu; Verzögerungen bei Druckerei oder Logistik
       berechtigen nicht zum Rücktritt, solange die Lieferung in angemessener Frist erfolgt.
@@ -48,10 +45,14 @@ $st = config('startschuss');
 
     <h2>§ 3 Leistungen für gastronomische Betriebe</h2>
     <p>
-      Teilnehmende Betriebe erhalten die bestellte Menge Pizzakartons unentgeltlich. Es fallen
-      weder Kaufpreis noch Liefergebühren an. Ein Rechtsanspruch auf eine bestimmte Menge oder
-      ein bestimmtes Format besteht nicht; wir teilen die verfügbare Auflage nach billigem
-      Ermessen zu, wenn die Nachfrage die Auflage übersteigt.
+      Teilnehmende Betriebe erhalten die bestellte Menge Pizzakartons unentgeltlich. Im
+      Stadtgebiet <?= e($porto['frei_in']) ?> fallen weder Kaufpreis noch Liefergebühren an.
+      Außerhalb <?= e($porto['frei_in']) ?> wird eine Portopauschale i. H. v.
+      <?= e(preis($porto['pauschale_cent'], false)) ?> Euro netto zzgl.
+      <?= (int) config('mwst_prozent') ?> % MwSt. je angefangene <?= zahl((int) $porto['je_kartons']) ?>
+      Kartons berechnet. Ein Rechtsanspruch auf eine bestimmte Menge oder ein bestimmtes
+      Format besteht nicht; wir teilen die verfügbare Auflage nach billigem Ermessen zu, wenn
+      die Nachfrage die Auflage übersteigt.
     </p>
     <p>
       Der Betrieb verpflichtet sich, die Kartons ausschließlich im eigenen Geschäftsbetrieb zu
@@ -66,8 +67,9 @@ $st = config('startschuss');
     <h2>§ 4 Werbebuchungen, Preise und Zahlung</h2>
     <p>
       Es gelten die zum Zeitpunkt der Buchung auf pizzasupport.de veröffentlichten Preise.
-      Preise für Unternehmen verstehen sich netto zuzüglich der gesetzlichen Umsatzsteuer;
-      der Preis für die Fun Area versteht sich inklusive Umsatzsteuer.
+      Preise für Unternehmen verstehen sich netto zuzüglich der gesetzlichen Umsatzsteuer.
+      Die Fun Area hingegen richtet sich an Endverbraucher, weshalb sich ihr Preis inklusive
+      Umsatzsteuer versteht.
     </p>
     <p>
       Nach Erreichen der Schwellen stellen wir <?= (int) $st['anzahlung'] ?> % des
@@ -94,27 +96,31 @@ $st = config('startschuss');
     </p>
     <ul class="liste-check">
       <li>Angebote von Essens-Lieferdiensten, da sie in direkter Konkurrenz zu den ausgebenden Betrieben stehen</li>
-      <li>politische Inhalte und Wahlwerbung</li>
+      <li>politische Inhalte, Wahlwerbung, hetzerische oder diskriminierende Inhalte</li>
       <li>religiöse und weltanschauliche Werbung</li>
-      <li>Meinungsäußerungen ohne fachliche Grundlage sowie irreführende Gesundheits- oder Heilsversprechen</li>
+      <li>Meinungsäußerungen ohne fachliche Grundlage (viel Meinung, wenig Ahnung)</li>
       <li>Inhalte, die gegen geltendes Recht verstoßen, Rechte Dritter verletzen oder geeignet sind, dem Ansehen des Projekts oder der teilnehmenden Betriebe zu schaden</li>
+      <li>Inhalte der Gender-Diskussion</li>
+      <li>Inhalte, die als Provokation empfunden werden können</li>
     </ul>
     <p>
       Lehnen wir ein Motiv ab, erhält der Werbepartner Gelegenheit zur Nachbesserung. Wird
-      auch das nachgebesserte Motiv abgelehnt, erstatten wir bereits geleistete Zahlungen
-      vollständig; weitergehende Ansprüche bestehen nicht.
+      auch das nachgebesserte Motiv abgelehnt, kommt kein Vertrag zustande und wir erstatten
+      bereits geleistete Zahlungen vollständig; weitergehende Ansprüche bestehen nicht.
     </p>
     <p>
       Der Werbepartner sichert zu, über alle Rechte an den eingereichten Unterlagen zu
-      verfügen, und stellt uns von Ansprüchen Dritter frei, die aus dem Inhalt seines Motivs
-      hergeleitet werden.
+      verfügen, und stellt uns vollumfänglich von Ansprüchen Dritter frei, die aus dem Inhalt
+      seines Motivs hergeleitet werden.
     </p>
 
     <h2>§ 6 QR-Codes</h2>
     <p>
       Auf Wunsch drucken wir einen QR-Code, der technisch über pizzasupport.de auf eine vom
       Werbepartner benannte Adresse weiterleitet. Für den Inhalt der Zielseite ist
-      ausschließlich der Werbepartner verantwortlich.
+      ausschließlich der Werbepartner verantwortlich. Weil der Code über uns zum Ziel führt,
+      sichern wir zu, dass ein von uns vor Drucklegung geprüfter Link zu diesem Zeitpunkt
+      nicht zu erkennbar illegalen Inhalten verlinkt.
     </p>
     <p>
       Die Ziel-Adresse kann bis zur Druckfreigabe geändert werden. <strong>Nach der
@@ -144,26 +150,130 @@ $st = config('startschuss');
 
     <h2>§ 9 Haftung</h2>
     <p>
-      Wir haften unbeschränkt bei Vorsatz und grober Fahrlässigkeit sowie bei der Verletzung
-      von Leben, Körper und Gesundheit. Bei einfacher Fahrlässigkeit haften wir nur bei
-      Verletzung einer wesentlichen Vertragspflicht und der Höhe nach begrenzt auf den
-      vertragstypischen, vorhersehbaren Schaden. Eine weitergehende Haftung ist
-      ausgeschlossen. Die Haftung nach dem Produkthaftungsgesetz bleibt unberührt.
+      Wir haften unbeschränkt bei Vorsatz und grober Fahrlässigkeit.
+      Bei einfacher Fahrlässigkeit haften wir nur bei Verletzung einer wesentlichen
+      Vertragspflicht und der Höhe nach begrenzt auf den vertragstypischen, vorhersehbaren
+      Schaden. Eine weitergehende Haftung ist ausgeschlossen. Die Haftung nach dem
+      Produkthaftungsgesetz bleibt unberührt.
     </p>
     <p>
       Für Werbewirkung, Reichweite oder wirtschaftlichen Erfolg einer Buchung übernehmen wir
       keine Gewähr. Druckbedingte Farbabweichungen im branchenüblichen Rahmen stellen keinen
-      Mangel dar.
+      Mangel dar. Der Druck auf Pizzakartons kann keine kleinen Schriften darstellen, was bei
+      der Erstellung der Druckdaten durch Werbepartner zu beachten ist. Für unscharfen Druck
+      oder schlechte Lesbarkeit als Folge zu kleiner oder zu feiner Druckdaten übernehmen wir
+      keine Haftung.
     </p>
 
-    <h2>§ 10 Widerrufsrecht für Verbraucher</h2>
+    <h2 id="widerruf">§ 10 Widerrufsrecht für Verbraucher</h2>
     <p>
-      Verbrauchern steht bei im Fernabsatz geschlossenen Verträgen ein gesetzliches
-      Widerrufsrecht zu. Das betrifft insbesondere Buchungen der Fun Area durch
-      Privatpersonen.
-      <em>PLATZHALTER: Hier die vollständige Widerrufsbelehrung nebst Muster-Widerrufsformular
-      einsetzen und rechtlich prüfen lassen; das Widerrufsrecht kann bei nach Kundenwunsch
-      angefertigten Waren eingeschränkt sein.</em>
+      Die folgende Belehrung gilt ausschließlich für Verbraucherinnen und Verbraucher,
+      also für natürliche Personen, die eine Fläche zu Zwecken buchen, die überwiegend
+      weder ihrer gewerblichen noch ihrer selbständigen beruflichen Tätigkeit zugerechnet
+      werden können (§ 13 BGB). In der Praxis betrifft das die Fun Area auf der
+      Kartonunterseite. Buchungen von Unternehmen auf Deckel- und Seitenflächen sind
+      Geschäfte unter Unternehmern; für sie besteht kein gesetzliches Widerrufsrecht.
+    </p>
+
+    <h3>Widerrufsbelehrung</h3>
+
+    <p><strong>Widerrufsrecht</strong></p>
+    <p>
+      Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu
+      widerrufen. Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag des Vertragsabschlusses.
+    </p>
+    <p>
+      Um Ihr Widerrufsrecht auszuüben, müssen Sie uns
+    </p>
+    <p class="adressblock">
+      <?= e(config('firma.name')) ?><br>
+      <?= e(config('firma.strasse')) ?><br>
+      <?= e(config('firma.plz_ort')) ?><br>
+      Telefon: <?= e(config('firma.telefon')) ?><br>
+      E-Mail: <a href="mailto:<?= e($mailLink) ?>"><?= e($mailAnzeige) ?></a>
+    </p>
+    <p>
+      mittels einer eindeutigen Erklärung (zum Beispiel ein mit der Post versandter Brief
+      oder eine E-Mail) über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren.
+      Sie können dafür das unten abgedruckte Muster-Widerrufsformular verwenden, das aber
+      nicht vorgeschrieben ist.
+    </p>
+    <p>
+      Zur Wahrung der Widerrufsfrist reicht es aus, dass Sie die Mitteilung über die
+      Ausübung des Widerrufsrechts vor Ablauf der Widerrufsfrist absenden.
+    </p>
+
+    <p><strong>Folgen des Widerrufs</strong></p>
+    <p>
+      Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen
+      erhalten haben, einschließlich der Lieferkosten (mit Ausnahme der zusätzlichen Kosten,
+      die sich daraus ergeben, dass Sie eine andere Art der Lieferung als die von uns
+      angebotene, günstigste Standardlieferung gewählt haben), unverzüglich und spätestens
+      binnen vierzehn Tagen ab dem Tag zurückzuzahlen, an dem die Mitteilung über Ihren
+      Widerruf dieses Vertrags bei uns eingegangen ist. Für diese Rückzahlung verwenden wir
+      dasselbe Zahlungsmittel, das Sie bei der ursprünglichen Transaktion eingesetzt haben,
+      es sei denn, mit Ihnen wurde ausdrücklich etwas anderes vereinbart; in keinem Fall
+      werden Ihnen wegen dieser Rückzahlung Entgelte berechnet.
+    </p>
+    <p>
+      Haben Sie verlangt, dass die Leistung während der Widerrufsfrist beginnen soll, so
+      haben Sie uns einen angemessenen Betrag zu zahlen, der dem Anteil der bis zu dem
+      Zeitpunkt, zu dem Sie uns von der Ausübung des Widerrufsrechts hinsichtlich dieses
+      Vertrags unterrichten, bereits erbrachten Leistungen im Vergleich zum Gesamtumfang
+      der im Vertrag vorgesehenen Leistungen entspricht.
+    </p>
+
+    <h3>Vorzeitiges Erlöschen des Widerrufsrechts</h3>
+    <p>
+      Das Widerrufsrecht erlischt vorzeitig, wenn wir die Leistung vollständig erbracht
+      haben und mit der Ausführung erst begonnen haben, nachdem Sie dazu Ihre ausdrückliche
+      Zustimmung gegeben und gleichzeitig bestätigt haben, dass Sie Ihr Widerrufsrecht bei
+      vollständiger Vertragserfüllung verlieren.
+    </p>
+    <p>
+      In der Regel tritt dieser Fall bei uns nicht ein: Wir geben die Produktion erst frei,
+      wenn genug Betriebe und genug gebuchte Flächen zusammengekommen sind. Zwischen Ihrer
+      Buchung und dem Druck liegen daher üblicherweise mehrere Wochen, und Ihre Widerrufsfrist
+      ist längst abgelaufen, bevor Ihr Motiv in Produktion geht.
+    </p>
+
+    <h3>Muster-Widerrufsformular</h3>
+    <p>
+      Wenn Sie den Vertrag widerrufen wollen, können Sie dieses Formular ausfüllen und an
+      uns zurücksenden. Sie müssen es nicht verwenden.
+    </p>
+    <div class="muster-widerruf">
+      <p>
+        An<br>
+        <?= e(config('firma.name')) ?><br>
+        <?= e(config('firma.strasse')) ?><br>
+        <?= e(config('firma.plz_ort')) ?><br>
+        E-Mail: <?= e($mailAnzeige) ?>
+      </p>
+      <p>
+        Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über
+        die Erbringung der folgenden Dienstleistung:
+      </p>
+      <p>
+        ______________________________________________
+      </p>
+      <p>
+        Bestellt am (*)/erhalten am (*): ____________________<br>
+        Name des/der Verbraucher(s): ____________________<br>
+        Anschrift des/der Verbraucher(s): ____________________<br><br>
+        Unterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier):<br><br>
+        ____________________<br><br>
+        Datum: ____________________
+      </p>
+      <p class="klein">(*) Unzutreffendes streichen.</p>
+    </div>
+
+    <h3>Keine Anwendung auf Buchungen von Unternehmen</h3>
+    <p>
+      Buchungen von Deckel- und Seitenflächen richten sich an Unternehmen im Sinne des
+      § 14 BGB. Für diese Verträge besteht kein gesetzliches Widerrufsrecht. Es gelten
+      ausschließlich die Regelungen dieser AGB, insbesondere zur Freigabe der Motive, zur
+      Anzahlung nach Erreichen des Startschusses und zum Rücktritt vor Produktionsfreigabe.
     </p>
 
     <h2>§ 11 Schlussbestimmungen</h2>

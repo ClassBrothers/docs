@@ -105,7 +105,7 @@ $erfolg = flash_get('kontakt_ok');
         <?= e(config('firma.plz_ort')) ?>
       </p>
       <p>
-        <a href="mailto:<?= e(config('firma.email')) ?>"><?= e(config('firma.email')) ?></a><br>
+        <a href="mailto:<?= e(firma_email_link()) ?>"><?= e(config('firma.email')) ?></a><br>
         <a href="tel:<?= e(preg_replace('/[^+0-9]/', '', (string) config('firma.telefon'))) ?>"><?= e(config('firma.telefon')) ?></a>
       </p>
 

@@ -9,13 +9,6 @@ $meta['stoerer']      = false;
   <div class="wrap schmal">
     <h1>Impressum</h1>
 
-    <div class="hinweis hinweis-todo" role="note">
-      <strong>Vor dem Livegang zu prüfen:</strong> Die mit PLATZHALTER markierten Angaben
-      stammen noch nicht aus dem Handelsregister. Bitte durch die verbindlichen Daten der
-      <?= e(config('firma.name')) ?> ersetzen (zentral in <code>app/config.php</code>) und
-      den Text juristisch abnehmen lassen.
-    </div>
-
     <h2>Angaben gemäß § 5 DDG</h2>
     <p>
       <?= e(config('firma.name')) ?><br>
@@ -30,7 +23,7 @@ $meta['stoerer']      = false;
     <h2>Kontakt</h2>
     <p>
       Telefon: <?= e(config('firma.telefon')) ?><br>
-      E-Mail: <a href="mailto:<?= e(config('firma.email')) ?>"><?= e(config('firma.email')) ?></a>
+      E-Mail: <a href="mailto:<?= e(firma_email_link()) ?>"><?= e(config('firma.email')) ?></a>
     </p>
 
     <h2>Registereintrag</h2>

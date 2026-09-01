@@ -1,10 +1,10 @@
 <?php
 /**
+ * Class Brothers GmbH für PizzaSupport
  * Zentrale Konfiguration.
  *
- * Alles, was sich fachlich aendern kann - Preise, Formate, Mengen,
- * Schwellenwerte, Kontaktdaten - steht hier und nur hier. Wer Preise
- * anpasst, muss keine einzige Vorlage anfassen.
+ * Alles, was sich fachlich aendern kann wird zentral hier gesteuert -> Preise, Formate, Mengen,
+ * Schwellenwerte, Kontaktdaten. Wer Preise anpasst, muss keine einzige Vorlage anfassen.
  */
 
 declare(strict_types=1);
@@ -16,13 +16,17 @@ return [
     // -----------------------------------------------------------------
     'firma' => [
         'name'      => 'Class Brothers GmbH',
-        'strasse'   => 'PLATZHALTER Strasse Hausnummer',
-        'plz_ort'   => 'PLATZHALTER 79xxx Freiburg im Breisgau',
-        'telefon'   => 'PLATZHALTER +49 761 000000',
-        'email'     => 'hallo@pizzasupport.de',
-        'gf'        => 'PLATZHALTER Geschaeftsfuehrung',
-        'hrb'       => 'PLATZHALTER HRB 000000, Amtsgericht Freiburg i. Br.',
-        'ustid'     => 'PLATZHALTER DE000000000',
+        'strasse'   => 'Im Hubhof 5',
+        'plz_ort'   => '79112 Freiburg im Breisgau',
+        'telefon'   => '+49 151 616 052 29',
+        // Mit Leerzeichen geschrieben, um Sammelprogramme abzuwehren. Fuer
+        // mailto:-Links immer firma_email_link() aus app/bootstrap.php nutzen,
+        // die die Leerzeichen entfernt - config('firma.email') bleibt fuer
+        // die Anzeige unveraendert.
+        'email'     => 'hallo @ pizzasupport . de',
+        'gf'        => 'Geschäftsführer Sebastian Class',
+        'hrb'       => 'HRB 713509, Amtsgericht Freiburg i. Br.',
+        'ustid'     => 'DE301531400',
     ],
     'partner_gastro' => 'Badische Entertainment GmbH',
 
@@ -44,19 +48,29 @@ return [
     // Auswahl reduzieren will, loescht hier Zeilen - sonst nichts.
     // -----------------------------------------------------------------
     'karton_formate' => [
-        ['id' => '28', 'label' => '28 × 28 cm', 'hinweis' => 'kleine Pizza',        'default' => false, 'sofort' => false],
         ['id' => '30', 'label' => '30 × 30 cm', 'hinweis' => 'Standard',            'default' => false, 'sofort' => false],
         ['id' => '32', 'label' => '32 × 32 cm', 'hinweis' => 'unsere Erstauflage',  'default' => true,  'sofort' => true],
         ['id' => '33', 'label' => '33 × 33 cm', 'hinweis' => 'Familienformat',      'default' => false, 'sofort' => false],
     ],
     'karton_hoehe_cm' => 3,
 
-    // Mengenlogik: zwei Schnellauswahlen plus freie Eingabe.
+    // Mengenlogik: drei Schnellauswahlen plus freie Eingabe.
     'mengen' => [
-        'presets' => [300, 500],
+        'presets' => [300, 500, 1000],
         'min'     => 300,
-        'max'     => 20000,
+        'max'     => 10000,
         'step'    => 50,
+    ],
+
+    // -----------------------------------------------------------------
+    // Versand fuer die Gastro-Bestellung. Innerhalb Freiburgs kostenlos,
+    // ausserhalb eine Pauschale je angefangene 300 Kartons. Wird in den
+    // AGB (§ 3) referenziert - hier aendern, nicht dort.
+    // -----------------------------------------------------------------
+    'porto' => [
+        'frei_in'        => 'Freiburg im Breisgau',
+        'pauschale_cent' => 900,   // 9,00 EUR netto je Staffel
+        'je_kartons'     => 300,
     ],
 
     // -----------------------------------------------------------------
@@ -145,6 +159,7 @@ return [
     'sitemap' => [
         ['pfad' => '/',                                'prio' => '1.0', 'freq' => 'weekly'],
         ['pfad' => '/werbepartner.html',               'prio' => '0.9', 'freq' => 'weekly'],
+        ['pfad' => '/werbeideen.html',                 'prio' => '0.7', 'freq' => 'monthly'],
         ['pfad' => '/teilnehmer.html',                 'prio' => '0.8', 'freq' => 'daily'],
         ['pfad' => '/verpackungssteuer-freiburg.html', 'prio' => '0.8', 'freq' => 'monthly'],
         ['pfad' => '/ueber-uns.html',                  'prio' => '0.6', 'freq' => 'monthly'],

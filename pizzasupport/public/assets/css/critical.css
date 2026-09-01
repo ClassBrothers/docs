@@ -188,10 +188,12 @@ img{max-width:100%;height:auto}
 
 @media (max-width:900px){
   .hero-innen{grid-template-columns:1fr}
+}
 
+@media (max-width:980px){
   /* Ab hier wandert die Navigation hinter den Menuknopf. Die Grenze ist
-     dieselbe, bei der die Links nicht mehr in eine Zeile passen - sonst
-     gaebe es einen Bereich ohne sichtbare Navigation. */
+     dieselbe, bei der die sieben Links nicht mehr in eine Zeile passen -
+     sonst gaebe es einen Bereich ohne sichtbare Navigation. */
   .kopf-innen{min-height:68px}
   .kopf-logo img{height:44px}
   .kopf-toggle{

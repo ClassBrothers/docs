@@ -120,6 +120,7 @@ if ($pfad === '/admin' || str_starts_with($pfad, '/admin/')) {
 $seiten = [
     '/'                                => 'startseite',
     '/werbepartner.html'               => 'werbepartner',
+    '/werbeideen.html'                 => 'werbeideen',
     '/teilnehmer.html'                 => 'teilnehmer',
     '/verpackungssteuer-freiburg.html' => 'verpackungssteuer',
     '/ueber-uns.html'                  => 'ueber-uns',
@@ -136,6 +137,7 @@ $umleitungen = [
     '/index.php'           => '/',
     '/home'                => '/',
     '/werbepartner'        => '/werbepartner.html',
+    '/werbeideen'          => '/werbeideen.html',
     '/teilnehmer'          => '/teilnehmer.html',
     '/ueber-uns'           => '/ueber-uns.html',
     '/kontakt'             => '/kontakt.html',

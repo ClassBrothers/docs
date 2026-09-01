@@ -76,6 +76,17 @@ function zahl(int $n): string
     return number_format($n, 0, ',', '.');
 }
 
+/**
+ * E-Mail-Adresse aus der Konfiguration, bereinigt fuer mailto:-Links.
+ * In app/config.php steht sie zum Schutz vor Sammelprogrammen mit
+ * Leerzeichen (hallo @ pizzasupport . de) - fuer einen Link muessen die raus.
+ * Die Anzeige nutzt weiterhin config('firma.email') direkt.
+ */
+function firma_email_link(): string
+{
+    return str_replace(' ', '', (string) config('firma.email'));
+}
+
 /** Ein Werbeformat aus der Konfiguration holen. */
 function werbeformat(string $id): ?array
 {
