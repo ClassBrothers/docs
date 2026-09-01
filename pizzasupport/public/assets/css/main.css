@@ -3,12 +3,19 @@
 /* --- Baender ---------------------------------------------------------- */
 .band{padding:clamp(2.5rem,1.5rem + 3vw,4.25rem) 0}
 .band-hell{background:var(--papier2)}
-.band-dunkel{background:var(--navy);color:#eef3f8}
+.band-dunkel{background:linear-gradient(150deg,var(--charcoal),var(--charcoal-weich));color:#eef3f8}
 .band-dunkel h2,.band-dunkel h3{color:var(--gelb)}
-.band-dunkel a{color:var(--gelb)}
+.band-dunkel a:not(.btn){color:var(--gelb)}
 .band-cta{background:var(--tomate);color:#fff5f0}
 .band-cta h2{color:#fff}
 .band-cta a:not(.btn){color:#ffe1d6}
+
+/* .btn-sekundaer ist fuer helle Flaechen gezeichnet (dunkler Text,
+   heller Rand). Auf farbigen/dunklen Baendern faellt der Text sonst
+   unter die Kontrastgrenze - hier auf hell umgestellt, wie ein
+   Ghost-Button auf dunklem Grund. */
+.band-cta .btn-sekundaer,.band-dunkel .btn-sekundaer{color:#fff;border-color:rgba(255,255,255,.5)}
+.band-cta .btn-sekundaer:hover,.band-dunkel .btn-sekundaer:hover{background:rgba(255,255,255,.14);color:#fff;border-color:#fff;box-shadow:none}
 .band-recht{padding-top:2.5rem}
 .band-fehler{padding:4rem 0}
 .band-lead{font-size:1.1rem;color:var(--tinte-hell);max-width:44em}
@@ -16,24 +23,51 @@
 .band-nachsatz{margin-top:1.75rem;color:var(--tinte-hell);max-width:48em}
 .klein{font-size:.9rem;color:var(--tinte-hell)}
 
-/* --- Kartonskizze im Hero -------------------------------------------- */
+/* --- Kartonskizze im Hero --------------------------------------------
+   Eine gezeichnete Kartonschachtel liegt als SVG hinter den Preis-Pillen.
+   Die Pillen selbst tragen die echten Werbeflaechen-Angaben und schweben
+   leicht versetzt, wie schon im Vorgaenger-Design - reines CSS, keine
+   Bilddatei, keine Layout-Verschiebung beim Laden (die SVG traegt feste
+   Masse). */
 .hero-karton{min-width:0}
 .karton-skizze{
-  background:var(--weiss);border:2px solid var(--linie);border-radius:var(--radius);
-  padding:1.25rem;box-shadow:var(--schatten);
+  position:relative;background:var(--weiss);border:2px solid var(--linie);
+  border-radius:var(--radius);padding:2.25rem 1.25rem 1.25rem;box-shadow:var(--schatten);
+  overflow:hidden;
 }
-.karton-deckel{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:.6rem;margin-bottom:.6rem}
+.karton-illustration{
+  position:absolute;bottom:2%;right:-4%;width:46%;height:auto;opacity:.6;
+  filter:drop-shadow(0 8px 16px rgba(60,35,20,.14));pointer-events:none;
+}
+.karton-dampf{animation:dampf 3.6s ease-out infinite;opacity:0}
+.karton-dampf:nth-child(2){animation-delay:.9s}
+.karton-dampf:nth-child(3){animation-delay:1.8s}
+@keyframes dampf{0%{opacity:0;transform:translateY(0) scaleX(1)}40%{opacity:.55}100%{opacity:0;transform:translateY(-22px) scaleX(1.4)}}
+
+.karton-deckel{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:.6rem;margin-bottom:.6rem}
 .flaeche{
   display:flex;flex-direction:column;justify-content:center;align-items:center;
-  border-radius:var(--radius-klein);padding:.7rem .5rem;text-align:center;
-  font-weight:700;font-size:.82rem;line-height:1.25;color:var(--navy);
-  background:var(--papier2);border:2px dashed var(--olivgold);
+  border-radius:999px;padding:.75rem .6rem;text-align:center;
+  font-family:var(--schrift-ui);font-weight:700;font-size:.8rem;line-height:1.25;color:var(--charcoal);
+  background:var(--weiss);border:1.5px solid var(--linie);box-shadow:var(--schatten-sm);
+  animation:schweben 5.4s ease-in-out infinite;
 }
-.flaeche small{display:block;font-weight:500;font-size:.72rem;color:var(--tinte-hell);margin-top:.15rem}
-.flaeche-gross{grid-row:span 2;background:#fdf0dd;border-color:var(--orange)}
-.karton-seite{margin-bottom:.75rem}
-.flaeche-seite{padding:.45rem;font-size:.78rem;border-style:solid;border-color:var(--basilikum);background:#eef4ec}
-.karton-boden{margin:0;font-size:.9rem;color:var(--tinte-hell);border-top:1px solid var(--linie);padding-top:.75rem}
+.flaeche::before{content:"";width:.5rem;height:.5rem;border-radius:50%;background:var(--olivgold);margin-bottom:.3rem}
+.flaeche small{display:block;font-family:var(--schrift-text);font-weight:500;font-size:.72rem;color:var(--tinte-hell);margin-top:.1rem}
+.flaeche-gross{grid-row:span 2;animation-delay:.2s}
+.flaeche-gross::before{background:var(--orange)}
+.flaeche-mittel{animation-delay:.8s}
+.flaeche-klein{animation-delay:1.4s}
+.karton-seite{position:relative;z-index:1;margin-bottom:.75rem}
+.flaeche-seite{padding:.55rem;font-size:.76rem;animation-delay:.5s}
+.flaeche-seite::before{background:var(--basilikum)}
+.karton-boden{position:relative;z-index:1;margin:0;font-size:.9rem;color:var(--tinte-hell);border-top:1px solid var(--linie);padding-top:.75rem}
+
+@keyframes schweben{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@media (prefers-reduced-motion:reduce){
+  .flaeche{animation:none}
+  .karton-dampf{animation:none;opacity:0}
+}
 
 /* --- Fortschritt ------------------------------------------------------ */
 .fortschritt{background:var(--weiss);border-block:1px solid var(--linie);padding:2rem 0}
@@ -55,7 +89,7 @@
 .schritte li{background:var(--weiss);border:1px solid var(--linie);border-radius:var(--radius);padding:1.4rem 1.25rem;position:relative}
 .schritt-nr{
   display:flex;align-items:center;justify-content:center;width:36px;height:36px;
-  border-radius:50%;background:var(--navy);color:var(--gelb);
+  border-radius:50%;background:var(--charcoal);color:var(--gelb);
   font-family:var(--schrift-kopf);font-weight:700;font-size:1.1rem;margin-bottom:.75rem;
 }
 .schritte h3{margin:0 0 .35rem;font-size:1.05rem}
@@ -66,7 +100,7 @@
 .karten{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));margin-top:1.75rem}
 .karten-zwei{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
 .karte{background:var(--weiss);border:1px solid var(--linie);border-radius:var(--radius);padding:1.5rem}
-.karte h3{margin:0 0 .5rem;color:var(--navy)}
+.karte h3{margin:0 0 .5rem;color:var(--charcoal)}
 .karte p{margin:0;color:var(--tinte-hell);font-size:.97rem}
 .karte-gross{padding:1.9rem}
 .karte-gross h3{font-size:1.3rem;font-family:var(--schrift-kopf)}
@@ -85,7 +119,7 @@
 .preistabelle{width:100%;border-collapse:collapse;min-width:560px}
 .preistabelle th,.preistabelle td{padding:.9rem 1rem;text-align:left;border-bottom:1px solid var(--linie);vertical-align:top}
 .preistabelle thead th{background:var(--papier2);font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;color:var(--tinte-hell)}
-.preistabelle tbody th{font-weight:700;color:var(--navy)}
+.preistabelle tbody th{font-weight:700;color:var(--charcoal)}
 .tabelle-sub{display:block;font-weight:400;font-size:.85rem;color:var(--tinte-hell);margin-top:.2rem}
 .tabelle-preis{font-weight:700;color:var(--tomate);white-space:nowrap}
 .tabelle-preis small{display:block;font-weight:400;font-size:.78rem;color:var(--tinte-hell)}
@@ -95,7 +129,7 @@
   margin-top:2rem;padding:1.6rem 1.75rem;border-radius:var(--radius);
   background:linear-gradient(135deg,#fff6e4,#fdeccd);border:2px solid var(--gelb);
 }
-.coupon-hinweis h3{margin-top:0;font-family:var(--schrift-kopf);font-size:1.3rem;color:var(--navy)}
+.coupon-hinweis h3{margin-top:0;font-family:var(--schrift-kopf);font-size:1.3rem;color:var(--charcoal)}
 .coupon-hinweis p{margin:0;color:#5a4a2c}
 
 .motiv-vorbehalt{margin-top:1.25rem;padding:1.25rem 1.4rem;background:var(--papier2);border-left:4px solid var(--tomate);border-radius:0 var(--radius-klein) var(--radius-klein) 0}
@@ -122,13 +156,13 @@
 .formular fieldset{border:0;padding:0;margin:0 0 2rem}
 .formular fieldset:last-of-type{margin-bottom:0}
 .formular legend{
-  font-family:var(--schrift-kopf);font-weight:700;font-size:1.15rem;color:var(--navy);
+  font-family:var(--schrift-kopf);font-weight:700;font-size:1.15rem;color:var(--charcoal);
   padding:0 0 .75rem;margin-bottom:1rem;border-bottom:2px solid var(--papier2);width:100%;
 }
 .feld{margin-bottom:1.15rem}
 .feld-reihe{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .feld-klein{max-width:none}
-.feld label,.feld-label{display:block;font-weight:600;font-size:.94rem;margin-bottom:.35rem}
+.feld label,.feld-label{font-family:var(--schrift-ui);display:block;font-weight:700;font-size:.86rem;letter-spacing:.01em;margin-bottom:.35rem}
 .feld-optional{font-weight:400;color:var(--tinte-hell);font-size:.88rem}
 .feld-hilfe{margin:.4rem 0 0;font-size:.87rem;color:var(--tinte-hell)}
 .pflicht{color:var(--tomate)}
@@ -138,7 +172,7 @@
   width:100%;padding:.7rem .85rem;font:inherit;font-size:1rem;color:var(--tinte);
   background:var(--weiss);border:1.5px solid var(--linie);border-radius:var(--radius-klein);
 }
-.feld input:focus,.feld select:focus,.feld textarea:focus{border-color:var(--navy);outline:2px solid rgba(22,55,91,.18);outline-offset:0}
+.feld input:focus,.feld select:focus,.feld textarea:focus{border-color:var(--charcoal);outline:2px solid rgba(22,55,91,.18);outline-offset:0}
 .feld textarea{resize:vertical;min-height:5rem}
 .feld input[type=file]{width:100%;font-size:.95rem;padding:.6rem;border:1.5px dashed var(--linie);border-radius:var(--radius-klein);background:var(--papier)}
 
@@ -176,15 +210,16 @@
 .wahl-inhalt strong{font-size:1rem}
 .wahl-inhalt small{font-size:.84rem;color:var(--tinte-hell)}
 .wahl-preis{font-style:normal;font-weight:700;font-size:.92rem;color:var(--tomate);margin-top:.35rem}
-.wahl-badge{font-style:normal;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--basilikum);margin-top:.3rem}
+.wahl-badge{font-family:var(--schrift-ui);font-style:normal;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:var(--basilikum);padding:.2rem .55rem;border-radius:999px;margin-top:.4rem;display:inline-block}
 .wahl input:checked + .wahl-inhalt{border-color:var(--orange);background:#fff7ef;box-shadow:inset 0 0 0 1px var(--orange)}
-.wahl input:focus-visible + .wahl-inhalt{outline:3px solid var(--navy);outline-offset:2px}
+.wahl input:focus-visible + .wahl-inhalt{outline:3px solid var(--charcoal);outline-offset:2px}
 
 /* Mengenauswahl */
 .menge-wahl{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
 .menge-knopf{
-  padding:.65rem 1.15rem;font:inherit;font-weight:700;cursor:pointer;
+  padding:.65rem 1.15rem;font-family:var(--schrift-ui);font-weight:700;cursor:pointer;
   background:var(--weiss);border:2px solid var(--linie);border-radius:999px;color:var(--tinte);
+  transition:all .2s ease;
 }
 .menge-knopf:hover{border-color:var(--orange)}
 .menge-knopf.ist-aktiv{background:var(--orange);border-color:var(--orange);color:#231204}
@@ -193,7 +228,7 @@
 /* Summenanzeige beim Werbepartner */
 .summe{
   display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem 1rem;
-  margin-top:1.25rem;padding:1rem 1.25rem;background:var(--navy);color:#fff;border-radius:var(--radius-klein);
+  margin-top:1.25rem;padding:1rem 1.25rem;background:linear-gradient(155deg,var(--charcoal),var(--charcoal-weich));color:#fff;border-radius:var(--radius-klein);
 }
 .summe-label{font-size:.9rem;color:#c9d7e6}
 .summe-wert{font-family:var(--schrift-kopf);font-size:1.6rem;font-weight:700;color:var(--gelb)}
@@ -207,7 +242,7 @@
 }
 .danke h2{margin:.5rem 0}
 .danke p{margin:0 auto .5rem;max-width:40em;color:var(--tinte-hell)}
-.danke-ruhig{border-color:var(--navy);padding:2rem 1.5rem}
+.danke-ruhig{border-color:var(--charcoal);padding:2rem 1.5rem}
 .danke-weiter{font-size:.95rem}
 .danke-konfetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .danke-karton{position:relative;width:96px;height:64px;margin:0 auto 1rem}
@@ -228,7 +263,7 @@
   cursor:pointer;padding:1.1rem 3rem 1.1rem 1.35rem;position:relative;list-style:none;
 }
 .faq-item summary::-webkit-details-marker{display:none}
-.faq-item summary h3{display:inline;margin:0;font-size:1.05rem;font-family:var(--schrift-text);font-weight:700;color:var(--navy)}
+.faq-item summary h3{display:inline;margin:0;font-size:1.05rem;font-family:var(--schrift-text);font-weight:700;color:var(--charcoal)}
 .faq-item summary::after{
   content:"";position:absolute;right:1.35rem;top:1.5rem;width:.6rem;height:.6rem;
   border-right:2px solid var(--tomate);border-bottom:2px solid var(--tomate);
@@ -245,8 +280,8 @@
 .such-feld{flex:1 1 240px}
 .such-feld input{width:100%;padding:.7rem .85rem;font:inherit;border:1.5px solid var(--linie);border-radius:999px;background:var(--weiss)}
 .segment{display:inline-flex;background:var(--weiss);border:1.5px solid var(--linie);border-radius:999px;padding:3px}
-.segment-knopf{padding:.5rem 1rem;font:inherit;font-size:.9rem;font-weight:600;border:0;background:none;border-radius:999px;cursor:pointer;color:var(--tinte-hell)}
-.segment-knopf.ist-aktiv{background:var(--navy);color:#fff}
+.segment-knopf{padding:.5rem 1rem;font-family:var(--schrift-ui);font-size:.85rem;font-weight:700;border:0;background:none;border-radius:999px;cursor:pointer;color:var(--tinte-hell);transition:all .2s ease}
+.segment-knopf.ist-aktiv{background:var(--charcoal);color:#fff}
 
 .teilnehmer-raster{display:grid;grid-template-columns:1.15fr .85fr;gap:1.5rem;align-items:start}
 .karte-halter{position:relative;background:var(--papier2);border:1px solid var(--linie);border-radius:var(--radius);overflow:hidden;min-height:460px}
@@ -258,7 +293,7 @@
 .karte-legende{display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap;font-size:.9rem;color:var(--tinte-hell);margin-top:.75rem}
 .legende-punkt,.teilnehmer-punkt{display:inline-block;width:.75rem;height:.75rem;border-radius:50%;flex:0 0 auto}
 .legende-gastro,.teilnehmer-punkt-gastro{background:var(--tomate)}
-.legende-unternehmen,.teilnehmer-punkt-unternehmen{background:var(--navy)}
+.legende-unternehmen,.teilnehmer-punkt-unternehmen{background:var(--charcoal)}
 .legende-punkt{margin-right:.35rem}
 
 .liste-spalte{background:var(--weiss);border:1px solid var(--linie);border-radius:var(--radius);padding:1.25rem;max-height:520px;overflow-y:auto}
@@ -293,7 +328,7 @@
 }
 .psk-marker:hover,.psk-marker.ist-aktiv{transform:scale(1.35);z-index:5}
 .psk-marker-gastro{background:var(--tomate)}
-.psk-marker-unternehmen{background:var(--navy)}
+.psk-marker-unternehmen{background:var(--charcoal)}
 .psk-popup{
   position:absolute;z-index:10;transform:translate(-50%,-100%);margin-top:-16px;
   background:#fff;border-radius:var(--radius-klein);box-shadow:var(--schatten);
@@ -304,7 +339,7 @@
 .psk-popup-zu{position:absolute;top:2px;right:6px;border:0;background:none;font-size:1.1rem;cursor:pointer;color:var(--tinte-hell)}
 .psk-zoom{position:absolute;top:10px;left:10px;z-index:20;display:flex;flex-direction:column;gap:2px}
 .psk-zoom button{
-  width:32px;height:32px;font:700 18px/1 system-ui,sans-serif;color:var(--navy);
+  width:32px;height:32px;font:700 18px/1 system-ui,sans-serif;color:var(--charcoal);
   background:#fff;border:1px solid var(--linie);cursor:pointer;
 }
 .psk-zoom button:first-child{border-radius:6px 6px 0 0}
@@ -326,14 +361,17 @@
   position:fixed;right:1.25rem;bottom:1.25rem;z-index:70;
   display:flex;align-items:center;gap:.65rem;
   padding:.75rem 1.1rem;border:0;border-radius:999px;cursor:pointer;
-  background:var(--tomate);color:#fff;font:inherit;font-size:.9rem;line-height:1.25;text-align:left;
+  background:linear-gradient(135deg,var(--tomate),var(--terracotta));color:#fff;
+  font-family:var(--schrift-ui);font-size:.88rem;font-weight:600;line-height:1.25;text-align:left;
   box-shadow:0 6px 20px rgba(43,35,31,.28);
-  transition:transform .15s ease,background-color .15s ease;
+  transition:transform .15s ease,box-shadow .15s ease;
+  animation:stoerer-puls 2.6s ease-out infinite;
 }
 .stoerer:hover{background:var(--tomate-dunkel);transform:translateY(-2px)}
 .stoerer-icon{font-size:1.4rem}
 .stoerer strong{display:block}
-@media (prefers-reduced-motion:reduce){.stoerer{transition:none}.stoerer:hover{transform:none}}
+@keyframes stoerer-puls{0%{box-shadow:0 6px 20px rgba(43,35,31,.28),0 0 0 0 rgba(200,52,42,.35)}70%{box-shadow:0 6px 20px rgba(43,35,31,.28),0 0 0 14px rgba(200,52,42,0)}100%{box-shadow:0 6px 20px rgba(43,35,31,.28),0 0 0 0 rgba(200,52,42,0)}}
+@media (prefers-reduced-motion:reduce){.stoerer{transition:none;animation:none}.stoerer:hover{transform:none}}
 @media (max-width:560px){
   .stoerer{right:.75rem;bottom:.75rem;padding:.65rem .9rem;font-size:.82rem}
   .stoerer-text{display:none}
@@ -375,7 +413,7 @@
 .consent-fuss{font-size:.82rem;margin:.9rem 0 0}
 
 /* --- Fuss ------------------------------------------------------------- */
-.fuss{background:var(--navy);color:#c9d7e6;padding:3rem 0 1.5rem;margin-top:0}
+.fuss{background:linear-gradient(155deg,var(--charcoal) 0%,var(--charcoal-weich) 100%);color:#c9d7e6;padding:3rem 0 1.5rem;margin-top:0}
 .fuss-innen{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:2rem}
 .fuss h2{font-size:.95rem;color:var(--gelb);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem}
 .fuss ul{list-style:none;margin:0;padding:0}

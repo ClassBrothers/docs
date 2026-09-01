@@ -1,5 +1,5 @@
 <?php declare(strict_types=1); ?>
-<button class="stoerer" type="button" data-modal-oeffnen="modal-empfehlung">
+<button class="stoerer" type="button" data-modal-oeffnen="modal-empfehlung" aria-label="Lieblings-Pizzeria vorschlagen">
   <span class="stoerer-icon" aria-hidden="true">🍕</span>
   <span class="stoerer-text">Unterstütze Deine<br><strong>Lieblings-Pizzeria!</strong></span>
 </button>

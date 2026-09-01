@@ -78,7 +78,7 @@ $f       = fortschritt();
   <div class="wrap hero-innen">
     <div class="hero-text">
       <p class="kicker">Für die Gastronomie in Freiburg und drumherum</p>
-      <h1>Kostenlose Pizzakartons für Freiburg</h1>
+      <h1>Kostenlose Pizzakartons für <span class="akzent">Freiburg</span></h1>
       <p class="hero-lead">
         Kostenlose Pizzakartons für Freiburg klingen nach Haken – hier ist keiner.
         Wir drucken 32er-Kartons in Vierfarbdruck, Unternehmen und Privatleute aus der
@@ -98,6 +98,27 @@ $f       = fortschritt();
 
     <aside class="hero-karton" aria-label="Werbeflächen auf dem Karton">
       <div class="karton-skizze">
+        <svg class="karton-illustration" viewBox="0 0 200 160" width="200" height="160" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="karton-deckelfarbe" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#f7e5c4"/><stop offset="100%" stop-color="#efd4a4"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="100" cy="152" rx="74" ry="7" fill="rgba(60,35,20,.08)"/>
+          <rect x="18" y="80" width="164" height="64" rx="6" fill="#ebce9b"/>
+          <rect x="18" y="122" width="164" height="10" rx="3" fill="#d3b071"/>
+          <path d="M18,80 L182,80 L178,12 L22,12 Z" fill="url(#karton-deckelfarbe)"/>
+          <ellipse cx="100" cy="108" rx="58" ry="30" fill="#e0a33c"/>
+          <ellipse cx="100" cy="108" rx="46" ry="23" fill="#f2c568"/>
+          <circle cx="82" cy="98" r="6" fill="#c1440e"/>
+          <circle cx="116" cy="102" r="6" fill="#c1440e"/>
+          <circle cx="100" cy="118" r="6" fill="#c1440e"/>
+          <g stroke="rgba(255,255,255,.85)" stroke-width="2.4" stroke-linecap="round" fill="none">
+            <path class="karton-dampf" d="M78,72 q0,-6 5,-11 t0,-11"/>
+            <path class="karton-dampf" d="M100,68 q0,-6 5,-11 t0,-11"/>
+            <path class="karton-dampf" d="M122,72 q0,-6 5,-11 t0,-11"/>
+          </g>
+        </svg>
         <div class="karton-deckel">
           <span class="flaeche flaeche-gross">Deckel groß<small>88 × 136 mm</small></span>
           <span class="flaeche flaeche-mittel">Deckel mittel<small>88 × 88 mm</small></span>

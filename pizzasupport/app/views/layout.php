@@ -46,7 +46,7 @@ $aktuell = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
-<meta name="theme-color" content="#16375B">
+<meta name="theme-color" content="#241C18">
 
 <?php /* Critical CSS: nur was ueber der Falz gebraucht wird. */ ?>
 <style nonce="<?= e($nonce) ?>"><?php readfile(APP_ROOT . '/public/assets/css/critical.css'); ?></style>
