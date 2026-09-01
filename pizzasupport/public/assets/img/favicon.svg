@@ -1,7 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Pizza Support">
-  <rect width="64" height="64" rx="14" fill="#173A5E"/>
-  <path d="M32 12 L52 50 L12 50 Z" fill="#F5B335" stroke="#F07E22" stroke-width="3" stroke-linejoin="round"/>
-  <circle cx="26" cy="38" r="4" fill="#C8402C"/>
-  <circle cx="38" cy="41" r="3.4" fill="#C8402C"/>
-  <circle cx="32" cy="29" r="3" fill="#C8402C"/>
+  <rect width="64" height="64" rx="14" fill="#241C18"/>
+  <path d="M32 12 L52 50 L12 50 Z" fill="#F2C568" stroke="#F07E22" stroke-width="3.5" stroke-linejoin="round"/>
+  <circle cx="26" cy="39" r="4.4" fill="#BC3127"/>
+  <circle cx="38" cy="42" r="3.8" fill="#BC3127"/>
+  <circle cx="32" cy="29" r="3.4" fill="#BC3127"/>
+  <path d="M46 10 L48.4 15 L53.4 17.4 L48.4 19.8 L46 24.8 L43.6 19.8 L38.6 17.4 L43.6 15 Z" fill="#F7C94B"/>
 </svg>
