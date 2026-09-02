@@ -90,6 +90,7 @@ $nlErfolg    = flash_get('newsletter_ok');
         <?php /* Die Karte wird erst nach Einwilligung geladen. */ ?>
         <div class="karte-halter" data-karte
              data-endpunkt="/api/teilnehmer.json"
+             data-skript="<?= e(asset('/assets/js/karte.js')) ?>"
              data-zentrum-lat="47.9959" data-zentrum-lon="7.8522" data-zoom="12">
           <div class="karte-consent" data-karte-consent>
             <h3>Karte von OpenStreetMap laden?</h3>

@@ -731,7 +731,11 @@
       karteFlaeche.hidden = false;
 
       var skript = document.createElement('script');
-      skript.src = '/assets/js/karte.js';
+      // Der versionierte Pfad kommt vom Server (siehe asset() in bootstrap.php) -
+      // ohne das haengt jede kuenftige Aenderung an karte.js an einem Jahr
+      // Browser-Cache fest, weil dieses Skript hier selbst per FTP-Upload und
+      // nicht ueber PHP ausgeliefert wird.
+      skript.src = karteHalter.getAttribute('data-skript') || '/assets/js/karte.js';
       skript.defer = true;
       skript.addEventListener('load', function () {
         if (window.psKarte) { window.psKarte.starten(karteHalter, karteFlaeche); }

@@ -354,7 +354,13 @@
 /* Kartenmodul. Eigene Klassen, damit es ohne fremdes Stylesheet sitzt.
    Liegt spaeter Leaflet unter /assets/js/leaflet.js, uebernimmt dessen
    eigenes CSS - die Klassen hier stoeren sich nicht. */
-.psk-map{position:relative;height:100%;width:100%;overflow:hidden;background:#e8e2d6;touch-action:none;cursor:grab}
+/* Keine eigene Hoehe/Breite hier: .psk-map sitzt immer auf demselben Element
+   wie .karte-flaeche, das schon height:460px;width:100% traegt. Ein eigenes
+   height:100% wuerde sich gegen die feste Hoehe durchsetzen (spaetere Regel,
+   gleiche Spezifitaet) und mangels definierter Hoehe von .karte-halter auf 0
+   zusammenfallen - dann bleibt die ganze Karte unsichtbar (overflow:hidden
+   schneidet alles ab einer Boxhoehe von 0 weg), obwohl kein Fehler auftritt. */
+.psk-map{position:relative;overflow:hidden;background:#e8e2d6;touch-action:none;cursor:grab}
 .psk-map.ist-gezogen{cursor:grabbing}
 .psk-kacheln{position:absolute;inset:0;transform:translateZ(0)}
 .psk-kachel{position:absolute;width:256px;height:256px;user-select:none;-webkit-user-drag:none;opacity:0;transition:opacity .25s ease}
