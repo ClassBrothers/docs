@@ -82,6 +82,23 @@
 .balken-fuellung{display:block;width:0;height:100%;background:var(--akzent);border-radius:var(--radius-badge);transition:width .6s ease}
 .balken-fuellung-zwei{background:var(--akzent-sekundaer)}
 .fortschritt-hinweis{margin:1.25rem 0 0;font-size:.95rem;color:var(--textfarbe-gedaempft);max-width:52em}
+.fortschritt-ersparnis{margin:1.5rem 0 0;padding:1rem 1.25rem;background:var(--flaeche-hell-zwei);border-radius:var(--radius-knopf);font-size:1rem}
+.fortschritt-ersparnis strong{color:var(--akzent-sekundaer-dunkel);font-family:var(--schrift-kopf);font-size:1.3rem;margin:0 .3rem}
+.fortschritt-ersparnis-klein{display:block;font-size:.82rem;color:var(--textfarbe-gedaempft);margin-top:.3rem}
+
+/* --- Ersparnisrechner --------------------------------------------------- */
+.rechner{margin-top:1.5rem}
+.rechner-menge-anzeige{margin:.3rem 0 0;font-size:1.05rem}
+.rechner-menge-anzeige strong{font-family:var(--schrift-kopf);font-size:1.4rem;color:var(--akzent)}
+.rechner-ergebnis{margin-top:1.5rem;padding:1.5rem;background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);text-align:center}
+.rechner-label{display:block;font-size:.9rem;color:var(--textfarbe-gedaempft)}
+.rechner-zahl{display:block;font-family:var(--schrift-kopf);font-size:2.4rem;color:var(--akzent-sekundaer-dunkel);margin:.25rem 0}
+.rechner-hinweis{margin:.25rem 0 0;font-size:.92rem;color:var(--textfarbe-gedaempft)}
+.rechner-steuer{margin:.75rem 0 0;font-size:.88rem;font-style:italic;color:var(--textfarbe-gedaempft)}
+
+/* --- Fun-Area-Flaechenrechner beim Werbepartner ------------------------- */
+.feld-funarea{margin-top:1rem;padding:1rem 1.15rem;background:var(--flaeche-hell);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte)}
+.feld-funarea .menge-wahl{margin-bottom:.75rem}
 @media (prefers-reduced-motion:reduce){.balken-fuellung{transition:none}}
 
 /* --- Schritte --------------------------------------------------------- */
@@ -188,6 +205,17 @@
 .hinweis-ok{background:#eff6ee;border:1px solid #b9d6b6;color:#2c5330}
 .hinweis-todo{background:#fff6e0;border:1px solid var(--akzent-waerme-hell);color:#6b5314}
 .hinweis-todo code{background:rgba(0,0,0,.06);padding:.1em .35em;border-radius:3px}
+.hinweis-gross{padding:1.75rem 1.5rem;font-size:1.15rem;text-align:center}
+
+/* Sicherheitsabfrage Kontaktformular */
+.captcha-frage{font-weight:600;margin:0 0 .5rem}
+.captcha-optionen{display:flex;flex-wrap:wrap;gap:.6rem}
+.captcha-knopf{font-size:1.8rem;line-height:1;padding:.55rem .85rem;border:2px solid var(--rahmenfarbe);border-radius:var(--radius-knopf);background:var(--flaeche-weiss);cursor:pointer}
+.captcha-knopf:hover{border-color:var(--akzent)}
+.captcha-knopf.ist-gewaehlt{border-color:var(--akzent);background:#fff7ef;box-shadow:inset 0 0 0 1px var(--akzent)}
+.captcha-alternative{margin-top:.75rem;font-size:.92rem}
+.captcha-alternative summary{cursor:pointer;color:var(--akzent);font-weight:600}
+.captcha-alternative .feld{margin-top:.75rem}
 
 .formular-fuss{margin:1rem 0 0;font-size:.88rem;color:var(--textfarbe-gedaempft)}
 .formular-inline{display:grid;gap:1rem;align-items:end;grid-template-columns:1fr;max-width:520px}
@@ -299,9 +327,11 @@
 .karte-consent p{color:var(--textfarbe-gedaempft);font-size:.95rem;max-width:34em;margin-inline:auto}
 .karte-consent-fuss{font-size:.85rem;margin-top:.9rem}
 .karte-legende{display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap;font-size:.9rem;color:var(--textfarbe-gedaempft);margin-top:.75rem}
-.legende-punkt,.teilnehmer-punkt{display:inline-block;width:.75rem;height:.75rem;border-radius:50%;flex:0 0 auto}
-.legende-gastro,.teilnehmer-punkt-gastro{background:var(--akzent)}
-.legende-unternehmen,.teilnehmer-punkt-unternehmen{background:var(--flaeche-dunkel)}
+/* Form UND Farbe unterscheiden Gastronomie/Unternehmen - wer Rot und Dunkelbraun
+   schlecht auseinanderhaelt, erkennt es trotzdem (WCAG 1.4.1). */
+.legende-punkt,.teilnehmer-punkt{display:inline-block;width:.75rem;height:.75rem;flex:0 0 auto}
+.legende-gastro,.teilnehmer-punkt-gastro{background:var(--akzent);border-radius:50%}
+.legende-unternehmen,.teilnehmer-punkt-unternehmen{background:var(--flaeche-dunkel);border-radius:3px}
 .legende-punkt{margin-right:.35rem}
 
 .liste-spalte{background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);padding:1.25rem;max-height:520px;overflow-y:auto}
@@ -336,7 +366,8 @@
 }
 .psk-marker:hover,.psk-marker.ist-aktiv{transform:scale(1.35);z-index:5}
 .psk-marker-gastro{background:var(--akzent)}
-.psk-marker-unternehmen{background:var(--flaeche-dunkel)}
+/* Nicht nur Farbe: Unternehmen als abgerundetes Quadrat statt Kreis. */
+.psk-marker-unternehmen{background:var(--flaeche-dunkel);border-radius:5px}
 .psk-popup{
   position:absolute;z-index:10;transform:translate(-50%,-100%);margin-top:-16px;
   background:#fff;border-radius:var(--radius-knopf);box-shadow:var(--schatten);

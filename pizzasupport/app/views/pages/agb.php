@@ -6,6 +6,7 @@ $meta['robots']       = 'noindex,nofollow';
 $meta['stoerer']      = false;
 $st = config('startschuss');
 $porto = config('porto');
+$lf = config('lieferung');
 $mailAnzeige = (string) config('firma.email');
 $mailLink    = firma_email_link();
 ?>
@@ -62,6 +63,31 @@ $mailLink    = firma_email_link();
     <p>
       Steuerliche Pflichten des Betriebs – insbesondere im Zusammenhang mit kommunalen
       Verpackungssteuern – bleiben unberührt und sind nicht Gegenstand dieses Vertrags.
+    </p>
+
+    <h2>§ 3a Lieferung und Abruf</h2>
+    <p>
+      Die bestellte Menge wird auf Wunsch in Teilmengen abgerufen. Je Betrieb und Monat
+      liefern wir eine Teilmenge innerhalb des in § 3 genannten Liefergebiets kostenfrei aus,
+      sofern sie mindestens <?= zahl((int) $lf['abruf_min']) ?> Kartons umfasst. Eine weitere
+      Lieferung im selben Monat ist gegen eine Pauschale von
+      <?= e(preis((int) $lf['zusatz_pauschale_cent'], false)) ?> Euro netto ab
+      <?= zahl((int) $lf['zusatz_mindestmenge']) ?> Kartons möglich; wir liefern spätestens
+      <?= (int) $lf['zusatz_frist_werktage'] ?> Werktage nach dem Abrufwunsch, da wir Fahrten
+      bündeln. Außerhalb des Liefergebiets gilt für eine solche Zusatzlieferung die
+      Portopauschale nach § 3 oder, bei größeren Mengen, eine vorher abgestimmte
+      Versandabrechnung nach Aufwand.
+    </p>
+    <p>
+      Die Abholung durch den Betrieb ist an unseren Standorten in
+      <?= e(implode(' und ', array_column($lf['abholung_standorte'], 'ort'))) ?> nach
+      telefonischer Terminvereinbarung jederzeit möglich, kostenlos und ohne
+      Mengenbeschränkung; sie zählt nicht als Lieferung im Sinne dieses Paragrafen.
+    </p>
+    <p>
+      Der Abruf ist auf <?= (int) $lf['abruf_zeitraum_monate'] ?> Monate ab der ersten
+      Lieferung begrenzt. Nicht abgerufene Mengen liefern wir nach Ablauf dieser Frist aus.
+      Feste Liefertermine sagen wir nicht zu.
     </p>
 
     <h2>§ 4 Werbebuchungen, Preise und Zahlung</h2>

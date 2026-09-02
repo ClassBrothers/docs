@@ -11,6 +11,81 @@
   var wenigerBewegung = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ------------------------------------------------------------------ */
+  /* Sicherheitsabfrage im Kontaktformular: Klick auf eine Option setzt  */
+  /* das verborgene Feld. Ohne JavaScript bleibt die Textalternative im  */
+  /* <details>-Element die einzige, aber vollständig funktionsfähige     */
+  /* Möglichkeit - kein Nutzer wird ausgesperrt.                         */
+  /* ------------------------------------------------------------------ */
+  var captchaFeld = document.getElementById('k-captcha-klick');
+  if (captchaFeld) {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-captcha-wert]'), function (knopf) {
+      knopf.addEventListener('click', function () {
+        captchaFeld.value = knopf.getAttribute('data-captcha-wert');
+        var gruppe = knopf.closest('.captcha-optionen');
+        Array.prototype.forEach.call(gruppe.querySelectorAll('[data-captcha-wert]'), function (k) {
+          var gewaehlt = k === knopf;
+          k.classList.toggle('ist-gewaehlt', gewaehlt);
+          k.setAttribute('aria-pressed', gewaehlt ? 'true' : 'false');
+        });
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Ersparnisrechner: liest die Menge live aus dem Bestellformular       */
+  /* mit (Felder "menge[...]"), rechnet ausschliesslich im Browser -      */
+  /* nichts davon wird gesendet, solange niemand tatsaechlich bestellt.   */
+  /* ------------------------------------------------------------------ */
+  var rechnerBox = document.querySelector('[data-rechner]');
+  if (rechnerBox) {
+    var rPreis      = rechnerBox.querySelector('[data-rechner-preis]');
+    var rMonat      = rechnerBox.querySelector('[data-rechner-monat]');
+    var rMengeWert  = rechnerBox.querySelector('[data-rechner-menge-wert]');
+    var rErgebnis   = rechnerBox.querySelector('[data-rechner-ergebnis]');
+    var rZahl       = rechnerBox.querySelector('[data-rechner-zahl]');
+    var rHinweis    = rechnerBox.querySelector('[data-rechner-hinweis]');
+    var euroFormat  = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' });
+
+    function rechnerMenge() {
+      var summe = 0;
+      Array.prototype.forEach.call(document.querySelectorAll('input[name^="menge["]'), function (f) {
+        var n = parseInt(f.value, 10);
+        if (!isNaN(n) && n > 0) { summe += n; }
+      });
+      return summe;
+    }
+
+    function rechnerAktualisieren() {
+      var menge = rechnerMenge();
+      if (rMengeWert) { rMengeWert.textContent = menge > 0 ? menge.toLocaleString('de-DE') : '–'; }
+
+      var preis = parseFloat((rPreis.value || '').replace(',', '.'));
+      if (!menge || isNaN(preis) || preis <= 0) {
+        rErgebnis.hidden = true;
+        return;
+      }
+
+      rZahl.textContent = euroFormat.format(preis * menge);
+
+      var monat = parseInt(rMonat.value, 10);
+      if (!isNaN(monat) && monat > 0) {
+        var monate = Math.round((menge / monat) * 10) / 10;
+        rHinweis.textContent = 'Das deckt etwa ' + monate.toLocaleString('de-DE') + ' Monate Deines Bedarfs.';
+      } else {
+        rHinweis.textContent = '';
+      }
+      rErgebnis.hidden = false;
+    }
+
+    rPreis.addEventListener('input', rechnerAktualisieren);
+    rMonat.addEventListener('input', rechnerAktualisieren);
+    document.addEventListener('input', function (e) {
+      if (e.target.matches('input[name^="menge["]')) { rechnerAktualisieren(); }
+    });
+    rechnerAktualisieren();
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Navigation auf schmalen Bildschirmen                                */
   /* ------------------------------------------------------------------ */
   var navKnopf = document.querySelector('.kopf-toggle');
@@ -278,22 +353,77 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* Lieferart im Bestellformular: zeigt die Abrufmenge nur bei          */
+  /* "Monatlicher Abruf" und rechnet vor, auf wie viele Monate sich die  */
+  /* Gesamtmenge bei der gewuenschten Abrufmenge verteilt.               */
+  /* ------------------------------------------------------------------ */
+  var lieferartGruppe = document.querySelector('[data-lieferart-gruppe]');
+  if (lieferartGruppe) {
+    var lieferartFelder  = lieferartGruppe.querySelectorAll('[data-lieferart-wahl]');
+    var abrufFeld        = lieferartGruppe.querySelector('[data-lieferart-feld="abruf"]');
+    var abholungHinweis  = lieferartGruppe.querySelector('[data-lieferart-feld="abholung"]');
+    var abrufMengeFeld   = document.getElementById('g-abrufmenge');
+    var abrufHinweis     = document.getElementById('g-abrufmenge-hilfe');
+    var abrufHinweisText = abrufHinweis ? abrufHinweis.textContent : '';
+
+    function lieferartAnzeigen() {
+      var gewaehlt = lieferartGruppe.querySelector('[data-lieferart-wahl]:checked');
+      var wert = gewaehlt ? gewaehlt.value : 'gesamt';
+      if (abrufFeld) { abrufFeld.hidden = wert !== 'abruf'; }
+      if (abholungHinweis) { abholungHinweis.hidden = wert !== 'abholung'; }
+    }
+
+    function abrufMengeAnzeigen() {
+      if (!abrufMengeFeld || !abrufHinweis) { return; }
+      var abrufMenge = parseInt(abrufMengeFeld.value, 10);
+      var gesamt = 0;
+      Array.prototype.forEach.call(document.querySelectorAll('input[name^="menge["]'), function (f) {
+        var n = parseInt(f.value, 10);
+        if (!isNaN(n) && n > 0) { gesamt += n; }
+      });
+      if (abrufMenge > 0 && gesamt > 0) {
+        var monate = Math.ceil(gesamt / abrufMenge);
+        abrufHinweis.textContent = abrufHinweisText + ' Bei dieser Menge verteilt sich Deine Bestellung auf etwa '
+          + monate + (monate === 1 ? ' Monat.' : ' Monate.');
+      } else {
+        abrufHinweis.textContent = abrufHinweisText;
+      }
+    }
+
+    Array.prototype.forEach.call(lieferartFelder, function (f) {
+      f.addEventListener('change', lieferartAnzeigen);
+    });
+    if (abrufMengeFeld) { abrufMengeFeld.addEventListener('input', abrufMengeAnzeigen); }
+    document.addEventListener('input', function (e) {
+      if (e.target.matches('input[name^="menge["]')) { abrufMengeAnzeigen(); }
+    });
+    lieferartAnzeigen();
+    abrufMengeAnzeigen();
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Versandzuschlag ausserhalb Freiburgs, anhand der eingetragenen PLZ  */
   /* ------------------------------------------------------------------ */
   var versandBox = document.querySelector('[data-versand-zuschlag]');
   var plzFeld    = document.getElementById('g-plz');
+  var ortFeld    = document.getElementById('g-ort');
   if (versandBox && plzFeld) {
     var plzVon = parseInt(versandBox.getAttribute('data-plz-von'), 10);
     var plzBis = parseInt(versandBox.getAttribute('data-plz-bis'), 10);
+    var freieOrte = [];
+    try { freieOrte = JSON.parse(versandBox.getAttribute('data-freie-orte') || '[]'); } catch (eJson) { freieOrte = []; }
     var versandCheckbox = versandBox.querySelector('input[type="checkbox"]');
 
     function versandPruefen() {
       var plz = parseInt(plzFeld.value, 10);
-      var ausserhalb = plzFeld.value.length === 5 && !isNaN(plz) && (plz < plzVon || plz > plzBis);
+      var plzAusserhalb = plzFeld.value.length === 5 && !isNaN(plz) && (plz < plzVon || plz > plzBis);
+      var ortIstFrei = ortFeld && freieOrte.indexOf(ortFeld.value.trim().toLowerCase()) !== -1;
+      var ausserhalb = plzAusserhalb && !ortIstFrei;
       versandBox.hidden = !ausserhalb;
       if (!ausserhalb && versandCheckbox) { versandCheckbox.checked = false; }
     }
     plzFeld.addEventListener('input', versandPruefen);
+    if (ortFeld) { ortFeld.addEventListener('input', versandPruefen); }
     versandPruefen();
   }
 
@@ -337,6 +467,64 @@
     var RABATT = 10;
 
     var euro = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' });
+
+    /* Fun Area: Preis haengt von der gewaehlten Flaeche ab, nicht von      */
+    /* einem Festpreis. Das Ergebnis wird als data-preis auf die Checkbox   */
+    /* geschrieben, danach rechnet neuRechnen() ganz normal weiter.         */
+    var funareaBlock = document.querySelector('[data-funarea-block]');
+    var funareaCheckbox = document.querySelector('[data-funarea-checkbox]');
+    if (funareaBlock && funareaCheckbox) {
+      var faBreiteFeld = funareaBlock.querySelector('[data-funarea-breite-feld]');
+      var faHoeheFeld  = funareaBlock.querySelector('[data-funarea-hoehe-feld]');
+      var faErgebnis   = funareaBlock.querySelector('[data-funarea-ergebnis]');
+      var faErgebnisText = faErgebnis ? faErgebnis.textContent : '';
+      var faPreisJeCm2 = parseInt(funareaBlock.getAttribute('data-preis-je-cm2'), 10) || 0;
+      var faMindest    = parseFloat(funareaBlock.getAttribute('data-min-flaeche')) || 0;
+
+      function funareaAktualisieren() {
+        funareaBlock.hidden = !funareaCheckbox.checked;
+        if (!funareaCheckbox.checked) { return; }
+
+        var breite = parseFloat((faBreiteFeld.value || '').replace(',', '.'));
+        var hoehe  = parseFloat((faHoeheFeld.value || '').replace(',', '.'));
+        if (isNaN(breite) || isNaN(hoehe) || breite <= 0 || hoehe <= 0) {
+          funareaCheckbox.setAttribute('data-preis', '0');
+          if (faErgebnis) { faErgebnis.textContent = faErgebnisText; }
+          return;
+        }
+        // Flaeche auf eine Nachkommastelle runden, danach multiplizieren.
+        var flaeche = Math.round(breite * hoehe * 10) / 10;
+        var preisCent = Math.round(flaeche * faPreisJeCm2);
+        funareaCheckbox.setAttribute('data-preis', String(preisCent));
+
+        if (faErgebnis) {
+          if (flaeche < faMindest) {
+            faErgebnis.textContent = 'Mindestens ' + faMindest.toLocaleString('de-DE') + ' cm² nötig - aktuell '
+              + flaeche.toLocaleString('de-DE') + ' cm².';
+          } else {
+            faErgebnis.textContent = flaeche.toLocaleString('de-DE') + ' cm² · '
+              + euro.format(preisCent / 100) + ' brutto.';
+          }
+        }
+      }
+
+      Array.prototype.forEach.call(funareaBlock.querySelectorAll('[data-funarea-breite]'), function (knopf) {
+        knopf.addEventListener('click', function () {
+          faBreiteFeld.value = knopf.getAttribute('data-funarea-breite');
+          faHoeheFeld.value = knopf.getAttribute('data-funarea-hoehe');
+          funareaAktualisieren();
+          neuRechnenAusloesen();
+        });
+      });
+      faBreiteFeld.addEventListener('input', function () { funareaAktualisieren(); neuRechnenAusloesen(); });
+      faHoeheFeld.addEventListener('input', function () { funareaAktualisieren(); neuRechnenAusloesen(); });
+      funareaCheckbox.addEventListener('change', funareaAktualisieren);
+      funareaAktualisieren();
+    }
+
+    function neuRechnenAusloesen() {
+      rechner.dispatchEvent(new Event('change'));
+    }
 
     function neuRechnen() {
       var netto = 0;

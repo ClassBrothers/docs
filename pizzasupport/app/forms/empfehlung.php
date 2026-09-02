@@ -57,4 +57,4 @@ mail_ops(
 );
 
 flash_set('empfehlung_ok', 'Danke Dir! Wir melden uns bei ' . $d['name'] . ' und erklären, worum es geht.');
-redirect($zurueck . '?empfohlen=1');
+redirect($zurueck . '?empfohlen=1#modal-empfehlung');

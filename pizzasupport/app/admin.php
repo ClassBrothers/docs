@@ -73,6 +73,27 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['aktion'])) {
                 [$aktion, gmdate('Y-m-d H:i:s'), $id]
             );
             $meldung = 'Status auf „' . $aktion . '" gesetzt.';
+        } elseif ($aktion === 'liefermenge-setzen' && $id > 0) {
+            $menge = (int) ($_POST['geliefert_menge'] ?? -1);
+            if ($menge < 0) {
+                $meldung = 'Ungültige Menge, nichts geändert.';
+            } else {
+                db_run('UPDATE gastro_bestellungen SET geliefert_menge = ? WHERE id = ?', [$menge, $id]);
+                $meldung = 'Gelieferte Menge gespeichert.';
+            }
+        } elseif ($aktion === 'loeschen' && in_array($tabelle, $erlaubteTabellen, true) && $id > 0) {
+            // Vollstaendige Loeschung fuer den Auskunfts-/Loeschanspruch aus der
+            // Datenschutzerklaerung. Abhaengige Zeilen (bestellpositionen) raeumt
+            // die Fremdschluessel-Loeschweitergabe automatisch mit auf; eine
+            // hochgeladene Motivdatei muss von Hand von der Platte verschwinden.
+            if ($tabelle === 'werbebuchungen') {
+                $motiv = db_value('SELECT motiv_pfad FROM werbebuchungen WHERE id = ?', [$id], null);
+                if ($motiv) {
+                    @unlink(APP_ROOT . '/storage/uploads/' . $motiv);
+                }
+            }
+            db_run("DELETE FROM {$tabelle} WHERE id = ?", [$id]);
+            $meldung = 'Eintrag endgültig gelöscht.';
         } elseif ($aktion === 'qr-freigeben' && $id > 0) {
             db_run('UPDATE qr_redirects SET aktiv = 1, gesperrt_am = ? WHERE id = ?', [gmdate('Y-m-d H:i:s'), $id]);
             $meldung = 'QR-Weiterleitung ist scharf, das Ziel ist jetzt fest.';
@@ -129,14 +150,27 @@ function admin_login(?string $fehler): void
        . '<button type="submit">Anmelden</button></form></div></body></html>';
 }
 
-/** Ein Knopf, der einen Status setzt. */
-function admin_knopf(string $tabelle, int $id, string $aktion, string $label, string $klasse = ''): string
+/** Ein Knopf, der einen Status setzt - erscheint nur, wenn der Datensatz nicht schon dort steht. */
+function admin_knopf(string $tabelle, array $z, string $aktion, string $label, string $klasse = ''): string
+{
+    if ($z['status'] === $aktion) {
+        return '';
+    }
+    return '<form method="post" class="inline">' . csrf_field()
+         . '<input type="hidden" name="tabelle" value="' . e($tabelle) . '">'
+         . '<input type="hidden" name="id" value="' . (int) $z['id'] . '">'
+         . '<input type="hidden" name="aktion" value="' . e($aktion) . '">'
+         . '<button class="' . e($klasse) . '" type="submit">' . e($label) . '</button></form>';
+}
+
+/** Endgueltiges Loeschen, mit Rueckfrage im Browser vor dem Absenden. */
+function admin_knopf_loeschen(string $tabelle, int $id, string $frage): string
 {
     return '<form method="post" class="inline">' . csrf_field()
          . '<input type="hidden" name="tabelle" value="' . e($tabelle) . '">'
          . '<input type="hidden" name="id" value="' . $id . '">'
-         . '<input type="hidden" name="aktion" value="' . e($aktion) . '">'
-         . '<button class="' . e($klasse) . '" type="submit">' . e($label) . '</button></form>';
+         . '<input type="hidden" name="aktion" value="loeschen">'
+         . '<button class="schlecht" type="submit" data-loeschen-frage="' . e($frage) . '">Löschen</button></form>';
 }
 
 function admin_status(string $status): string
@@ -147,7 +181,15 @@ function admin_status(string $status): string
 function admin_seite(?string $meldung): void
 {
     admin_kopf('Verwaltung');
-    $f = fortschritt();
+    $f     = fortschritt();
+    $nonce = $GLOBALS['csp_nonce'] ?? '';
+
+    // Rueckfrage vor dem endgueltigen Loeschen. Ohne fremden Dienst, ohne
+    // Bibliothek - ein einzeiliger Bestaetigungsdialog des Browsers reicht.
+    echo '<script nonce="' . e($nonce) . '">document.addEventListener("submit",function(e){'
+       . 'var k=e.submitter;if(k&&k.hasAttribute("data-loeschen-frage")&&'
+       . '!window.confirm(k.getAttribute("data-loeschen-frage"))){e.preventDefault();}'
+       . '});</script>';
 
     echo '<header class="admin-kopf"><h1>Pizza Support – Verwaltung</h1>'
        . '<a href="/admin/logout">Abmelden</a></header>';
@@ -165,8 +207,9 @@ function admin_seite(?string $meldung): void
        . '</section>';
 
     // Gastro
+    $lieferartLabels = ['gesamt' => 'Alles auf einmal', 'abruf' => 'Monatlicher Abruf', 'abholung' => 'Abholung'];
     echo '<h2>Gastro-Bestellungen</h2><div class="tabelle-wrap"><table><thead><tr>'
-       . '<th>Betrieb</th><th>Kontakt</th><th>Menge</th><th>Karte</th><th>Status</th><th>Aktion</th></tr></thead><tbody>';
+       . '<th>Betrieb</th><th>Kontakt</th><th>Menge</th><th>Lieferung</th><th>Karte</th><th>Status</th><th>Aktion</th></tr></thead><tbody>';
     foreach (db_all('SELECT * FROM gastro_bestellungen ORDER BY id DESC LIMIT 200') as $z) {
         $positionen = db_all('SELECT format, menge FROM bestellpositionen WHERE bestellung_id = ? ORDER BY format', [(int) $z['id']]);
         $gesamt = 0;
@@ -176,16 +219,28 @@ function admin_seite(?string $meldung): void
             $fm = kartonformat((string) $p['format']);
             $zeilen[] = zahl((int) $p['menge']) . '× ' . ($fm['label'] ?? $p['format'] . ' cm');
         }
+        $lieferText = $lieferartLabels[$z['lieferart']] ?? $z['lieferart'];
+        if ($z['lieferart'] === 'abruf' && $z['abruf_menge']) {
+            $lieferText .= '<br><small>' . zahl((int) $z['abruf_menge']) . ' je Abruf</small>';
+        }
         echo '<tr>'
            . '<td><strong>' . e($z['betrieb']) . '</strong><br><small>' . e($z['strasse']) . ', ' . e($z['plz']) . ' ' . e($z['ort']) . '<br>' . e($z['betriebsart']) . '</small></td>'
            . '<td><small>' . e($z['vorname']) . ' ' . e($z['nachname']) . '<br>' . e($z['email']) . '<br>' . e((string) decrypt_field($z['telefon_enc'])) . '</small></td>'
            . '<td><strong>' . zahl($gesamt) . '</strong><br><small>' . e(implode(', ', $zeilen)) . '</small>'
            . ((int) $z['versand_zuschlag_ok'] ? '<br><small>+ Versandzuschlag</small>' : '') . '</td>'
+           . '<td>' . $lieferText
+           . '<form method="post" class="inline liefermenge-form">' . csrf_field()
+           . '<input type="hidden" name="aktion" value="liefermenge-setzen">'
+           . '<input type="hidden" name="id" value="' . (int) $z['id'] . '">'
+           . '<label>geliefert <input type="number" name="geliefert_menge" min="0" value="' . (int) $z['geliefert_menge'] . '"></label>'
+           . ' / ' . zahl($gesamt)
+           . '<button type="submit">Speichern</button></form></td>'
            . '<td>' . ((int) $z['karte_ok'] ? 'ja' : 'nein') . '</td>'
            . '<td>' . admin_status($z['status']) . '</td>'
            . '<td class="aktionen">'
-           . admin_knopf('gastro_bestellungen', (int) $z['id'], 'freigegeben', 'Freigeben', 'gut')
-           . admin_knopf('gastro_bestellungen', (int) $z['id'], 'abgelehnt', 'Ablehnen', 'schlecht')
+           . admin_knopf('gastro_bestellungen', $z, 'freigegeben', 'Freigeben', 'gut')
+           . admin_knopf('gastro_bestellungen', $z, 'abgelehnt', 'Ablehnen', 'schlecht')
+           . admin_knopf_loeschen('gastro_bestellungen', (int) $z['id'], 'Bestellung von „' . $z['betrieb'] . '" endgültig löschen, mit allen Positionen? Das lässt sich nicht rückgängig machen.')
            . '</td></tr>';
     }
     echo '</tbody></table></div>';
@@ -208,8 +263,9 @@ function admin_seite(?string $meldung): void
            . '<td><small>' . e((string) ($z['motiv_name'] ?: ((int) $z['motiv_spaeter'] ? 'wird nachgereicht' : '–'))) . '</small></td>'
            . '<td>' . admin_status($z['status']) . '</td>'
            . '<td class="aktionen">'
-           . admin_knopf('werbebuchungen', (int) $z['id'], 'freigegeben', 'Freigeben', 'gut')
-           . admin_knopf('werbebuchungen', (int) $z['id'], 'abgelehnt', 'Ablehnen', 'schlecht')
+           . admin_knopf('werbebuchungen', $z, 'freigegeben', 'Freigeben', 'gut')
+           . admin_knopf('werbebuchungen', $z, 'abgelehnt', 'Ablehnen', 'schlecht')
+           . admin_knopf_loeschen('werbebuchungen', (int) $z['id'], 'Buchung von „' . $z['firma'] . '" endgültig löschen, inklusive Motiv? Das lässt sich nicht rückgängig machen.')
            . '</td></tr>';
     }
     echo '</tbody></table></div>';
@@ -224,8 +280,9 @@ function admin_seite(?string $meldung): void
            . '<td><small>' . e((string) ($z['melder_email'] ?: 'anonym')) . '</small></td>'
            . '<td>' . admin_status($z['status']) . '</td>'
            . '<td class="aktionen">'
-           . admin_knopf('pizzeria_empfehlungen', (int) $z['id'], 'kontaktiert', 'Kontaktiert')
-           . admin_knopf('pizzeria_empfehlungen', (int) $z['id'], 'erledigt', 'Erledigt', 'gut')
+           . admin_knopf('pizzeria_empfehlungen', $z, 'kontaktiert', 'Kontaktiert')
+           . admin_knopf('pizzeria_empfehlungen', $z, 'erledigt', 'Erledigt', 'gut')
+           . admin_knopf_loeschen('pizzeria_empfehlungen', (int) $z['id'], 'Vorschlag „' . $z['name'] . '" endgültig löschen? Das lässt sich nicht rückgängig machen.')
            . '</td></tr>';
     }
     echo '</tbody></table></div>';

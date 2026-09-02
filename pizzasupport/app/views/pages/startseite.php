@@ -187,6 +187,8 @@ $f       = fortschritt();
   </div>
 </section>
 
+<?php include APP_ROOT . '/app/views/partials/ersparnisrechner.php'; ?>
+
 <?php include APP_ROOT . '/app/views/partials/formular-gastro.php'; ?>
 
 <section class="band band-hell" id="vorteile" aria-labelledby="vorteile-titel">
@@ -216,6 +218,10 @@ $f       = fortschritt();
       <article class="karte">
         <h3>Eine Antwort auf die Steuer</h3>
         <p>Die Abgabe bleibt, der Einkaufspreis fällt weg. <a href="/verpackungssteuer-freiburg.html">Was das rechnerisch bringt.</a></p>
+      </article>
+      <article class="karte">
+        <h3>Du musst nichts stapeln</h3>
+        <p>Dreitausend Kartons passen in keine Pizzeria. Wir lagern sie für Dich und liefern jeden Monat nach, was Du brauchst.</p>
       </article>
     </div>
   </div>

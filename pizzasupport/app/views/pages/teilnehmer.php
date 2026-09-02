@@ -132,6 +132,13 @@ $nlErfolg    = flash_get('newsletter_ok');
           </p>
           <ul class="teilnehmer-liste" data-t-liste>
             <?php foreach ($teilnehmer as $t): ?>
+              <?php
+                // Fuer Screenreader-Nutzer: der Punkt daneben ist aria-hidden, also
+                // braucht jede Zeile eine sichtbare Kategorie im Text - nicht nur
+                // Farbe oder Form. Gastronomien haben ihre Betriebsart, unterstützende
+                // Unternehmen bekommen hier einen eigenen Text.
+                $kategorie = $t['sparte'] ?: ($t['typ'] === 'unternehmen' ? 'Unterstützendes Unternehmen' : null);
+              ?>
               <li class="teilnehmer-eintrag" data-t-id="<?= e($t['id']) ?>" data-t-typ="<?= e($t['typ']) ?>"
                   data-t-plz="<?= e((string) $t['plz']) ?>" data-t-name="<?= e($t['name']) ?>">
                 <button type="button" class="teilnehmer-knopf" data-t-springen="<?= e($t['id']) ?>">
@@ -140,7 +147,7 @@ $nlErfolg    = flash_get('newsletter_ok');
                     <strong><?= e($t['name']) ?></strong>
                     <small>
                       <?= $t['strasse'] ? e($t['strasse']) . ', ' : '' ?><?= e((string) $t['plz']) ?> <?= e((string) $t['ort']) ?>
-                      <?= $t['sparte'] ? ' · ' . e($t['sparte']) : '' ?>
+                      <?= $kategorie ? ' · ' . e($kategorie) : '' ?>
                     </small>
                   </span>
                 </button>

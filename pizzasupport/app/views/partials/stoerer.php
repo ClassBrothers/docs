@@ -10,16 +10,24 @@
     <button class="modal-zu" type="button" data-modal-schliessen aria-label="Schließen">&times;</button>
 
     <div class="modal-inhalt">
+      <?php if ($erfolg = flash_get('empfehlung_ok')): ?>
+        <div class="danke danke-ruhig" id="empfehlung-danke" tabindex="-1" role="status" data-konfetti>
+          <div class="danke-karton" aria-hidden="true">
+            <span class="danke-deckel"></span>
+            <span class="danke-boden"></span>
+          </div>
+          <canvas class="danke-konfetti" aria-hidden="true"></canvas>
+          <h3>Danke Dir!</h3>
+          <p><?= e((string) $erfolg) ?></p>
+        </div>
+      <?php endif; ?>
+
       <h2 id="modal-empfehlung-titel">Welche Pizzeria sollen wir ansprechen?</h2>
       <p class="modal-vorspann">
         Du hast einen Laden, der die Kartons gut gebrauchen könnte? Sag uns, welcher.
         Wir melden uns dort und erklären, wie das Ganze funktioniert. Kostet die
         Pizzeria nichts und Dich auch nicht.
       </p>
-
-      <?php if ($erfolg = flash_get('empfehlung_ok')): ?>
-        <p class="hinweis hinweis-ok" role="status"><?= e((string) $erfolg) ?></p>
-      <?php endif; ?>
 
       <?php $fehler = flash_get('empfehlung_fehler', []); $altw = flash_get('empfehlung_alt', []); ?>
       <?php if ($fehler): ?>

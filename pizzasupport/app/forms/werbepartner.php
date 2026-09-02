@@ -25,7 +25,7 @@ $v->auswahl('art', 'Die Art des Buchenden', ['unternehmen', 'privat'])
   ->text('ansprechpartner', 'Der Ansprechpartner', true, 120)
   ->email('email', 'Die E-Mail-Adresse')
   ->telefon('telefon', 'Die Telefonnummer')
-  ->langtext('rechnung', 'Die Rechnungsanschrift', true, 400)
+  ->langtext('rechnung', 'Die Rechnungsadresse', true, 200)
   ->plz('plz', 'Die Postleitzahl')
   ->text('ort', 'Der Ort', true, 100)
   ->text('ustid', 'Die USt-IdNr.', false, 20)
@@ -37,6 +37,7 @@ $v->auswahl('art', 'Die Art des Buchenden', ['unternehmen', 'privat'])
   ->checkbox('karte_ok', '', false)
   ->checkbox('agb_ok', 'Ohne Zustimmung zu den AGB können wir die Buchung nicht annehmen.')
   ->checkbox('motivvorbehalt_ok', 'Bitte bestätigen Sie, dass Sie den Motiv-Vorbehalt kennen.')
+  ->checkbox('verbindlich_ok', 'Bitte bestätigen Sie die verbindliche Buchung für den Fall, dass das Projekt zustande kommt.')
   ->checkbox('datenschutz_ok', 'Ohne Zustimmung zu den Datenschutzhinweisen dürfen wir Ihre Angaben nicht verarbeiten.');
 
 // USt-IdNr. nur grob auf Form pruefen – die inhaltliche Pruefung macht
@@ -44,6 +45,30 @@ $v->auswahl('art', 'Die Art des Buchenden', ['unternehmen', 'privat'])
 $ustid = $v->get('ustid');
 if ($ustid !== null && $ustid !== '' && !preg_match('/^[A-Z]{2}[0-9A-Z]{6,14}$/i', $ustid)) {
     $v->fehlerSetzen('ustid', 'Diese USt-IdNr. sieht nicht richtig aus, zum Beispiel DE123456789.');
+}
+
+// Fun Area: Preis haengt von der tatsaechlich gewaehlten Flaeche ab, nicht
+// von einem Festpreis (Nachtrag 2+5). Flaeche auf eine Nachkommastelle
+// runden, danach mit dem Preis je cm² multiplizieren.
+$funArea       = config('fun_area');
+$funFlaecheCm2 = null;
+$funPreisCent  = null;
+if (in_array('fun-area', $v->get('formate') ?? [], true)) {
+    $breiteRoh = str_replace(',', '.', trim((string) ($_POST['fun_breite'] ?? '')));
+    $hoeheRoh  = str_replace(',', '.', trim((string) ($_POST['fun_hoehe'] ?? '')));
+    if ($breiteRoh === '' || !is_numeric($breiteRoh) || (float) $breiteRoh <= 0) {
+        $v->fehlerSetzen('fun_breite', 'Bitte geben Sie die Breite der Fun-Area-Fläche in Zentimetern an.');
+    } elseif ($hoeheRoh === '' || !is_numeric($hoeheRoh) || (float) $hoeheRoh <= 0) {
+        $v->fehlerSetzen('fun_hoehe', 'Bitte geben Sie die Höhe der Fun-Area-Fläche in Zentimetern an.');
+    } else {
+        $funFlaecheCm2 = round(((float) $breiteRoh) * ((float) $hoeheRoh), 1);
+        if ($funFlaecheCm2 < (float) $funArea['mindestflaeche_cm2']) {
+            $v->fehlerSetzen('fun_hoehe', 'Die Fläche muss mindestens ' . $funArea['mindestflaeche_cm2']
+                . ' cm² groß sein, aktuell ' . $funFlaecheCm2 . ' cm².');
+        } else {
+            $funPreisCent = (int) round($funFlaecheCm2 * (int) $funArea['preis_je_cm2_cent']);
+        }
+    }
 }
 
 $upload = upload_motiv($_FILES['motiv'] ?? null);
@@ -80,12 +105,16 @@ foreach ($d['formate'] as $id) {
     if ($wf === null) {
         continue;
     }
+    // Fun Area hat keinen Festpreis mehr: die Flaeche kommt aus dem
+    // Formular, der Preis je cm² ausschliesslich aus der Konfiguration.
+    $liniePreis = ($id === 'fun-area' && $funPreisCent !== null) ? $funPreisCent : (int) $wf['preis'];
     // Brutto-Preise auf netto zurueckrechnen, damit die Schwelle eine
     // einheitliche Bezugsgroesse hat.
     $netto += $wf['brutto']
-        ? (int) round($wf['preis'] / (1 + $mwst / 100))
-        : (int) $wf['preis'];
-    $gewaehlteLabels[] = $wf['label'] . ' (' . $wf['masse'] . ')';
+        ? (int) round($liniePreis / (1 + $mwst / 100))
+        : $liniePreis;
+    $gewaehlteLabels[] = $wf['label'] . ' (' . $wf['masse'] . ')'
+        . ($id === 'fun-area' && $funFlaecheCm2 !== null ? ', ' . $funFlaecheCm2 . ' cm²' : '');
 }
 
 $rabatt = 0;
@@ -107,9 +136,9 @@ try {
              rechnung_enc, ustid_enc, plz, ort,
              formate, coupon, summe_cent,
              motiv_pfad, motiv_name, motiv_groesse, motiv_spaeter, zielurl, nachricht,
-             agb_ok, motivvorbehalt_ok, karte_ok, datenschutz_ok, einwilligung_am, einwilligung_zweck,
+             agb_ok, motivvorbehalt_ok, verbindlich_ok, karte_ok, datenschutz_ok, einwilligung_am, einwilligung_zweck,
              status, erstellt_am, quelle)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         [
             $d['art'], $d['firma'], $d['ansprechpartner'], $d['email'],
             encrypt_field($d['telefon']), $d['website'],
@@ -117,7 +146,7 @@ try {
             json_encode($d['formate'], JSON_UNESCAPED_UNICODE), $d['coupon'], $netto,
             $upload['pfad'] ?? null, $upload['name'] ?? null, $upload['groesse'] ?? null,
             $d['motiv_spaeter'], $d['zielurl'], $d['nachricht'],
-            $d['agb_ok'], $d['motivvorbehalt_ok'], $d['karte_ok'], $d['datenschutz_ok'],
+            $d['agb_ok'], $d['motivvorbehalt_ok'], $d['verbindlich_ok'], $d['karte_ok'], $d['datenschutz_ok'],
             $jetzt, implode('; ', $zwecke),
             'neu', $jetzt, 'website',
         ]
@@ -198,6 +227,9 @@ mail_ops(
 
 flash_set(
     'werbung_ok',
-    'Wir haben Ihre Reservierung über ' . preis($netto) . ' netto notiert. Bis zum Startschuss ist sie kostenfrei und unverbindlich.'
+    'Herzlichen Dank für Ihre Unterstützung! Wir haben Ihre Reservierung über ' . preis($netto)
+    . ' netto notiert. Bis zum Startschuss ist sie kostenfrei und unverbindlich – sobald er fällt, '
+    . 'erhalten Sie eine Auftragsbestätigung und eine Teilrechnung über '
+    . (int) config('startschuss.anzahlung') . ' % des Auftragswerts.'
 );
 redirect('/werbepartner.html?gebucht=1#danke');

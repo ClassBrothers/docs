@@ -257,7 +257,10 @@
     box.innerHTML = html;
     // Inhalte als Text setzen, nie als HTML - die Namen kommen aus der Datenbank.
     box.querySelector('strong').textContent = p.name;
-    box.querySelector('small').textContent = adresse + (p.sparte ? ' · ' + p.sparte : '');
+    // Kategorie immer als Text zeigen, nicht nur ueber Farbe/Form des Markers -
+    // Gastronomien haben ihre Betriebsart, unterstuetzende Unternehmen sonst nichts.
+    var kategorie = p.sparte || (p.typ === 'unternehmen' ? 'Unterstützendes Unternehmen' : '');
+    box.querySelector('small').textContent = adresse + (kategorie ? ' · ' + kategorie : '');
 
     if (p.website) {
       var a = document.createElement('a');

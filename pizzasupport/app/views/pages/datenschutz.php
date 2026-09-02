@@ -136,6 +136,13 @@ $fr = config('aufbewahrung');
       (Art. 6 Abs. 1 lit. b DSGVO). Ihre Telefonnummer speichern wir verschlüsselt.
     </p>
     <p>
+      Nutzen Sie den Ersparnisrechner und schließen die Bestellung ab, speichern wir
+      zusätzlich Ihren angegebenen Einkaufspreis je Karton und Ihren monatlichen
+      Kartonbedarf – ebenfalls zur Durchführung der Bestellung (Art. 6 Abs. 1 lit. b DSGVO)
+      und um die auf der Startseite gezeigte Gesamtersparnis zu berechnen. Nutzen Sie den
+      Rechner, ohne zu bestellen, verlässt keine dieser Angaben Ihren Browser.
+    </p>
+    <p>
       Die Anzeige Ihres Betriebs auf der Teilnehmerkarte erfolgt nur, wenn Sie das im
       Formular gesondert ankreuzen, und erst nach manueller Freigabe durch uns
       (Art. 6 Abs. 1 lit. a DSGVO). Diese Einwilligung können Sie jederzeit formlos

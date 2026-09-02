@@ -6,7 +6,7 @@ declare(strict_types=1);
 $zurueck = '/kontakt.html';
 
 if (!honeypot_ok($_POST)) {
-    flash_set('kontakt_ok', 'Danke, Ihre Nachricht ist bei uns.');
+    flash_set('kontakt_ok', 'Danke, Ihre Nachricht ist bei uns. Wir melden uns binnen 24 Stunden.');
     redirect($zurueck);
 }
 
@@ -25,6 +25,14 @@ $v->text('name', 'Ihr Name', true, 120)
 
 if (mb_strlen((string) $v->get('nachricht')) < 10) {
     $v->fehlerSetzen('nachricht', 'Ein paar Worte mehr helfen uns, Ihnen sinnvoll zu antworten.');
+}
+
+// Einfache Sicherheitsabfrage: entweder der Klick auf die Pizza oder die
+// Textalternative fuer Tastatur- und Screenreader-Nutzung muss stimmen.
+$captchaKlick = (string) ($_POST['captcha_klick'] ?? '');
+$captchaText  = mb_strtolower(trim((string) ($_POST['captcha_text'] ?? '')));
+if ($captchaKlick !== 'pizza' && $captchaText !== 'pizza') {
+    $v->fehlerSetzen('captcha', 'Bitte beantworten Sie die Sicherheitsfrage: Klicken Sie auf die Pizza, oder nennen Sie sie im Textfeld.');
 }
 
 if (!$v->ok()) {
@@ -61,5 +69,5 @@ mail_send(
     (string) env('MAIL_TO_OPS')
 );
 
-flash_set('kontakt_ok', 'Danke, Ihre Nachricht ist bei uns. Wir melden uns werktags meist am selben Tag.');
+flash_set('kontakt_ok', 'Danke, Ihre Nachricht ist bei uns. Wir melden uns binnen 24 Stunden.');
 redirect($zurueck);

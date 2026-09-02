@@ -248,6 +248,7 @@ $f      = fortschritt();
               <label class="wahl">
                 <input type="checkbox" name="formate[]" value="<?= e($wf['id']) ?>"
                        data-preis="<?= (int) $wf['preis'] ?>" data-brutto="<?= $wf['brutto'] ? '1' : '0' ?>"
+                       <?= $wf['id'] === 'fun-area' ? 'data-funarea-checkbox' : '' ?>
                        <?= in_array($wf['id'], $gewaehlt, true) ? 'checked' : '' ?>>
                 <span class="wahl-inhalt">
                   <strong><?= e($wf['label']) ?></strong>
@@ -258,6 +259,37 @@ $f      = fortschritt();
             <?php endforeach; ?>
           </div>
           <?php if (isset($fehler['formate'])): ?><p class="feld-meldung"><?= e($fehler['formate']) ?></p><?php endif; ?>
+        </div>
+
+        <?php $fa = config('fun_area'); ?>
+        <div class="feld feld-funarea" data-funarea-block
+             data-preis-je-cm2="<?= (int) $fa['preis_je_cm2_cent'] ?>" data-min-flaeche="<?= e((string) $fa['mindestflaeche_cm2']) ?>" hidden>
+          <span class="feld-label">Größe der Fun-Area-Fläche</span>
+          <div class="menge-wahl">
+            <?php foreach ($fa['schnellauswahl'] as $sa): ?>
+              <button type="button" class="menge-knopf" data-funarea-breite="<?= e((string) $sa['breite_cm']) ?>" data-funarea-hoehe="<?= e((string) $sa['hoehe_cm']) ?>">
+                <?= e($sa['label']) ?> (<?= e((string) $sa['breite_cm']) ?> × <?= e((string) $sa['hoehe_cm']) ?> cm)
+              </button>
+            <?php endforeach; ?>
+          </div>
+          <div class="feld-reihe">
+            <div class="feld<?= isset($fehler['fun_breite']) ? ' feld-fehler' : '' ?>">
+              <label for="w-fun-breite">Breite <span class="feld-optional">(cm)</span></label>
+              <input type="text" id="w-fun-breite" name="fun_breite" inputmode="decimal"
+                     data-funarea-breite-feld value="<?= e(alt($altw, 'fun_breite')) ?>">
+            </div>
+            <div class="feld<?= isset($fehler['fun_hoehe']) ? ' feld-fehler' : '' ?>">
+              <label for="w-fun-hoehe">Höhe <span class="feld-optional">(cm)</span></label>
+              <input type="text" id="w-fun-hoehe" name="fun_hoehe" inputmode="decimal"
+                     data-funarea-hoehe-feld value="<?= e(alt($altw, 'fun_hoehe')) ?>">
+            </div>
+          </div>
+          <p class="feld-hilfe" data-funarea-ergebnis>
+            Mindestens <?= e((string) $fa['mindestflaeche_cm2']) ?> cm². Der Preis ist ein Bruttopreis.
+          </p>
+          <?php if (isset($fehler['fun_breite']) || isset($fehler['fun_hoehe'])): ?>
+            <p class="feld-meldung"><?= e($fehler['fun_breite'] ?? $fehler['fun_hoehe']) ?></p>
+          <?php endif; ?>
         </div>
 
         <div class="feld feld-check feld-coupon">
@@ -365,9 +397,9 @@ $f      = fortschritt();
         </div>
 
         <div class="feld<?= isset($fehler['rechnung']) ? ' feld-fehler' : '' ?>">
-          <label for="w-rechnung">Rechnungsanschrift <span class="pflicht" aria-hidden="true">*</span></label>
-          <textarea id="w-rechnung" name="rechnung" rows="3" required maxlength="400"
-                    placeholder="Straße und Hausnummer&#10;PLZ Ort"><?= e(alt($altw, 'rechnung')) ?></textarea>
+          <label for="w-rechnung">Rechnungsadresse <span class="feld-optional">(Straße und Hausnummer – PLZ und Ort stehen gleich unten)</span> <span class="pflicht" aria-hidden="true">*</span></label>
+          <input type="text" id="w-rechnung" name="rechnung" required maxlength="200"
+                 placeholder="Straße und Hausnummer" value="<?= e(alt($altw, 'rechnung')) ?>" autocomplete="street-address">
           <?php if (isset($fehler['rechnung'])): ?><p class="feld-meldung"><?= e($fehler['rechnung']) ?></p><?php endif; ?>
         </div>
 
@@ -424,6 +456,14 @@ $f      = fortschritt();
             <span>Ich habe den Motiv-Vorbehalt zur Kenntnis genommen. <span class="pflicht" aria-hidden="true">*</span></span>
           </label>
           <?php if (isset($fehler['motivvorbehalt_ok'])): ?><p class="feld-meldung"><?= e($fehler['motivvorbehalt_ok']) ?></p><?php endif; ?>
+        </div>
+
+        <div class="feld feld-check<?= isset($fehler['verbindlich_ok']) ? ' feld-fehler' : '' ?>">
+          <label>
+            <input type="checkbox" name="verbindlich_ok" value="1" required>
+            <span>Ich buche verbindlich für den Fall, dass das Projekt zustande kommt. <span class="pflicht" aria-hidden="true">*</span></span>
+          </label>
+          <?php if (isset($fehler['verbindlich_ok'])): ?><p class="feld-meldung"><?= e($fehler['verbindlich_ok']) ?></p><?php endif; ?>
         </div>
 
         <div class="feld feld-check">

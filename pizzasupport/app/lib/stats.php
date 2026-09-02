@@ -26,6 +26,18 @@ function fortschritt(): array
           WHERE g.status = 'freigegeben'", [], 0
     );
 
+    // Ersparnisrechner, oeffentliche Gesamtsumme: nur aus freigegebenen
+    // Bestellungen mit angegebenem Einkaufspreis, nie aus reinen
+    // Rechnereingaben. Rechnet live, damit eine geloeschte Bestellung ihren
+    // Anteil automatisch verliert.
+    $ersparnis_cent = (int) db_value(
+        "SELECT COALESCE(SUM(g.einkaufspreis_cent * bp.gesamt), 0)
+           FROM gastro_bestellungen g
+           JOIN (SELECT bestellung_id, SUM(menge) AS gesamt FROM bestellpositionen GROUP BY bestellung_id) bp
+             ON bp.bestellung_id = g.id
+          WHERE g.status = 'freigegeben' AND g.einkaufspreis_cent IS NOT NULL", [], 0
+    );
+
     // Schwellenwerte fuer den Startschuss rechnen immer mit den echten,
     // ungeschoenten Zahlen - die Mindestanzeige weiter unten betrifft
     // ausschliesslich das, was auf der Startseite zu sehen ist.
@@ -60,6 +72,7 @@ function fortschritt(): array
         // Werten, nicht der Mindestanzeige.
         'gesamt_prozent'   => (int) round(min($q_betriebe, $q_budget) * 100),
         'ausgeloest'       => $ausgeloest,
+        'ersparnis_cent'   => $ersparnis_cent,
     ];
 }
 

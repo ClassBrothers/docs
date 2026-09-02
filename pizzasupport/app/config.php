@@ -54,6 +54,18 @@ return [
     ],
     'karton_hoehe_cm' => 3,
 
+    // -----------------------------------------------------------------
+    // Ersparnisrechner auf der Startseite. Grenzwerte gegen Unsinnseingaben,
+    // die die oeffentliche Gesamtsumme wertlos machen wuerden - serverseitig
+    // in app/forms/gastro.php geprueft, nicht nur im Browser.
+    // -----------------------------------------------------------------
+    'ersparnisrechner' => [
+        'einkaufspreis_min_cent' => 5,     // 0,05 EUR
+        'einkaufspreis_max_cent' => 300,   // 3,00 EUR
+        'kartons_monat_min'      => 50,
+        'kartons_monat_max'      => 20000,
+    ],
+
     // Mengenlogik: drei Schnellauswahlen plus freie Eingabe. Eine Bestellung
     // darf mehrere Formate mischen - format_min gilt je gewaehltem Format,
     // min/max/step gelten fuer die Summe aller Formate zusammen.
@@ -74,8 +86,29 @@ return [
         'frei_in'        => 'Freiburg im Breisgau',
         'plz_von'        => '79098',   // Freiburg im Breisgau, PLZ-Bereich
         'plz_bis'        => '79117',
+        // Angrenzende Gemeinden ausserhalb des PLZ-Bereichs, die trotzdem noch
+        // kostenfrei beliefert werden. Ortsname wird gegen das Feld "Ort" im
+        // Formular geprueft, ohne Gross-/Kleinschreibung. Vom Kunden nachgetragen.
+        'freie_orte'     => [],
         'pauschale_cent' => 1000,  // 10,00 EUR netto je Staffel
         'je_kartons'     => 300,
+    ],
+
+    // -----------------------------------------------------------------
+    // Lieferung und Abruf (Nachtrag 4+5): die bestellte Menge kann auf
+    // einmal, in monatlichen Teilmengen oder per Selbstabholung ankommen.
+    // -----------------------------------------------------------------
+    'lieferung' => [
+        'abruf_min'            => 300,   // Mindestmenge je monatlichem Abruf
+        'abruf_zeitraum_monate' => 12,   // Abrufzeitraum ab der ersten Lieferung
+        'zusatz_pauschale_cent' => 1000,  // 10,00 EUR netto fuer eine zweite Lieferung im selben Monat
+        'zusatz_mindestmenge'  => 500,   // ab dieser Menge lohnt sich die Sonderfahrt
+        'zusatz_frist_werktage' => 7,    // ab Abrufwunsch, nicht ab Bestellung
+        // Adressen traegt der Kunde nach - Feld bleibt bis dahin leer.
+        'abholung_standorte'   => [
+            ['ort' => 'Freiburg-Tiengen', 'adresse' => ''],
+            ['ort' => 'Freiburg-Haid', 'adresse' => ''],
+        ],
     ],
 
     // -----------------------------------------------------------------
@@ -134,6 +167,20 @@ return [
     // Nachlass auf den Listen-Mediapreis, wenn das Motiv ein Gutschein ist.
     'coupon_rabatt_prozent' => 10,
     'mwst_prozent'          => 19,
+
+    // -----------------------------------------------------------------
+    // Fun Area: Preis nach tatsaechlicher Flaeche statt Festpreis
+    // (Nachtrag 2+5). Flaeche wird auf eine Nachkommastelle gerundet,
+    // danach mit dem Preis je cm² multipliziert.
+    // -----------------------------------------------------------------
+    'fun_area' => [
+        'preis_je_cm2_cent'  => 799,   // 7,99 EUR je cm², inkl. MwSt.
+        'mindestflaeche_cm2' => 12,
+        'schnellauswahl' => [
+            ['label' => 'Feld S', 'breite_cm' => 6.4, 'hoehe_cm' => 2.7],
+            ['label' => 'Feld M', 'breite_cm' => 13.2, 'hoehe_cm' => 2.7],
+        ],
+    ],
 
     // -----------------------------------------------------------------
     // Startschuss-Prinzip: Ab hier laeuft die Produktion an.

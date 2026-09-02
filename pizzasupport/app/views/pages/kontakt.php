@@ -31,6 +31,17 @@ $meta['jsonld'] = [
 $fehler = flash_get('kontakt_fehler', []);
 $altw   = flash_get('kontakt_alt', []);
 $erfolg = flash_get('kontakt_ok');
+
+// Einfache, selbst gebaute Sicherheitsabfrage gegen automatisierte Einsendungen -
+// ohne fremden Dienst, ohne Einwilligungspflicht. "Pizza" ist immer richtig,
+// die Reihenfolge der Optionen wechselt bei jedem Aufruf.
+$captchaOptionen = [
+    ['id' => 'pizza',  'icon' => '🍕', 'label' => 'Pizza'],
+    ['id' => 'burger', 'icon' => '🍔', 'label' => 'Burger'],
+    ['id' => 'sushi',  'icon' => '🍣', 'label' => 'Sushi'],
+    ['id' => 'taco',   'icon' => '🌮', 'label' => 'Taco'],
+];
+shuffle($captchaOptionen);
 ?>
 
 <section class="seiten-hero">
@@ -51,7 +62,7 @@ $erfolg = flash_get('kontakt_ok');
 
     <div class="kontakt-formular">
       <?php if ($erfolg): ?>
-        <p class="hinweis hinweis-ok" role="status"><?= e((string) $erfolg) ?></p>
+        <p class="hinweis hinweis-ok hinweis-gross" role="status"><?= e((string) $erfolg) ?></p>
       <?php endif; ?>
       <?php if ($fehler): ?>
         <p class="hinweis hinweis-fehler" role="alert">Bitte prüfen Sie die markierten Felder.</p>
@@ -91,6 +102,25 @@ $erfolg = flash_get('kontakt_ok');
             <span>Ich habe die <a href="/datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen. <span class="pflicht" aria-hidden="true">*</span></span>
           </label>
           <?php if (isset($fehler['datenschutz_ok'])): ?><p class="feld-meldung"><?= e($fehler['datenschutz_ok']) ?></p><?php endif; ?>
+        </div>
+
+        <div class="feld<?= isset($fehler['captcha']) ? ' feld-fehler' : '' ?>">
+          <p class="captcha-frage" id="captcha-frage">Kurze Sicherheitsfrage: Klicken Sie auf die Pizza. <span class="pflicht" aria-hidden="true">*</span></p>
+          <input type="hidden" name="captcha_klick" id="k-captcha-klick" value="">
+          <div class="captcha-optionen" role="group" aria-labelledby="captcha-frage">
+            <?php foreach ($captchaOptionen as $opt): ?>
+              <button type="button" class="captcha-knopf" data-captcha-wert="<?= e($opt['id']) ?>"
+                      aria-pressed="false" aria-label="<?= e($opt['label']) ?>"><span aria-hidden="true"><?= e($opt['icon']) ?></span></button>
+            <?php endforeach; ?>
+          </div>
+          <details class="captcha-alternative">
+            <summary>Ich kann nicht klicken oder benutze einen Screenreader</summary>
+            <div class="feld">
+              <label for="k-captcha-text">Um welches Gericht dreht sich diese ganze Seite?</label>
+              <input type="text" id="k-captcha-text" name="captcha_text" autocomplete="off">
+            </div>
+          </details>
+          <?php if (isset($fehler['captcha'])): ?><p class="feld-meldung"><?= e($fehler['captcha']) ?></p><?php endif; ?>
         </div>
 
         <button class="btn btn-primaer btn-gross" type="submit">Nachricht senden</button>

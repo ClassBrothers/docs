@@ -24,9 +24,10 @@ if (!rate_limit_ok('gastro', 5, 3600)) {
     redirect($zurueck);
 }
 
-$formate = config('karton_formate');
-$mengen  = config('mengen');
-$porto   = config('porto');
+$formate   = config('karton_formate');
+$mengen    = config('mengen');
+$porto     = config('porto');
+$lieferung = config('lieferung');
 
 $v = new Validator($_POST);
 $v->text('betrieb', 'Der Name der Gastronomie', true, 150)
@@ -52,10 +53,14 @@ if ($v->get('betriebsart') !== null && !in_array($v->get('betriebsart'), $betrie
 }
 
 // Ausserhalb Freiburgs faellt eine Portopauschale an - die Zustimmung dazu
-// ist nur dann Pflicht, wenn die eingetragene PLZ ausserhalb liegt.
-$plzWert = $v->get('plz');
-$ausserhalbFreiburg = $plzWert !== null
+// ist nur dann Pflicht, wenn die eingetragene PLZ ausserhalb liegt und der
+// Ort auch nicht in der Liste der angrenzenden Gemeinden steht.
+$plzWert   = $v->get('plz');
+$ortWert   = $v->get('ort');
+$plzAusserhalb = $plzWert !== null
     && ((int) $plzWert < (int) $porto['plz_von'] || (int) $plzWert > (int) $porto['plz_bis']);
+$ortIstFrei = $ortWert !== null && in_array(mb_strtolower($ortWert), array_map('mb_strtolower', $porto['freie_orte']), true);
+$ausserhalbFreiburg = $plzAusserhalb && !$ortIstFrei;
 $v->checkbox(
     'versand_zuschlag_ok',
     'Bitte bestätige den Versandzuschlag außerhalb ' . $porto['frei_in'] . '.',
@@ -103,6 +108,61 @@ if ($mengeFehler !== null) {
     $v->fehlerSetzen('menge', $mengeFehler);
 }
 
+// Ersparnisrechner: beide Felder sind freiwillig, nur bei Angabe pruefen.
+// Wer nur rechnet und nicht bestellt, sendet dieses Formular nie ab - hier
+// landen nur Werte, die tatsaechlich zu einer Bestellung gehoeren.
+$er                = config('ersparnisrechner');
+$einkaufspreisCent = null;
+$einkaufspreisRoh  = trim(str_replace(',', '.', (string) ($_POST['einkaufspreis'] ?? '')));
+if ($einkaufspreisRoh !== '') {
+    if (!is_numeric($einkaufspreisRoh)) {
+        $v->fehlerSetzen('einkaufspreis', 'Der Einkaufspreis muss eine Zahl sein, zum Beispiel 0,45.');
+    } else {
+        $einkaufspreisCent = (int) round(((float) $einkaufspreisRoh) * 100);
+        if ($einkaufspreisCent < (int) $er['einkaufspreis_min_cent'] || $einkaufspreisCent > (int) $er['einkaufspreis_max_cent']) {
+            $v->fehlerSetzen('einkaufspreis', 'Der Einkaufspreis sollte zwischen '
+                . preis((int) $er['einkaufspreis_min_cent']) . ' und ' . preis((int) $er['einkaufspreis_max_cent']) . ' liegen.');
+        }
+    }
+}
+
+$kartonsMonat    = null;
+$kartonsMonatRoh = trim((string) ($_POST['kartons_monat'] ?? ''));
+if ($kartonsMonatRoh !== '') {
+    if (!preg_match('/^\d+$/', $kartonsMonatRoh)) {
+        $v->fehlerSetzen('kartons_monat', 'Die Kartons pro Monat müssen eine Zahl sein.');
+    } else {
+        $kartonsMonat = (int) $kartonsMonatRoh;
+        if ($kartonsMonat < (int) $er['kartons_monat_min'] || $kartonsMonat > (int) $er['kartons_monat_max']) {
+            $v->fehlerSetzen('kartons_monat', 'Die Kartons pro Monat sollten zwischen '
+                . zahl((int) $er['kartons_monat_min']) . ' und ' . zahl((int) $er['kartons_monat_max']) . ' liegen.');
+        }
+    }
+}
+
+// Lieferart: auf einmal, monatlicher Abruf oder Abholung. Die Abrufmenge
+// gilt nur beim monatlichen Abruf und muss innerhalb der Gesamtmenge liegen.
+$erlaubteLieferarten = ['gesamt', 'abruf', 'abholung'];
+$lieferart = (string) ($_POST['lieferart'] ?? 'gesamt');
+if (!in_array($lieferart, $erlaubteLieferarten, true)) {
+    $lieferart = 'gesamt';
+}
+
+$abrufMenge = null;
+if ($lieferart === 'abruf') {
+    $abrufRoh = trim(str_replace(['.', ' ', "\u{00A0}"], '', (string) ($_POST['abruf_menge'] ?? '')));
+    if ($abrufRoh === '' || !preg_match('/^\d+$/', $abrufRoh)) {
+        $v->fehlerSetzen('abruf_menge', 'Bitte gib die gewünschte Menge je Abruf ein.');
+    } else {
+        $abrufMenge = (int) $abrufRoh;
+        if ($abrufMenge < (int) $lieferung['abruf_min']) {
+            $v->fehlerSetzen('abruf_menge', 'Ein Abruf braucht mindestens ' . zahl((int) $lieferung['abruf_min']) . ' Kartons.');
+        } elseif ($mengeFehler === null && $abrufMenge > $gesamtmenge) {
+            $v->fehlerSetzen('abruf_menge', 'Die Abrufmenge kann nicht größer sein als Deine Gesamtbestellung.');
+        }
+    }
+}
+
 if (!$v->ok()) {
     flash_set('gastro_fehler', $v->fehler());
     flash_set('gastro_alt', $_POST);
@@ -125,13 +185,15 @@ try {
             (vorname, nachname, betrieb, strasse, plz, ort, email, telefon_enc, website,
              betriebsart, anmerkung,
              bestellung_ok, karte_ok, datenschutz_ok, versand_zuschlag_ok,
+             einkaufspreis_cent, kartons_monat, lieferart, abruf_menge,
              einwilligung_am, einwilligung_zweck, status, erstellt_am, quelle)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         [
             $d['vorname'], $d['nachname'], $d['betrieb'], $d['strasse'], $d['plz'], $d['ort'],
             $d['email'], encrypt_field($d['telefon']), $d['website'],
             $d['betriebsart'], $d['anmerkung'],
             $d['bestellung_ok'], $d['karte_ok'], $d['datenschutz_ok'], $d['versand_zuschlag_ok'],
+            $einkaufspreisCent, $kartonsMonat, $lieferart, $abrufMenge,
             $jetzt, implode('; ', $zwecke), 'neu', $jetzt, 'website',
         ]
     );
@@ -170,6 +232,10 @@ foreach ($positionen as $formatId => $n) {
 }
 $positionsText = implode("\n", $positionsZeilen);
 
+$lieferartLabels = ['gesamt' => 'Alles auf einmal', 'abruf' => 'Monatlicher Abruf', 'abholung' => 'Abholung'];
+$lieferartText = $lieferartLabels[$lieferart]
+    . ($lieferart === 'abruf' ? ' (' . zahl((int) $abrufMenge) . ' Kartons je Abruf)' : '');
+
 // Bestaetigung an den Betrieb
 mail_send(
     $d['email'],
@@ -179,7 +245,9 @@ mail_send(
     . "Betrieb:   {$d['betrieb']}\n"
     . "Adresse:   {$d['strasse']}, {$d['plz']} {$d['ort']}\n"
     . "Formate:\n{$positionsText}\n"
-    . 'Gesamt:    ' . zahl($gesamtmenge) . " Kartons\n\n"
+    . 'Gesamt:    ' . zahl($gesamtmenge) . " Kartons\n"
+    . 'Lieferung: ' . $lieferartText
+    . ($lieferart === 'abholung' ? ' – wir rufen Dich zur Terminvereinbarung an.' : '') . "\n\n"
     . ($ausserhalbFreiburg
         ? 'Da Du außerhalb ' . $porto['frei_in'] . " bestellst, fällt eine Portopauschale von\n"
           . preis((int) $porto['pauschale_cent'], false) . ' € netto zzgl. ' . (int) config('mwst_prozent')
@@ -207,6 +275,7 @@ mail_ops(
     . 'Website:      ' . ($d['website'] ?: '–') . "\n"
     . "Formate:\n{$positionsText}\n"
     . 'Gesamt:       ' . zahl($gesamtmenge) . "\n"
+    . 'Lieferung:    ' . $lieferartText . "\n"
     . 'Versandzuschlag: ' . ($ausserhalbFreiburg ? 'ja – außerhalb ' . $porto['frei_in'] : 'nein') . "\n"
     . 'Karte:        ' . ($d['karte_ok'] ? 'JA – bitte freigeben' : 'nein') . "\n"
     . 'Anmerkung:    ' . ($d['anmerkung'] ?: '–') . "\n\n"

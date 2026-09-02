@@ -62,5 +62,13 @@ $nonce = $GLOBALS['csp_nonce'] ?? '';
         <a href="/teilnehmer.html">Wer schon dabei ist.</a>
       <?php endif; ?>
     </p>
+
+    <?php if ($f['ersparnis_cent'] > 0): ?>
+      <p class="fortschritt-ersparnis">
+        So viel hat Pizza Support der Freiburger Gastronomie bisher erspart:
+        <strong><?= e(preis($f['ersparnis_cent'])) ?></strong>
+        <span class="fortschritt-ersparnis-klein">Grundlage sind die von den Betrieben selbst angegebenen Einkaufspreise.</span>
+      </p>
+    <?php endif; ?>
   </div>
 </section>

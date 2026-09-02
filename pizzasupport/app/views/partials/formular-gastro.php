@@ -5,9 +5,10 @@
  */
 declare(strict_types=1);
 
-$formate = $formate ?? config('karton_formate');
-$mengen  = $mengen  ?? config('mengen');
-$porto   = $porto   ?? config('porto');
+$formate    = $formate    ?? config('karton_formate');
+$mengen     = $mengen     ?? config('mengen');
+$porto      = $porto      ?? config('porto');
+$lieferung  = $lieferung  ?? config('lieferung');
 $fehler  = $fehler  ?? [];
 $altw    = $altw    ?? [];
 $erfolg  = $erfolg  ?? null;
@@ -60,7 +61,7 @@ $altMengen = $altw['menge'] ?? [];
       </p>
     <?php endif; ?>
 
-    <form method="post" action="/senden/gastro" class="formular formular-breit" novalidate>
+    <form method="post" action="/senden/gastro" id="formular-bestellen" class="formular formular-breit" novalidate>
       <?= csrf_field() ?>
       <?= honeypot_field() ?>
 
@@ -199,7 +200,8 @@ $altMengen = $altw['menge'] ?? [];
         </div>
 
         <div class="feld feld-check" data-versand-zuschlag
-             data-plz-von="<?= e($porto['plz_von']) ?>" data-plz-bis="<?= e($porto['plz_bis']) ?>" hidden>
+             data-plz-von="<?= e($porto['plz_von']) ?>" data-plz-bis="<?= e($porto['plz_bis']) ?>"
+             data-freie-orte="<?= e(json_encode(array_map('mb_strtolower', $porto['freie_orte']), JSON_UNESCAPED_UNICODE)) ?>" hidden>
           <label>
             <input type="checkbox" id="g-versand-zuschlag" name="versand_zuschlag_ok" value="1"
                    <?= alt($altw, 'versand_zuschlag_ok') ? 'checked' : '' ?>>
@@ -217,6 +219,55 @@ $altMengen = $altw['menge'] ?? [];
           <label for="g-anmerkung">Willst Du uns noch etwas mitgeben? <span class="feld-optional">(freiwillig)</span></label>
           <textarea id="g-anmerkung" name="anmerkung" rows="3" maxlength="1500"><?= e(alt($altw, 'anmerkung')) ?></textarea>
         </div>
+      </fieldset>
+
+      <fieldset class="konfigurator" data-lieferart-gruppe>
+        <legend>Lieferung</legend>
+        <p class="feld-hilfe">
+          Wir lagern Deine Kartons und liefern ab, wenn Du sie brauchst. Eine Lieferung pro
+          Monat ist für Dich kostenfrei, ab <?= zahl((int) $lieferung['abruf_min']) ?> Kartons
+          je Abruf. Wir bündeln Fahrten, deshalb kann eine zusätzliche Lieferung im selben
+          Monat bis zu <?= (int) $lieferung['zusatz_frist_werktage'] ?> Werktage dauern – länger
+          nicht. Abholen kannst Du jederzeit, kostenlos und ohne Mengenbeschränkung.
+        </p>
+
+        <div class="feld">
+          <span class="feld-label">Wie möchtest Du Deine Kartons bekommen?</span>
+          <div class="wahl-reihe" role="radiogroup" aria-label="Lieferart">
+            <label class="wahl wahl-schmal">
+              <input type="radio" name="lieferart" value="gesamt" data-lieferart-wahl
+                     <?= alt($altw, 'lieferart', 'gesamt') === 'gesamt' ? 'checked' : '' ?>>
+              <span class="wahl-inhalt"><strong>Alles auf einmal</strong><small>Die gesamte Menge in einer Lieferung</small></span>
+            </label>
+            <label class="wahl wahl-schmal">
+              <input type="radio" name="lieferart" value="abruf" data-lieferart-wahl
+                     <?= alt($altw, 'lieferart') === 'abruf' ? 'checked' : '' ?>>
+              <span class="wahl-inhalt"><strong>Monatlicher Abruf</strong><small>Teilmengen über mehrere Monate</small></span>
+            </label>
+            <label class="wahl wahl-schmal">
+              <input type="radio" name="lieferart" value="abholung" data-lieferart-wahl
+                     <?= alt($altw, 'lieferart') === 'abholung' ? 'checked' : '' ?>>
+              <span class="wahl-inhalt"><strong>Abholung</strong><small>Selbst abholen, jederzeit</small></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="feld<?= isset($fehler['abruf_menge']) ? ' feld-fehler' : '' ?>" data-lieferart-feld="abruf" hidden>
+          <label for="g-abrufmenge">Gewünschte Menge je Abruf</label>
+          <input type="number" id="g-abrufmenge" name="abruf_menge" inputmode="numeric"
+                 min="<?= (int) $lieferung['abruf_min'] ?>" value="<?= e(alt($altw, 'abruf_menge')) ?>"
+                 aria-describedby="g-abrufmenge-hilfe">
+          <p class="feld-hilfe" id="g-abrufmenge-hilfe" data-abrufmenge-hinweis>
+            Mindestens <?= zahl((int) $lieferung['abruf_min']) ?> Kartons je Abruf.
+          </p>
+          <?php if (isset($fehler['abruf_menge'])): ?><p class="feld-meldung"><?= e($fehler['abruf_menge']) ?></p><?php endif; ?>
+        </div>
+
+        <p class="feld-hilfe" data-lieferart-feld="abholung" hidden>
+          Wir rufen Dich unter der oben angegebenen Nummer zur Terminvereinbarung an.
+          Abholorte: <?= e(implode(' oder ', array_column($lieferung['abholung_standorte'], 'ort'))) ?>,
+          Montag bis Sonntag, kostenlos.
+        </p>
       </fieldset>
 
       <fieldset>
