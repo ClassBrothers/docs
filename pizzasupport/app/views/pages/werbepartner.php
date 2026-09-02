@@ -5,7 +5,7 @@ declare(strict_types=1);
 $faq = [
     [
         'frage'   => 'Wann wird die Werbefläche in Rechnung gestellt?',
-        'antwort' => '<p>Erst nach dem Startschuss. Sobald genug Betriebe und genug Buchungen zusammengekommen
+        'antwort' => '<p>Erst nach dem Startschuss. Sobald genug Gastronomien und genug Buchungen zusammengekommen
                       sind, erhalten Sie eine Auftragsbestätigung und eine Teilrechnung über '
                       . (int) config('startschuss.anzahlung') . ' % des Auftragswerts. Die Restsumme wird
                       mit Auslieferung fällig. Vor dem Startschuss entstehen Ihnen keine Kosten, und Sie
@@ -21,7 +21,7 @@ $faq = [
     ],
     [
         'frage'   => 'Welche Motive lehnen Sie ab?',
-        'antwort' => '<p>Essens-Lieferdienste, weil sie in direkter Konkurrenz zu den Betrieben stehen,
+        'antwort' => '<p>Essens-Lieferdienste, weil sie in direkter Konkurrenz zu den Gastronomien stehen,
                       die die Kartons ausgeben. Außerdem Politisches, Religiöses und alles, was ohne
                       fachliche Grundlage Meinung transportiert. Bei Motiven, die rechtlich heikel sind
                       oder dem Projekt schaden könnten, behalten wir uns die Ablehnung ebenfalls vor.
@@ -110,7 +110,7 @@ $f      = fortschritt();
               <td><?= e($wf['gruppe']) ?></td>
               <td><?= e($wf['masse']) ?></td>
               <td class="tabelle-preis">
-                <?= e(preis($wf['preis'])) ?>
+                <?= $wf['id'] === 'fun-area' ? 'ab ' : '' ?><?= e(preis($wf['preis'])) ?>
                 <small><?= $wf['brutto'] ? 'inkl. ' . (int) config('mwst_prozent') . ' % MwSt.' : 'zzgl. ' . (int) config('mwst_prozent') . ' % MwSt.' ?></small>
               </td>
             </tr>
@@ -188,7 +188,7 @@ $f      = fortschritt();
       <li>
         <span class="schritt-nr" aria-hidden="true">4</span>
         <h3>Druck und Auslieferung</h3>
-        <p>Rund <?= e(config('startschuss.lieferwochen')) ?> Wochen später sind die Kartons in den Betrieben.</p>
+        <p>Rund <?= e(config('startschuss.lieferwochen')) ?> Wochen später sind die Kartons in den Gastronomien.</p>
       </li>
     </ol>
     <p class="band-nachsatz">
@@ -309,7 +309,7 @@ $f      = fortschritt();
           <h3>Motiv-Vorbehalt</h3>
           <p>
             Wir behalten uns vor, Motive abzulehnen. Ausgeschlossen sind Essens-Lieferdienste,
-            da sie in direkter Konkurrenz zu den ausgebenden Betrieben stehen, außerdem
+            da sie in direkter Konkurrenz zu den ausgebenden Gastronomien stehen, außerdem
             politische und religiöse Inhalte sowie Meinungsbeiträge ohne fachliche Grundlage.
             Lehnen wir ab, erstatten wir bereits gezahlte Beträge vollständig. Die Einzelheiten
             stehen in den <a href="/agb.html">AGB</a>.

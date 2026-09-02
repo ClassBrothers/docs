@@ -26,7 +26,7 @@ $nonce = $GLOBALS['csp_nonce'] ?? '';
     </h2>
 
     <div class="fortschritt-zahlen">
-      <p><strong data-zaehler="betriebe"><?= zahl($f['betriebe']) ?></strong> <span>Betriebe dabei</span></p>
+      <p><strong data-zaehler="betriebe"><?= zahl($f['betriebe']) ?></strong> <span>Gastronomien dabei</span></p>
       <p><strong data-zaehler="unternehmen"><?= zahl($f['unternehmen']) ?></strong> <span>Unternehmen dabei</span></p>
       <p><strong data-zaehler="kartons"><?= zahl($f['kartons']) ?></strong> <span>Kartons vorgemerkt</span></p>
     </div>
@@ -37,7 +37,7 @@ $nonce = $GLOBALS['csp_nonce'] ?? '';
           <span>Gastronomie</span>
           <span><?= zahl($f['betriebe']) ?> von <?= zahl($f['betriebe_ziel']) ?></span>
         </div>
-        <div class="balken" role="progressbar" aria-valuenow="<?= $f['betriebe_prozent'] ?>" aria-valuemin="0" aria-valuemax="100" aria-label="Fortschritt teilnehmende Betriebe">
+        <div class="balken" role="progressbar" aria-valuenow="<?= $f['betriebe_prozent'] ?>" aria-valuemin="0" aria-valuemax="100" aria-label="Fortschritt teilnehmende Gastronomien">
           <span class="balken-fuellung" id="balken-betriebe"></span>
         </div>
       </div>

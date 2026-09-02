@@ -122,10 +122,12 @@ return [
             'id'      => 'fun-area',
             'gruppe'  => 'Fun Area',
             'label'   => 'Fun Area (Boden)',
-            'masse'   => 'Sammelfläche auf der Kartonunterseite',
-            'preis'   => 790,      // 7,90 EUR inkl. 19 % MwSt.
+            'masse'   => 'Sammelfläche auf der Kartonunterseite, frei wählbare Größe ab 12 cm²',
+            // Vorlaeufig der Mindestpreis (12 cm² × 7,99 EUR/cm², inkl. 19 % MwSt.), bis die
+            // flaechenbasierte Buchung im Formular steht - siehe Nachtrag 5, Punkt 1.
+            'preis'   => 9588,     // ab 95,88 EUR inkl. 19 % MwSt., je nach gewählter Fläche
             'brutto'  => true,
-            'text'    => 'Für Privatleute: Gruß, Spruch, Heiratsantrag. Wird beim Aufmachen entdeckt.',
+            'text'    => 'Kleine Fläche, große Wirkung: für kleine Betriebe, Start-ups, Vereine und Suchanzeigen. Wird beim Aufmachen entdeckt.',
         ],
     ],
 
@@ -138,7 +140,7 @@ return [
     // Beide Werte muessen erreicht sein.
     // -----------------------------------------------------------------
     'startschuss' => [
-        'betriebe'     => 40,
+        'betriebe'     => 50,
         'budget_cent'  => 6000000,   // 60.000 EUR netto gebuchtes Werbevolumen
         'anzahlung'    => 50,        // Prozent
         'lieferwochen' => '10–12',

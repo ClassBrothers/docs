@@ -10,15 +10,18 @@ $faq = [
         'frage'   => 'Was ist die Verpackungssteuer in Freiburg?',
         'antwort' => '<p>Eine kommunale Steuer auf Einwegverpackungen, die für Speisen und Getränke zum
                       sofortigen Verzehr ausgegeben werden. Sie wird nicht beim Gast erhoben, sondern
-                      beim Betrieb, der die Verpackung ausgibt. Das Vorbild ist die Tübinger Satzung,
+                      bei der Gastronomie, die die Verpackung ausgibt. Das Vorbild ist die Tübinger Satzung,
                       deren Rechtmäßigkeit das Bundesverfassungsgericht 2025 bestätigt hat. Maßgeblich
                       ist immer die aktuelle Satzung der Stadt Freiburg.</p>',
     ],
     [
         'frage'   => 'Wer muss die Steuer zahlen?',
-        'antwort' => '<p>Der Betrieb, der die Verpackung an den Endkunden ausgibt – also Pizzerien,
+        'antwort' => '<p>Die Gastronomie, die die Verpackung an den Endkunden ausgibt – also Pizzerien,
                       Imbisse, Cafés, Bäckereien, Foodtrucks. Nicht der Hersteller, nicht der Großhandel
-                      und nicht der Gast. Für die Gastronomie bedeutet das: eine zusätzliche Position
+                      und nicht der Gast. Ausgenommen sind reine Lieferdienste ohne eigenen Verkauf vor
+                      Ort: Der Verpackungsmüll fällt bei ihnen im Privathaushalt an, nicht im
+                      öffentlichen Raum. Besteuert wird der Verzehr außer Haus im Sinne von Take-away.
+                      Für die betroffene Gastronomie bedeutet das: eine zusätzliche Position
                       in der Kalkulation, die vorher nicht da war.</p>',
     ],
     [
@@ -34,7 +37,7 @@ $faq = [
         'frage'   => 'Kann ich die Steuer an meine Gäste weitergeben?',
         'antwort' => '<p>Rechtlich steht Ihnen die Preisgestaltung frei. Praktisch ist es eine
                       Abwägung: Ein sichtbarer Aufschlag auf der Rechnung sorgt für Diskussionen an
-                      der Theke, ein eingepreister Aufschlag drückt die Marge. Die meisten Betriebe,
+                      der Theke, ein eingepreister Aufschlag drückt die Marge. Die meisten Gastronomien,
                       mit denen wir sprechen, machen ein bisschen von beidem. Wer den Einkaufspreis
                       der Verpackung auf null bekommt, hat in dieser Rechnung mehr Luft.</p>',
     ],
@@ -56,14 +59,14 @@ $faq = [
 ];
 
 $meta['titel']        = 'Verpackungssteuer Freiburg: Was sie für die Gastronomie bedeutet | Pizza Support';
-$meta['beschreibung'] = 'Verpackungssteuer Freiburg verständlich erklärt: wer sie zahlt, wie hoch sie ausfällt, eine Beispielrechnung für Pizzerien und was Betriebe jetzt tun können.';
+$meta['beschreibung'] = 'Verpackungssteuer Freiburg verständlich erklärt: wer sie zahlt, wie hoch sie ausfällt, eine Beispielrechnung für Pizzerien und was Gastronomien jetzt tun können.';
 $meta['jsonld'] = [
     jsonld_faq($faq),
     jsonld_breadcrumb(['Start' => '/', 'Verpackungssteuer Freiburg' => '/verpackungssteuer-freiburg.html']),
     [
         '@type'         => 'Article',
         'headline'      => 'Verpackungssteuer Freiburg: Was sie für die Gastronomie bedeutet',
-        'description'   => 'Ratgeber zur kommunalen Verpackungssteuer in Freiburg mit Beispielrechnung für gastronomische Betriebe.',
+        'description'   => 'Ratgeber zur kommunalen Verpackungssteuer in Freiburg mit Beispielrechnung für Gastronomien.',
         'inLanguage'    => 'de-DE',
         'author'        => ['@id' => url('/#organisation')],
         'publisher'     => ['@id' => url('/#organisation')],
@@ -86,10 +89,10 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
     <p class="kicker">Ratgeber für Gastronomen</p>
     <h1>Verpackungssteuer Freiburg: Was bedeutet sie für die Gastronomie?</h1>
     <p class="hero-lead">
-      Die Verpackungssteuer in Freiburg trifft nicht den Gast, sondern den Betrieb, der die
+      Die Verpackungssteuer in Freiburg trifft nicht den Gast, sondern die Gastronomie, die die
       Verpackung ausgibt. Das ist der ganze Unterschied, und er erklärt, warum sich für viele
       Küchen die Kalkulation verschoben hat. Auf dieser Seite steht, was besteuert wird, wie
-      viel bei welchem Volumen zusammenkommt und welche Stellschrauben Betrieben bleiben.
+      viel bei welchem Volumen zusammenkommt und welche Stellschrauben Gastronomien bleiben.
       Wer die Verpackungssteuer in Freiburg abfedern will, findet am Ende einen Weg, der beim
       Einkaufspreis ansetzt statt beim Preisschild für den Gast.
     </p>
@@ -178,7 +181,7 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
 
 <section class="band" aria-labelledby="tun-titel">
   <div class="wrap">
-    <h2 id="tun-titel">Was können Betriebe jetzt tun?</h2>
+    <h2 id="tun-titel">Was können Gastronomien jetzt tun?</h2>
     <div class="karten">
       <article class="karte">
         <h3>Sauber erfassen</h3>
@@ -208,12 +211,13 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
       ausschließlich die Veröffentlichungen der Stadt:
     </p>
     <ul class="liste-links">
-      <li><a href="https://www.freiburg.de" rel="nofollow noopener" target="_blank">Stadt Freiburg im Breisgau – amtliche Bekanntmachungen und Satzungen</a></li>
-      <li><a href="https://www.bundesverfassungsgericht.de" rel="nofollow noopener" target="_blank">Bundesverfassungsgericht – Entscheidung zur kommunalen Verpackungssteuer</a></li>
-      <li><a href="https://www.dehoga-bw.de" rel="nofollow noopener" target="_blank">DEHOGA Baden-Württemberg – Hinweise für Betriebe</a></li>
+      <li><a href="https://www.freiburg.de/pb/2485964.html?QUERYSTRING=verpackungssteuer" rel="nofollow noopener" target="_blank">Stadt Freiburg im Breisgau – Verpackungssteuer, amtliche Auskunft</a></li>
+      <li><a href="https://www.bundesverfassungsgericht.de/SharedDocs/Entscheidungen/DE/2024/11/rs20241127_1bvr172623.html" rel="nofollow noopener" target="_blank">Bundesverfassungsgericht – Entscheidung zur kommunalen Verpackungssteuer</a></li>
+      <li><a href="https://www.dehogabw.de" rel="nofollow noopener" target="_blank">DEHOGA Baden-Württemberg – Hinweise für Gastronomien</a></li>
+      <li><a href="https://de.wikipedia.org/wiki/Verpackungssteuer_(T%C3%BCbingen)" rel="nofollow noopener" target="_blank">Wikipedia – Verpackungssteuer (Tübingen)</a></li>
     </ul>
     <p class="klein">
-      Bei steuerlichen Fragen zum eigenen Betrieb hilft die Steuerberatung weiter.
+      Bei steuerlichen Fragen zur eigenen Gastronomie hilft die Steuerberatung weiter.
       Wir können sagen, was ein Karton kostet – nicht, wie Ihre Anmeldung auszusehen hat.
     </p>
   </div>

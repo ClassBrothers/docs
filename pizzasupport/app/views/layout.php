@@ -17,7 +17,7 @@ $jsonld = array_merge([jsonld_organisation()], $meta['jsonld'] ?? []);
 $graph  = ['@context' => 'https://schema.org', '@graph' => $jsonld];
 
 $navigation = [
-    '/'                                => 'Start',
+    '/'                                => 'Für die Gastro',
     '/werbepartner.html'               => 'Für Unternehmen',
     '/werbeideen.html'                 => 'Werbeideen',
     '/teilnehmer.html'                 => 'Wer ist dabei',

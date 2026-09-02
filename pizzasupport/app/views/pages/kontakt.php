@@ -16,7 +16,7 @@ $faq = [
     [
         'frage'   => 'Ich möchte über das Projekt berichten. An wen wende ich mich?',
         'antwort' => '<p>Schreiben Sie uns über dieses Formular mit dem Betreff „Presse“. Wir schicken
-                      Bildmaterial, Hintergründe und stellen den Kontakt zu teilnehmenden Betrieben her,
+                      Bildmaterial, Hintergründe und stellen den Kontakt zu teilnehmenden Gastronomien her,
                       soweit diese einverstanden sind.</p>',
     ],
 ];

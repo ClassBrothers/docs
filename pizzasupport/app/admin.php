@@ -79,6 +79,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['aktion'])) {
         } elseif ($aktion === 'qr-aus' && $id > 0) {
             db_run('UPDATE qr_redirects SET aktiv = 0 WHERE id = ?', [$id]);
             $meldung = 'QR-Weiterleitung abgeschaltet.';
+        } elseif ($aktion === 'migrieren') {
+            $ergebnis = migrationen_ausfuehren();
+            if ($ergebnis['fehler'] !== null) {
+                $meldung = 'Fehler beim Einspielen: ' . $ergebnis['fehler'];
+            } elseif ($ergebnis['eingespielt'] === []) {
+                $meldung = 'Datenbank ist bereits aktuell, nichts einzuspielen.';
+            } else {
+                $meldung = 'Eingespielt: ' . implode(', ', $ergebnis['eingespielt']) . '.';
+            }
+        } elseif ($aktion === 'gruendungspartner-anlegen') {
+            $meldung = gruendungspartner_anlegen()['hinweis'];
         } else {
             $meldung = 'Unbekannte Aktion, nichts geändert.';
         }
@@ -238,6 +249,20 @@ function admin_seite(?string $meldung): void
            . '</td></tr>';
     }
     echo '</tbody></table></div>';
+
+    // Wartung: neue Datenbank-Migrationen einspielen, ohne Kommandozeilenzugang.
+    echo '<h2>Wartung</h2>'
+       . '<p class="hinweis-klein">Nach dem Hochladen neuer Dateien per FTP hier klicken, damit neue '
+       . 'Datenbank-Tabellen oder -Spalten angelegt werden. Ist nichts Neues dabei, passiert nichts.</p>'
+       . '<form method="post" class="inline">' . csrf_field()
+       . '<input type="hidden" name="aktion" value="migrieren">'
+       . '<button type="submit">Migrationen ausführen</button></form>'
+       . '<p class="hinweis-klein">Einmalig, sobald die neuen Dateien für die Gründungspartner-Buchungen '
+       . 'hochgeladen sind: legt die vier Buchungen von Badische Entertainment, Class Brothers, '
+       . 'KI-Assistenz und SnackWorks an. Ein zweiter Klick tut nichts, wenn sie schon existieren.</p>'
+       . '<form method="post" class="inline">' . csrf_field()
+       . '<input type="hidden" name="aktion" value="gruendungspartner-anlegen">'
+       . '<button type="submit">Gründungspartner anlegen</button></form>';
 
     echo '<p class="fuss-hinweis">Auskunft und Löschung einzelner Personen laufen über die Kommandozeile: '
        . '<code>php bin/export.php auskunft adresse@example.com</code> und '

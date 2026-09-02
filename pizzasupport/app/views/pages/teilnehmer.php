@@ -6,15 +6,15 @@ $faq = [
     [
         'frage'   => 'Wann startet das Projekt wirklich?',
         'antwort' => '<p>Wenn genug zusammenkommt. Wir brauchen ' . zahl((int) config('startschuss.betriebe')) . '
-                      teilnehmende Betriebe und genug gebuchtes Werbevolumen, um eine Auflage sinnvoll
+                      teilnehmende Gastronomien und genug gebuchtes Werbevolumen, um eine Auflage sinnvoll
                       zu drucken. Beides sehen Sie oben in Echtzeit. Erst wenn beide Balken voll sind,
                       geben wir die Produktion frei – danach dauert es rund '
                       . e(config('startschuss.lieferwochen')) . ' Wochen bis zur Auslieferung.
                       Feste Kalendertermine nennen wir nicht, solange wir sie nicht halten können.</p>',
     ],
     [
-        'frage'   => 'Warum stehen hier noch nicht alle Betriebe?',
-        'antwort' => '<p>Weil jeder Eintrag von Hand freigegeben wird und nur erscheint, wenn der Betrieb
+        'frage'   => 'Warum stehen hier noch nicht alle Gastronomien?',
+        'antwort' => '<p>Weil jeder Eintrag von Hand freigegeben wird und nur erscheint, wenn die Gastronomie
                       dem ausdrücklich zugestimmt hat. Viele machen mit, wollen aber nicht öffentlich
                       genannt werden – das respektieren wir. Die Zahlen oben zählen alle Teilnehmer,
                       die Karte zeigt nur die, die einverstanden sind.</p>',
@@ -35,7 +35,7 @@ $faq = [
 ];
 
 $meta['titel']        = 'Wer macht bei Pizza Support mit? Karte und Liste | Pizza Support';
-$meta['beschreibung'] = 'Alle teilnehmenden Betriebe und unterstützenden Unternehmen auf einer Karte, sortierbar nach PLZ und Alphabet. Aktueller Stand bis zum Startschuss.';
+$meta['beschreibung'] = 'Alle teilnehmenden Gastronomien und unterstützenden Unternehmen auf einer Karte, sortierbar nach PLZ und Alphabet. Aktueller Stand bis zum Startschuss.';
 $meta['jsonld'] = [
     jsonld_faq($faq),
     jsonld_breadcrumb(['Start' => '/', 'Wer ist dabei' => '/teilnehmer.html']),
@@ -52,10 +52,10 @@ $nlErfolg    = flash_get('newsletter_ok');
     <p class="kicker">Der aktuelle Stand</p>
     <h1>Wer ist bei Pizza Support dabei?</h1>
     <p class="hero-lead">
-      Hier sehen Sie, wer bei Pizza Support dabei ist: die Betriebe, die Kartons abnehmen,
+      Hier sehen Sie, wer bei Pizza Support dabei ist: die Gastronomien, die Kartons abnehmen,
       und die Unternehmen, die sie finanzieren. Die Liste wächst mit jeder Eintragung, und
       der Startschuss fällt, sobald beide Seiten stehen. Wer noch fehlt, kann jederzeit
-      dazukommen – <a href="/#bestellen">als Betrieb hier</a> oder
+      dazukommen – <a href="/#bestellen">als Gastronomie hier</a> oder
       <a href="/werbepartner.html">als Werbepartner hier</a>.
     </p>
   </div>
@@ -114,14 +114,14 @@ $nlErfolg    = flash_get('newsletter_ok');
           <div class="leer-zustand">
             <h3>Noch ist die Karte leer</h3>
             <p>
-              Wir haben gerade erst angefangen. Sobald die ersten Betriebe ihre Freigabe
+              Wir haben gerade erst angefangen. Sobald die ersten Gastronomien ihre Freigabe
               erteilen, erscheinen sie hier – mit Name, Adresse und Link.
             </p>
             <p>
               <a class="btn btn-primaer" href="/#bestellen">Der erste sein</a>
             </p>
             <p class="leer-hinweis">
-              Wir zeigen hier ausschließlich Betriebe, die tatsächlich zugesagt und der
+              Wir zeigen hier ausschließlich Gastronomien, die tatsächlich zugesagt und der
               Veröffentlichung zugestimmt haben. Beispieleinträge, die es in Wirklichkeit
               nicht gibt, würden weder Ihnen noch uns helfen.
             </p>

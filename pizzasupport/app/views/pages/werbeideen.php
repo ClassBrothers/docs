@@ -34,10 +34,10 @@ $meta['jsonld'] = [
       <article class="idee">
         <p class="idee-claim">„Wir suchen Dich. Nicht Deinen Lebenslauf.“</p>
         <p>
-          Ein Sanitärbetrieb sucht einen Monteur. Auf dem Deckel steht der Satz, das
-          Firmenlogo und ein QR-Code, der direkt zu einem Formular mit drei Feldern führt.
-          Keine Anschreiben, keine Zeugnisse. Wer Interesse hat, tippt seinen Namen ein,
-          während die Pizza abkühlt.
+          Ein Sanitärbetrieb sucht einen Monteur. Der Deckel klappt auf, der Dampf steigt –
+          und mittendrin der Satz, das Firmenlogo und ein QR-Code, der direkt zu einem
+          Formular mit drei Feldern führt. Keine Anschreiben, keine Zeugnisse. Wer Interesse
+          hat, tippt seinen Namen ein, während die erste Ecke noch zu heiß zum Anfassen ist.
         </p>
         <p class="idee-meta">Empfohlen: Deckel mittel, mit QR-Code</p>
       </article>
@@ -46,9 +46,9 @@ $meta['jsonld'] = [
         <p class="idee-claim">„Ausbildung ab September. Ja, wirklich bezahlt.“</p>
         <p>
           Die Zielgruppe für Ausbildungsplätze sitzt fast wörtlich vor diesem Karton:
-          zwischen sechzehn und zwanzig, abends zu Hause, Freunde daneben. Ein
-          Ausbildungsplatz gehört dorthin, nicht auf eine Karriereseite, die niemand
-          aufruft.
+          zwischen sechzehn und zwanzig, Käse zieht gerade Fäden, Freunde daneben, Handy
+          sowieso in der Hand. Ein Ausbildungsplatz gehört in genau diesen Moment, nicht auf
+          eine Karriereseite, die niemand aufruft.
         </p>
         <p class="idee-meta">Empfohlen: Deckel klein oder mittel</p>
       </article>
@@ -57,8 +57,8 @@ $meta['jsonld'] = [
         <p class="idee-claim">„Quereinsteiger willkommen. Erfahrung im Aushalten reicht.“</p>
         <p>
           Pflegedienste, Kitas und Sicherheitsdienste suchen Menschen, die nicht in der
-          Branche sind und deshalb nie eine Branchenanzeige sehen. Auf einem Pizzakarton
-          erreichen Sie genau die.
+          Branche sind und deshalb nie eine Branchenanzeige sehen. Beim Aufklappen des
+          Kartons dagegen schon – mitten im Feierabend, mitten im echten Leben.
         </p>
         <p class="idee-meta">Empfohlen: Deckel mittel</p>
       </article>
@@ -134,8 +134,9 @@ $meta['jsonld'] = [
         <p class="idee-claim">„Neu bei Ihnen um die Ecke.“</p>
         <p>
           Eine Neueröffnung braucht in den ersten Wochen vor allem eines: dass die Leute im
-          Umkreis überhaupt wissen, dass es Sie gibt. Kartons gehen an die Betriebe im
-          jeweiligen Stadtteil, also genau dorthin, wo Ihre ersten Kundinnen wohnen.
+          Umkreis überhaupt wissen, dass es Sie gibt. Die Kartons landen bei den Gastronomien
+          im jeweiligen Stadtteil und damit auf dem Wohnzimmertisch, noch bevor die erste
+          Scheibe gegessen ist – genau dort, wo Ihre ersten Kundinnen wohnen.
         </p>
         <p class="idee-meta">Empfohlen: Deckel groß</p>
       </article>
@@ -166,24 +167,25 @@ $meta['jsonld'] = [
 
 <section class="band band-hell">
   <div class="wrap">
-    <h2>Die Fun Area – für alle anderen</h2>
+    <h2>Die Fun Area – die unkonventionelle Fläche</h2>
     <p>
-      Auf der Unterseite jedes Kartons sammeln wir kleine Flächen für Privatleute. Sie
-      kosten <?= e(preis((int) werbeformat('fun-area')['preis'])) ?> und werden entdeckt,
-      wenn jemand den leeren Karton hochhebt. Was dort steht, muss keinen Zweck erfüllen.
+      Auf der Unterseite jedes Kartons sammeln wir kleine, frei zuschneidbare Flächen –
+      ab <?= e(preis((int) werbeformat('fun-area')['preis'])) ?> je nach gewählter Größe.
+      Gedacht für kleine Betriebe, Start-ups, Vereine und Suchanzeigen, die mit wenig Fläche
+      viel sagen wollen. Entdeckt wird sie, wenn jemand den leeren Karton hochhebt – was dort
+      steht, muss keinen Zweck erfüllen.
     </p>
 
     <ul class="liste-check">
-      <li>„Marie, willst Du mich heiraten? – Der Typ mit der Salami“</li>
-      <li>„Für Basti, 30. Er isst das hier gerade. Wir wissen es.“</li>
-      <li>„Danke an den Nachbarn, der immer das Paket annimmt.“</li>
       <li>„TuS Sportverein sucht Trainer. Bezahlung: Respekt.“</li>
+      <li>„3 Mitarbeitende gesucht. Kein Anschreiben nötig.“</li>
+      <li>„Neu im Viertel: unser kleiner Laden um die Ecke.“</li>
+      <li>„Marie, willst Du mich heiraten? – Der Typ mit der Salami“</li>
     </ul>
 
     <p>
       Wer eine gute Idee hat, sollte sie schnell buchen. Die Fun Area ist begrenzt, und
-      erfahrungsgemäß sind es die <?= e(preis((int) werbeformat('fun-area')['preis'])) ?>-Flächen,
-      über die am meisten geredet wird.
+      erfahrungsgemäß sind es genau diese kleinen Flächen, über die am meisten geredet wird.
     </p>
   </div>
 </section>
@@ -197,7 +199,7 @@ $meta['jsonld'] = [
       einem Wirt seine Gäste vergrault.
     </p>
     <ul class="liste-check">
-      <li>Keine Essens-Lieferdienste. Sie wären direkte Konkurrenz für genau die Betriebe, denen wir helfen wollen.</li>
+      <li>Keine Essens-Lieferdienste. Sie wären direkte Konkurrenz für genau die Gastronomien, denen wir helfen wollen.</li>
       <li>Nichts Politisches und nichts Religiöses.</li>
       <li>Keine Meinung ohne Ahnung.</li>
     </ul>

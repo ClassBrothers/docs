@@ -8,13 +8,13 @@ $faq = [
         'antwort' => '<p>Nichts. Kein Cent, keine versteckte Gebühr, keine Mindestabnahme gegen Rechnung.
                       Die Kartons sind vollständig durch die Werbeflächen finanziert, die Unternehmen und
                       Privatleute auf Deckel, Seite und Boden buchen. Du bezahlst weder Druck noch
-                      Lieferung. Was Du einbringst, ist Dein Bedarf – je mehr Betriebe mitmachen,
+                      Lieferung. Was Du einbringst, ist Dein Bedarf – je mehr Gastronomien mitmachen,
                       desto attraktiver werden die Flächen für die
                       <a href="/werbepartner.html">Werbepartner</a>.</p>',
     ],
     [
         'frage'   => 'Wie läuft das Startschuss-Prinzip genau ab?',
-        'antwort' => '<p>Erst sammeln, dann drucken. Betriebe tragen ihren Bedarf ein, Unternehmen buchen
+        'antwort' => '<p>Erst sammeln, dann drucken. Gastronomien tragen ihren Bedarf ein, Unternehmen buchen
                       Flächen. Wenn beides zusammenkommt – genug Kartons abgenommen und genug Werbebudget
                       gebucht – geben wir die Produktion frei. Danach dauert es rund '
                       . e(config('startschuss.lieferwochen')) . ' Wochen, bis die Paletten hier stehen und
@@ -33,7 +33,7 @@ $faq = [
         'antwort' => '<p>Es ist der Anlass. Seit die Steuer auf Einwegverpackungen erhoben wird, schlägt
                       jeder Karton zusätzlich zu Buche. Wir können die Steuer nicht abschaffen und wollen
                       das auch gar nicht – aber wir können den Einkaufspreis der Verpackung auf null
-                      drücken. Was die Steuer für einen Betrieb konkret bedeutet, haben wir auf der
+                      drücken. Was die Steuer für eine Gastronomie konkret bedeutet, haben wir auf der
                       Seite <a href="/verpackungssteuer-freiburg.html">Verpackungssteuer Freiburg</a>
                       durchgerechnet.</p>',
     ],
@@ -154,7 +154,7 @@ $f       = fortschritt();
       <li>
         <span class="schritt-nr" aria-hidden="true">1</span>
         <h3>Du trägst Dich ein</h3>
-        <p>Betrieb, Adresse, Wunschmenge. Dauert zwei Minuten und kostet nichts.</p>
+        <p>Gastronomie, Adresse, Wunschmenge. Dauert zwei Minuten und kostet nichts.</p>
       </li>
       <li>
         <span class="schritt-nr" aria-hidden="true">2</span>
@@ -207,7 +207,7 @@ $f       = fortschritt();
       </article>
       <article class="karte">
         <h3>Nachbarn werben für Nachbarn</h3>
-        <p>Auf dem Deckel steht kein Konzern, sondern der Betrieb zwei Straßen weiter. Das kommt an.</p>
+        <p>Auf dem Deckel steht kein Konzern, sondern die Gastronomie zwei Straßen weiter. Das kommt an.</p>
       </article>
       <article class="karte">
         <h3>Keine Bindung</h3>
@@ -226,7 +226,7 @@ $f       = fortschritt();
     <h2 id="mission-titel">Wofür wir das aufziehen</h2>
     <p>
       Freiburg lebt von Läden, die jemandem gehören, den man kennt. Von der Pizzeria,
-      in der der Chef noch selbst am Ofen steht, und vom Betrieb, der seit dreißig
+      in der der Chef noch selbst am Ofen steht, und von der Gastronomie, die seit dreißig
       Jahren dieselbe Ecke hält. Diese Vielfalt verschwindet nicht mit einem Knall,
       sondern leise, ein Laden nach dem anderen.
     </p>
@@ -248,7 +248,8 @@ $f       = fortschritt();
     <h2 id="flaechen-titel">Was kostet eine Fläche auf dem Karton?</h2>
     <p class="band-lead">
       Für Unternehmen gibt es feste Pakete, keine Rechnerei nach Quadratzentimetern.
-      Für alle anderen die Fun Area auf der Unterseite.
+      Für alle anderen die Fun Area auf der Unterseite. Unser Lagerbestand: 42.000 Kartons,
+      bereit für die erste Auflage.
     </p>
     <div class="preis-gitter">
       <?php foreach (config('werbeformate') as $wf): ?>
@@ -256,7 +257,7 @@ $f       = fortschritt();
           <h3><?= e($wf['label']) ?></h3>
           <p class="preis-masse"><?= e($wf['masse']) ?></p>
           <p class="preis-zahl">
-            <?= e(preis($wf['preis'])) ?>
+            <?= $wf['id'] === 'fun-area' ? 'ab ' : '' ?><?= e(preis($wf['preis'])) ?>
             <small><?= $wf['brutto'] ? 'inkl. ' . (int) config('mwst_prozent') . ' % MwSt.' : 'netto' ?></small>
           </p>
           <p class="preis-text"><?= e($wf['text']) ?></p>
@@ -277,7 +278,7 @@ $f       = fortschritt();
 
 <section class="band band-cta" aria-labelledby="cta-titel">
   <div class="wrap schmal zentriert">
-    <h2 id="cta-titel">Klingt das nach etwas für Deinen Betrieb?</h2>
+    <h2 id="cta-titel">Willst Du mit Deinem Betrieb dabei sein?</h2>
     <p>
       Dann trag Dich ein. Es kostet nichts, bindet Dich an nichts und dauert
       keine drei Minuten. Bestelle jetzt und sei dabei, wenn wir versenden.

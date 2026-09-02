@@ -29,6 +29,8 @@ require APP_ROOT . '/app/lib/stats.php';
 require APP_ROOT . '/app/lib/analytics.php';
 require APP_ROOT . '/app/lib/upload.php';
 require APP_ROOT . '/app/lib/widerruf.php';
+require APP_ROOT . '/app/lib/migrate.php';
+require APP_ROOT . '/app/lib/gruendungspartner.php';
 
 /** Zugriff auf die Konfiguration, punktgetrennt: config('startschuss.betriebe') */
 function config(?string $pfad = null, $default = null)
