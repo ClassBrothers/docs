@@ -30,13 +30,23 @@ function fortschritt(): array
     // Bestellungen mit angegebenem Einkaufspreis, nie aus reinen
     // Rechnereingaben. Rechnet live, damit eine geloeschte Bestellung ihren
     // Anteil automatisch verliert.
-    $ersparnis_cent = (int) db_value(
-        "SELECT COALESCE(SUM(g.einkaufspreis_cent * bp.gesamt), 0)
-           FROM gastro_bestellungen g
-           JOIN (SELECT bestellung_id, SUM(menge) AS gesamt FROM bestellpositionen GROUP BY bestellung_id) bp
-             ON bp.bestellung_id = g.id
-          WHERE g.status = 'freigegeben' AND g.einkaufspreis_cent IS NOT NULL", [], 0
-    );
+    //
+    // Faengt fehlende Spalten ab: Beim FTP-Deploy kommen neue Dateien vor der
+    // Migration an (die Migration laeuft erst per Knopf im Adminpanel), und
+    // fortschritt() wird auch von admin_seite() aufgerufen - ohne Abfangen
+    // wuerde ein fehlender Spaltenname in diesem kurzen Zwischenzustand die
+    // gesamte Seite inklusive Adminpanel lahmlegen.
+    try {
+        $ersparnis_cent = (int) db_value(
+            "SELECT COALESCE(SUM(g.einkaufspreis_cent * bp.gesamt), 0)
+               FROM gastro_bestellungen g
+               JOIN (SELECT bestellung_id, SUM(menge) AS gesamt FROM bestellpositionen GROUP BY bestellung_id) bp
+                 ON bp.bestellung_id = g.id
+              WHERE g.status = 'freigegeben' AND g.einkaufspreis_cent IS NOT NULL", [], 0
+        );
+    } catch (PDOException $e) {
+        $ersparnis_cent = 0;
+    }
 
     // Schwellenwerte fuer den Startschuss rechnen immer mit den echten,
     // ungeschoenten Zahlen - die Mindestanzeige weiter unten betrifft
