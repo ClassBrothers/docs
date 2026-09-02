@@ -190,7 +190,12 @@
           kachel.alt = '';
           kachel.loading = 'lazy';
           kachel.decoding = 'async';
-          kachel.referrerPolicy = 'no-referrer';
+          // Kein eigenes referrerPolicy hier: OpenStreetMaps Kachelserver
+          // erwartet laut Nutzungsbedingungen einen erkennbaren Referer und
+          // blockiert Anfragen ohne einen solchen mitunter kommentarlos -
+          // die Kachel bleibt dann leer, ohne Fehler in der Konsole. Die
+          // seitenweite Referrer-Policy (strict-origin-when-cross-origin)
+          // gibt an OpenStreetMap ohnehin nur die Domain weiter, nie den Pfad.
           kachel.addEventListener('load', function () { this.classList.add('ist-da'); });
           kachel.src = 'https://tile.openstreetmap.org/' + z + '/' + wx + '/' + ty + '.png';
           this.kachelCache[id] = kachel;
