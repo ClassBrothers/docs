@@ -52,7 +52,7 @@ return [
         ['id' => '32', 'label' => '32 × 32 cm', 'hinweis' => 'unsere Erstauflage',  'default' => true,  'sofort' => true],
         ['id' => '33', 'label' => '33 × 33 cm', 'hinweis' => 'Familienformat',      'default' => false, 'sofort' => false],
     ],
-    'karton_hoehe_cm' => 4,   // per Flaechenplan-Legende: Karton 32 × 32 × 4 cm
+    'karton_hoehe_cm' => 3,   // vom Kunden bestaetigt: 3 cm, nicht die 4 cm aus der Flaechenplan-Legende
 
     // -----------------------------------------------------------------
     // Ersparnisrechner auf der Startseite. Grenzwerte gegen Unsinnseingaben,

@@ -201,7 +201,7 @@ $f       = fortschritt();
       </article>
       <article class="karte">
         <h3>Vierfarbdruck statt Braunware</h3>
-        <p>32 × 32 × 4 cm, sauber bedruckt. Sieht auf dem Beifahrersitz besser aus als der Standardkarton.</p>
+        <p>32 × 32 × 3 cm, sauber bedruckt. Sieht auf dem Beifahrersitz besser aus als der Standardkarton.</p>
       </article>
       <article class="karte">
         <h3>Du stehst auf der Karte</h3>
