@@ -20,6 +20,7 @@ $tabellen = [
     'newsletter'  => ['newsletter', 'email'],
     'kontakt'     => ['kontaktanfragen', 'email'],
     'empfehlung'  => ['pizzeria_empfehlungen', 'melder_email'],
+    'abstimmung'  => ['gaeste_abstimmungen', 'email'],
 ];
 
 /** Verschluesselte Spalten fuer die Ausgabe entschluesseln. */

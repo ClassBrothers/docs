@@ -172,7 +172,21 @@ $fr = config('aufbewahrung');
       Ihre E-Mail-Adresse Ihre Einwilligung.
     </p>
 
-    <h2>12. Newsletter</h2>
+    <h2>12. Abstimmung für Gäste</h2>
+    <p>
+      Auf der Seite „Für Gäste" können Sie über die gedruckten Werbemotive und über die
+      Aktion insgesamt abstimmen. Verarbeitet werden Ihre Auswahl, Ihre Einschätzung zur
+      Aktion sowie ein etwaiges Freitextfeld. Postleitzahl und Alter geben Sie freiwillig
+      für unsere Statistik an; sie fließen ausschließlich anonymisiert in Auswertungen ein.
+      Rechtsgrundlage ist unser berechtigtes Interesse an der Auswertung der Aktion
+      (Art. 6 Abs. 1 lit. f DSGVO). Wenn Sie möchten, dass wir Ihnen antworten, können Sie
+      freiwillig Namen und E-Mail-Adresse hinterlassen; dafür holen wir gesondert Ihre
+      Einwilligung ein (Art. 6 Abs. 1 lit. a DSGVO). Melden Sie sich dabei zusätzlich für
+      unsere Neuigkeiten an, gilt dafür das unter „Newsletter" beschriebene
+      Double-Opt-in-Verfahren.
+    </p>
+
+    <h2>13. Newsletter</h2>
     <p>
       Für den Newsletter verwenden wir das Double-Opt-in-Verfahren: Nach Ihrer Anmeldung
       erhalten Sie eine E-Mail mit einem Bestätigungslink. Erst nach dem Klick nehmen wir
@@ -184,7 +198,7 @@ $fr = config('aufbewahrung');
       automatisch.
     </p>
 
-    <h2>13. Kontaktformular</h2>
+    <h2>14. Kontaktformular</h2>
     <p>
       Ihre Angaben aus dem Kontaktformular verarbeiten wir zur Bearbeitung Ihrer Anfrage
       (Art. 6 Abs. 1 lit. b bzw. lit. f DSGVO). Wir bewahren die Anfragen auf, bis sie
@@ -192,7 +206,7 @@ $fr = config('aufbewahrung');
       Aufbewahrungspflichten bleiben unberührt.
     </p>
 
-    <h2>14. QR-Codes auf den Kartons</h2>
+    <h2>15. QR-Codes auf den Kartons</h2>
     <p>
       QR-Codes auf gedruckten Kartons führen technisch über eine Adresse auf pizzasupport.de
       und von dort auf die Seite des jeweiligen Inserenten. Beim Aufruf zählen wir den Klick
@@ -202,7 +216,7 @@ $fr = config('aufbewahrung');
       Herkunftsadresse nicht weiter.
     </p>
 
-    <h2>15. Formularschutz</h2>
+    <h2>16. Formularschutz</h2>
     <p>
       Zum Schutz vor automatisierten Einsendungen enthalten unsere Formulare ein für Menschen
       unsichtbares Feld und eine Zeitprüfung. Zusätzlich begrenzen wir die Zahl der
@@ -212,7 +226,7 @@ $fr = config('aufbewahrung');
       Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.
     </p>
 
-    <h2>16. Empfänger und Drittlandübermittlung</h2>
+    <h2>17. Empfänger und Drittlandübermittlung</h2>
     <p>
       Ihre Daten erhalten außer unserem Hosting-Anbieter keine Dritten, sofern das nicht zur
       Vertragserfüllung notwendig ist – etwa die Druckerei für die Auslieferungsadresse oder
@@ -223,7 +237,7 @@ $fr = config('aufbewahrung');
       in die USA übermitteln kann (siehe Nummer 7).
     </p>
 
-    <h2>17. Speicherdauer</h2>
+    <h2>18. Speicherdauer</h2>
     <ul class="liste-check">
       <li>Bestellungen und Buchungen: für die Dauer der Geschäftsbeziehung, danach nach den handels- und steuerrechtlichen Fristen von sechs bzw. zehn Jahren</li>
       <li>Abgelehnte oder zurückgezogene Einträge: <?= (int) $fr['abgelehnte_eintraege'] ?> Tage</li>
@@ -233,7 +247,7 @@ $fr = config('aufbewahrung');
       <li>Google Analytics: legt Google in eigenen Einstellungen fest, unabhängig von uns</li>
     </ul>
 
-    <h2>18. Ihre Rechte</h2>
+    <h2>19. Ihre Rechte</h2>
     <p>Sie haben jederzeit das Recht auf</p>
     <ul class="liste-check">
       <li>Auskunft über die zu Ihnen gespeicherten Daten (Art. 15 DSGVO)</li>
@@ -251,7 +265,7 @@ $fr = config('aufbewahrung');
       die Informationsfreiheit Baden-Württemberg, Lautenschlagerstraße 20, 70173 Stuttgart.
     </p>
 
-    <h2>19. Widerspruchsrecht</h2>
+    <h2>20. Widerspruchsrecht</h2>
     <p>
       Soweit wir Daten auf Grundlage berechtigter Interessen verarbeiten, können Sie dieser
       Verarbeitung aus Gründen, die sich aus Ihrer besonderen Situation ergeben, jederzeit
@@ -259,7 +273,7 @@ $fr = config('aufbewahrung');
       wir können zwingende schutzwürdige Gründe nachweisen, die Ihre Interessen überwiegen.
     </p>
 
-    <h2>20. Verschlüsselung</h2>
+    <h2>21. Verschlüsselung</h2>
     <p>
       Diese Website wird ausschließlich über HTTPS ausgeliefert. Besonders schutzwürdige
       Felder – Telefonnummern, Rechnungsanschriften und Umsatzsteuer-Identifikationsnummern –

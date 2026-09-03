@@ -295,6 +295,9 @@
 .wahl-gitter{display:grid;gap:.75rem;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-top:.25rem}
 .wahl-gitter-preis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .wahl-reihe{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:.25rem}
+.wahl-reihe-spalte{flex-direction:column}
+.wahl-reihe-spalte .wahl-schmal{flex:1 1 auto}
+.feld-hilfe-inline{font-weight:400;font-size:.85rem;color:var(--textfarbe-gedaempft)}
 .wahl{position:relative;display:block;cursor:pointer}
 /* Wie bei .modal/.consent/.teilnehmer-eintrag: eigenes display:block
    sticht sonst das hidden-Attribut aus (hier fuer die Wunschflaechen-

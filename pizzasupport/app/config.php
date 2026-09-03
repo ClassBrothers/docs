@@ -315,6 +315,7 @@ return [
         '/werbepartner.html'               => ['prio' => '0.9', 'freq' => 'weekly'],
         '/werbeideen.html'                 => ['prio' => '0.7', 'freq' => 'monthly'],
         '/teilnehmer.html'                 => ['prio' => '0.8', 'freq' => 'daily'],
+        '/fuer-gaeste.html'                => ['prio' => '0.6', 'freq' => 'weekly'],
         '/verpackungssteuer-freiburg.html' => ['prio' => '0.8', 'freq' => 'monthly'],
         '/ueber-uns.html'                  => ['prio' => '0.6', 'freq' => 'monthly'],
         '/kontakt.html'                    => ['prio' => '0.5', 'freq' => 'monthly'],
@@ -329,5 +330,11 @@ return [
         'betriebe'    => 16,
         'unternehmen' => 5,
         'kartons'     => 5500,
+    ],
+
+    // Gaeste-Abstimmung auf /fuer-gaeste.html: wie viele Motive je Frage
+    // gleichzeitig ausgewaehlt werden duerfen.
+    'abstimmung' => [
+        'max_auswahl' => 3,
     ],
 ];

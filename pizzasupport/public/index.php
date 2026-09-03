@@ -31,6 +31,7 @@ $formulare = [
     '/senden/empfehlung'   => 'empfehlung.php',
     '/senden/newsletter'   => 'newsletter.php',
     '/senden/kontakt'      => 'kontakt.php',
+    '/senden/abstimmung'   => 'abstimmung.php',
 ];
 
 if (isset($formulare[$pfad])) {
@@ -59,6 +60,7 @@ $seiten = [
     '/werbepartner.html'               => 'werbepartner',
     '/werbeideen.html'                 => 'werbeideen',
     '/teilnehmer.html'                 => 'teilnehmer',
+    '/fuer-gaeste.html'                => 'fuer-gaeste',
     '/verpackungssteuer-freiburg.html' => 'verpackungssteuer',
     '/ueber-uns.html'                  => 'ueber-uns',
     '/kontakt.html'                    => 'kontakt',

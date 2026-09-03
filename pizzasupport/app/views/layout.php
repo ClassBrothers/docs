@@ -21,6 +21,7 @@ $navigation = [
     '/werbepartner.html'               => 'Für Unternehmen',
     '/werbeideen.html'                 => 'Werbeideen',
     '/teilnehmer.html'                 => 'Wer ist dabei',
+    '/fuer-gaeste.html'                => 'Für Gäste',
     '/verpackungssteuer-freiburg.html' => 'Verpackungssteuer',
     '/ueber-uns.html'                  => 'Über uns',
     '/kontakt.html'                    => 'Kontakt',
