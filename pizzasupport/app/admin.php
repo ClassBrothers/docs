@@ -312,9 +312,16 @@ function admin_seite(?string $meldung): void
     echo '</tbody></table></div>';
 
     // Werbung
+    // Faengt eine fehlende Tabelle ab: Beim FTP-Deploy kommen neue Dateien
+    // vor der Migration an (die Migration laeuft erst per Knopf weiter
+    // unten) - ohne Abfangen wuerde das den ganzen Adminbereich lahmlegen.
     $vergebenNachBuchung = [];
-    foreach (db_all('SELECT werbebuchung_id, kennung FROM flaechen_vergabe') as $v) {
-        $vergebenNachBuchung[(int) $v['werbebuchung_id']][] = $v['kennung'];
+    try {
+        foreach (db_all('SELECT werbebuchung_id, kennung FROM flaechen_vergabe') as $v) {
+            $vergebenNachBuchung[(int) $v['werbebuchung_id']][] = $v['kennung'];
+        }
+    } catch (PDOException $e) {
+        $vergebenNachBuchung = [];
     }
     echo '<h2>Werbebuchungen</h2><div class="tabelle-wrap"><table><thead><tr>'
        . '<th>Firma</th><th>Kontakt</th><th>Flächen</th><th>Wert</th><th>Motiv</th><th>Status</th><th>Aktion</th></tr></thead><tbody>';

@@ -366,7 +366,17 @@ $f      = fortschritt();
           // Permanente "bereits verkauft"-Markierung: erst nach dem
           // Bestaetigungsklick fest vergeben (siehe werbebuchung-bestaetigen.php),
           // ab dann fuer niemanden mehr waehlbar.
-          $vergebeneKennungen = array_column(db_all('SELECT kennung FROM flaechen_vergabe'), 'kennung');
+          //
+          // Faengt eine fehlende Tabelle ab: Beim FTP-Deploy kommen neue
+          // Dateien vor der Migration an (die Migration laeuft erst per
+          // Knopf im Adminpanel) - ohne Abfangen wuerde das die ganze Seite
+          // mitten im Rendern abbrechen, noch bevor das Layout (Kopf, CSS,
+          // Navigation) ueberhaupt zum Zug kommt, siehe render.php.
+          try {
+              $vergebeneKennungen = array_column(db_all('SELECT kennung FROM flaechen_vergabe'), 'kennung');
+          } catch (PDOException $e) {
+              $vergebeneKennungen = [];
+          }
         ?>
         <div class="feld feld-wunschflaeche" data-wunschflaeche-block>
           <span class="feld-label">Wunschfläche <span class="feld-optional">(freiwillig)</span></span>

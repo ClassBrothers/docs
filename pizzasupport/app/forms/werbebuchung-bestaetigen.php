@@ -17,10 +17,17 @@ $vergeben = [];
 $verloren = [];
 
 if (preg_match('/^[a-f0-9]{64}$/', $token)) {
-    $zeile = db_one(
-        'SELECT id, wunschflaechen FROM werbebuchungen WHERE bestaetigung_token = ? AND bestaetigt_am IS NULL',
-        [$token]
-    );
+    // Faengt fehlende Spalten ab: Diese Spalten kommen erst mit der
+    // Migration - kann eigentlich nur bei einem veralteten Link aus der
+    // kurzen Zeit zwischen FTP-Upload und Migrationsklick auftreten.
+    try {
+        $zeile = db_one(
+            'SELECT id, wunschflaechen FROM werbebuchungen WHERE bestaetigung_token = ? AND bestaetigt_am IS NULL',
+            [$token]
+        );
+    } catch (PDOException $e) {
+        $zeile = null;
+    }
     if ($zeile) {
         $jetzt = gmdate('Y-m-d H:i:s');
         db_run(

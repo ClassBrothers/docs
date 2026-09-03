@@ -29,7 +29,30 @@ function render_seite(string $seite, string $pfad): void
     ];
 
     ob_start();
-    include $datei;                 // setzt $meta und gibt den Inhalt aus
+    try {
+        include $datei;              // setzt $meta und gibt den Inhalt aus
+    } catch (\Throwable $e) {
+        // Ohne dieses Netz wuerde ein Fehler mitten im Seiteninhalt (z.B.
+        // eine Datenbank-Tabelle, die per FTP schon im Code, aber noch
+        // nicht per Migration angelegt ist) den bis dahin gepufferten
+        // Teil-Inhalt roh an den Browser durchreichen - ganz ohne Kopf,
+        // CSS oder Navigation, weil layout.php dann nie zum Zug kommt.
+        error_log('render_seite(' . $seite . '): ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+        ob_end_clean();
+        ob_start();
+        http_response_code(500);
+        $meta['titel']  = 'Kurzzeitig nicht verfügbar | Pizza Support';
+        $meta['robots'] = 'noindex,nofollow';
+        ?>
+        <section class="band">
+          <div class="wrap schmal">
+            <h1>Kurzzeitig nicht verfügbar</h1>
+            <p>Diese Seite hat gerade ein technisches Problem. Bitte versuchen Sie es in
+               ein paar Minuten noch einmal.</p>
+          </div>
+        </section>
+        <?php
+    }
     $inhalt = ob_get_clean();
 
     include APP_ROOT . '/app/views/layout.php';
