@@ -142,7 +142,8 @@ $meta['jsonld'] = [
       wissen, wo sie anfangen sollen.
     </p>
     <p>
-      <strong>KI-Assistenz</strong> — Beratung und Umsetzung rund um künstliche Intelligenz im
+      <strong><a href="https://ki-assistenz.com" target="_blank" rel="noopener" data-follow>KI-Assistenz</a></strong>
+      — Beratung und Umsetzung rund um künstliche Intelligenz im
       Arbeitsalltag. Für Unternehmen, die ahnen, dass sich hier etwas verändert, und dabei
       lieber jemanden neben sich haben.
     </p>
