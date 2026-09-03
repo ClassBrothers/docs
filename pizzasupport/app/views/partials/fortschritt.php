@@ -63,6 +63,11 @@ $nonce = $GLOBALS['csp_nonce'] ?? '';
       <?php endif; ?>
     </p>
 
+    <p class="fortschritt-hinweis">
+      Den Anfang haben wir selbst gemacht: Die ersten Flächen gehen an vier Unternehmen aus
+      unserem eigenen Umfeld. Wer andere um Vertrauen bittet, sollte selbst vorangehen.
+    </p>
+
     <?php if ($f['ersparnis_cent'] > 0): ?>
       <p class="fortschritt-ersparnis">
         So viel hat Pizza Support der Freiburger Gastronomie bisher erspart:

@@ -481,6 +481,12 @@ $f      = fortschritt();
           <?php if (isset($fehler['datenschutz_ok'])): ?><p class="feld-meldung"><?= e($fehler['datenschutz_ok']) ?></p><?php endif; ?>
         </div>
 
+        <p class="formular-fuss">
+          Die Fläche ist begrenzt. Wir berücksichtigen Buchungen in der Reihenfolge des
+          Eingangs; ein Anspruch auf eine bestimmte Fläche besteht nicht. Kommt Ihre Buchung
+          nicht zum Zug, sagen wir Ihnen umgehend Bescheid und berechnen nichts.
+        </p>
+
         <?php /* Als Verbraucher-Buchung (Fun Area) sicherer Vorschlag ohne JavaScript:
                  die Button-Lösung nach § 312j BGB verlangt eine eindeutige
                  Zahlungspflicht-Formulierung. Nur wenn erkennbar ein Unternehmen bucht,

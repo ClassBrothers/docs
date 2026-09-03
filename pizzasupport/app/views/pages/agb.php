@@ -110,6 +110,18 @@ $mailLink    = firma_email_link();
       Buchungsformular keinen Gutschein enthält.
     </p>
 
+    <h2>§ 4a Begrenzte Fläche, Reihenfolge der Buchungen</h2>
+    <p>
+      Die Werbefläche auf den Kartons ist begrenzt. Wir nehmen Buchungen in der Reihenfolge
+      ihres Eingangs an. Ein Anspruch auf eine bestimmte Fläche, eine bestimmte Position oder
+      überhaupt auf Berücksichtigung besteht nicht.
+    </p>
+    <p>
+      Können wir eine Buchung nicht berücksichtigen, teilen wir das unverzüglich mit. Ein
+      Vertrag kommt in diesem Fall nicht zustande. Bereits geleistete Zahlungen erstatten wir
+      vollständig; weitere Ansprüche entstehen daraus nicht.
+    </p>
+
     <h2>§ 5 Motive, Druckunterlagen und Vorbehalt</h2>
     <p>
       Druckfähige Unterlagen sind bis zu dem von uns mitgeteilten Termin einzureichen. Gehen

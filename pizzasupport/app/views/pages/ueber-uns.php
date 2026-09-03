@@ -127,6 +127,33 @@ $meta['jsonld'] = [
   </div>
 </section>
 
+<section class="band" aria-labelledby="sonst-titel">
+  <div class="wrap schmal">
+    <h2 id="sonst-titel">Was wir sonst so können</h2>
+    <p>
+      Pizza Support ist ein Projekt, kein Unternehmen. Dahinter stehen Leute, die den ganzen
+      Tag etwas anderes machen – und genau deshalb wissen, wie man so etwas aufzieht. Falls
+      Sie über die Kartons hinaus etwas brauchen: Hier sind wir zu Hause.
+    </p>
+    <p>
+      <strong><a href="https://class-brothers.com" target="_blank" rel="noopener" data-follow>Class Brothers GmbH</a></strong>
+      — Digitale Agentur aus Freiburg, seit 2014. Suchmaschinenoptimierung, Websites,
+      Markenberatung und Coaching für Betriebe, die im Netz gefunden werden wollen und nicht
+      wissen, wo sie anfangen sollen.
+    </p>
+    <p>
+      <strong>KI-Assistenz</strong> — Beratung und Umsetzung rund um künstliche Intelligenz im
+      Arbeitsalltag. Für Unternehmen, die ahnen, dass sich hier etwas verändert, und dabei
+      lieber jemanden neben sich haben.
+    </p>
+    <p>
+      <strong><a href="https://badische-entertainment.com" target="_blank" rel="noopener" data-follow>Badische Entertainment GmbH</a></strong>
+      — Veranstaltungen, Livemusik und Bühnenprogramm in der Region. Von der Firmenfeier bis
+      zum Stadtfest. Ohne die Gastro-Erfahrung von hier gäbe es Pizza Support nicht.
+    </p>
+  </div>
+</section>
+
 <section class="band band-dunkel" aria-labelledby="ausblick-titel">
   <div class="wrap schmal">
     <h2 id="ausblick-titel">Und danach?</h2>
