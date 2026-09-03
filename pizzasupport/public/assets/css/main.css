@@ -122,6 +122,12 @@
 .karte-gross{padding:1.9rem}
 .karte-gross h3{font-size:1.3rem;font-family:var(--schrift-kopf)}
 
+/* --- Partnerlogos, "Was wir sonst so können" --------------------------- */
+.partner-eintrag{margin-bottom:1.75rem}
+.partner-eintrag:last-child{margin-bottom:0}
+.partner-logo-link{display:inline-block;margin-bottom:.6rem}
+.partner-logo{height:48px;width:auto;display:block}
+
 /* --- Preise ----------------------------------------------------------- */
 .preis-gitter{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin-top:1.75rem}
 .preis-karte{background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-top:4px solid var(--akzent);border-radius:var(--radius-karte);padding:1.5rem}

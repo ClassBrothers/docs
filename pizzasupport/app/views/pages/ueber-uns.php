@@ -135,29 +135,61 @@ $meta['jsonld'] = [
       Tag etwas anderes machen – und genau deshalb wissen, wie man so etwas aufzieht. Falls
       Sie über die Kartons hinaus etwas brauchen: Hier sind wir zu Hause.
     </p>
-    <p>
-      <strong><a href="https://class-brothers.com" target="_blank" rel="noopener" data-follow>Class Brothers GmbH</a></strong>
-      — Digitale Agentur aus Freiburg, seit 2014. Suchmaschinenoptimierung, Websites,
-      Markenberatung und Coaching für Betriebe, die im Netz gefunden werden wollen und nicht
-      wissen, wo sie anfangen sollen.
-    </p>
-    <p>
-      <strong><a href="https://ki-assistenz.com" target="_blank" rel="noopener" data-follow>KI-Assistenz</a></strong>
-      — Beratung und Umsetzung rund um künstliche Intelligenz im
-      Arbeitsalltag. Für Unternehmen, die ahnen, dass sich hier etwas verändert, und dabei
-      lieber jemanden neben sich haben.
-    </p>
-    <p>
-      <strong><a href="https://snackworks.de" target="_blank" rel="noopener" data-follow>SnackWorks</a></strong>
-      — Snackautomaten für Unternehmen, Hotels, Schulen, Bildungseinrichtungen und
-      Fitnessstudios: überall dort, wo ein Snack im richtigen Moment die Welt verändern kann.
-      Seit 2026 versorgt SnackWorks Freiburg mit Automaten in jeder Größe.
-    </p>
-    <p>
-      <strong><a href="https://badische-entertainment.com" target="_blank" rel="noopener" data-follow>Badische Entertainment GmbH</a></strong>
-      — Veranstaltungen, Livemusik und Bühnenprogramm in der Region. Von der Firmenfeier bis
-      zum Stadtfest. Ohne die Gastro-Erfahrung von hier gäbe es Pizza Support nicht.
-    </p>
+    <div class="partner-eintrag">
+      <a class="partner-logo-link" href="https://class-brothers.com" target="_blank" rel="noopener" data-follow>
+        <picture>
+          <source srcset="<?= e(asset('/assets/img/logo-class-brothers.webp')) ?>" type="image/webp">
+          <img src="<?= e(asset('/assets/img/logo-class-brothers.png')) ?>" alt="Logo Class Brothers GmbH" class="partner-logo" width="139" height="48" loading="lazy" decoding="async">
+        </picture>
+      </a>
+      <p>
+        <strong><a href="https://class-brothers.com" target="_blank" rel="noopener" data-follow>Class Brothers GmbH</a></strong>
+        — Digitale Agentur aus Freiburg, seit 2014. Suchmaschinenoptimierung, Websites,
+        Markenberatung und Coaching für Betriebe, die im Netz gefunden werden wollen und nicht
+        wissen, wo sie anfangen sollen.
+      </p>
+    </div>
+    <div class="partner-eintrag">
+      <a class="partner-logo-link" href="https://ki-assistenz.com" target="_blank" rel="noopener" data-follow>
+        <picture>
+          <source srcset="<?= e(asset('/assets/img/logo-ki-assistenz.webp')) ?>" type="image/webp">
+          <img src="<?= e(asset('/assets/img/logo-ki-assistenz.png')) ?>" alt="Logo KI-Assistenz" class="partner-logo" width="100" height="48" loading="lazy" decoding="async">
+        </picture>
+      </a>
+      <p>
+        <strong><a href="https://ki-assistenz.com" target="_blank" rel="noopener" data-follow>KI-Assistenz</a></strong>
+        — Beratung und Umsetzung rund um künstliche Intelligenz im
+        Arbeitsalltag. Für Unternehmen, die ahnen, dass sich hier etwas verändert, und dabei
+        lieber jemanden neben sich haben.
+      </p>
+    </div>
+    <div class="partner-eintrag">
+      <a class="partner-logo-link" href="https://snackworks.de" target="_blank" rel="noopener" data-follow>
+        <picture>
+          <source srcset="<?= e(asset('/assets/img/logo-snackworks.webp')) ?>" type="image/webp">
+          <img src="<?= e(asset('/assets/img/logo-snackworks.png')) ?>" alt="Logo SnackWorks" class="partner-logo" width="124" height="48" loading="lazy" decoding="async">
+        </picture>
+      </a>
+      <p>
+        <strong><a href="https://snackworks.de" target="_blank" rel="noopener" data-follow>SnackWorks</a></strong>
+        — Snackautomaten für Unternehmen, Hotels, Schulen, Bildungseinrichtungen und
+        Fitnessstudios: überall dort, wo ein Snack im richtigen Moment die Welt verändern kann.
+        Seit 2026 versorgt SnackWorks Freiburg mit Automaten in jeder Größe.
+      </p>
+    </div>
+    <div class="partner-eintrag">
+      <a class="partner-logo-link" href="https://badische-entertainment.com" target="_blank" rel="noopener" data-follow>
+        <picture>
+          <source srcset="<?= e(asset('/assets/img/logo-badische-entertainment.webp')) ?>" type="image/webp">
+          <img src="<?= e(asset('/assets/img/logo-badische-entertainment.png')) ?>" alt="Logo Badische Entertainment GmbH" class="partner-logo" width="72" height="48" loading="lazy" decoding="async">
+        </picture>
+      </a>
+      <p>
+        <strong><a href="https://badische-entertainment.com" target="_blank" rel="noopener" data-follow>Badische Entertainment GmbH</a></strong>
+        — Veranstaltungen, Livemusik und Bühnenprogramm in der Region. Von der Firmenfeier bis
+        zum Stadtfest. Ohne die Gastro-Erfahrung von hier gäbe es Pizza Support nicht.
+      </p>
+    </div>
   </div>
 </section>
 
