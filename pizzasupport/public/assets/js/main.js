@@ -599,6 +599,59 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* Flächenplan: Mouse-Over-Lupe. Zeigt an der Cursorposition einen      */
+  /* vergrößerten Ausschnitt aus der hochaufgelösten Grafik, damit auch   */
+  /* die kleine Beschriftung lesbar wird. Nur mit echter Maus - auf       */
+  /* Touch-Geräten bleibt es beim einfachen, anklickbaren Bild.           */
+  /* ------------------------------------------------------------------ */
+  var lupenHalter = document.querySelector('[data-flaechenplan-lupe]');
+  if (lupenHalter && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    var lupenBild = lupenHalter.querySelector('.flaechenplan-bild');
+    var lupenglas = lupenHalter.querySelector('[data-lupenglas]');
+    var lupenQuelle = lupenHalter.getAttribute('data-lupe-quelle');
+
+    if (lupenBild && lupenglas && lupenQuelle) {
+      var ZOOM = 3;
+      lupenglas.style.backgroundImage = 'url(' + lupenQuelle + ')';
+
+      // Hochaufgeloeste Datei schon beim Laden der Seite anfordern, damit sie
+      // beim ersten Hover bereits im Cache liegt statt sichtbar nachzuladen.
+      new Image().src = lupenQuelle;
+
+      lupenHalter.addEventListener('mousemove', function (e) {
+        var rect = lupenBild.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        if (x < 0 || y < 0 || x > rect.width || y > rect.height) {
+          lupenglas.hidden = true;
+          return;
+        }
+        lupenglas.hidden = false;
+
+        var groesse = lupenglas.offsetWidth;
+        var halb = groesse / 2;
+        // Lupe am Bildrand einklemmen, aber immer noch auf den Cursor
+        // zentriert, solange genug Platz ist.
+        var lupeX = Math.max(0, Math.min(x - halb, rect.width - groesse));
+        var lupeY = Math.max(0, Math.min(y - halb, rect.height - groesse));
+        lupenglas.style.left = lupeX + 'px';
+        lupenglas.style.top = lupeY + 'px';
+
+        // Bildausschnitt anhand der tatsaechlichen (eingeklemmten) Lupenmitte
+        // berechnen, damit der Ausschnitt zur sichtbaren Lupenposition passt.
+        lupenglas.style.backgroundSize = (rect.width * ZOOM) + 'px ' + (rect.height * ZOOM) + 'px';
+        var mitteX = lupeX + halb;
+        var mitteY = lupeY + halb;
+        lupenglas.style.backgroundPosition = (-(mitteX * ZOOM - halb)) + 'px ' + (-(mitteY * ZOOM - halb)) + 'px';
+      });
+
+      lupenHalter.addEventListener('mouseleave', function () {
+        lupenglas.hidden = true;
+      });
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Konfetti-Danke. Läuft nur, wenn jemand Bewegung sehen will.         */
   /* ------------------------------------------------------------------ */
   var danke = document.querySelector('[data-konfetti]');

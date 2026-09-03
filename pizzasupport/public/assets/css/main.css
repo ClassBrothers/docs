@@ -102,10 +102,30 @@
 
 /* --- Wunschflaeche beim Werbepartner ------------------------------------ */
 .feld-wunschflaeche{margin-top:1rem;margin-bottom:1.75rem}
-.flaechenplan-grafik{margin:0 0 1.25rem}
-.flaechenplan-grafik a{display:inline-block;max-width:420px}
-.flaechenplan-grafik img{width:100%;height:auto;display:block;border-radius:var(--radius-karte);border:1px solid var(--rahmenfarbe)}
-.flaechenplan-grafik figcaption{margin-top:.5rem;font-size:.85rem;color:var(--textfarbe-gedaempft)}
+
+/* --- Fläche buchen: Formular links, Flächenplan mit Lupe rechts -------- */
+.bestellen-grid{display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start}
+.bestellen-formular-spalte{min-width:0}
+.bestellen-grafik-spalte{position:sticky;top:1.5rem}
+@media (max-width:900px){
+  .bestellen-grid{display:block}
+  .bestellen-grafik-spalte{position:static;max-width:340px;margin:2rem auto 0}
+}
+
+.flaechenplan-lupe{position:relative}
+.flaechenplan-lupe a{display:block}
+.flaechenplan-bild{width:100%;height:auto;display:block;border-radius:var(--radius-karte);border:1px solid var(--rahmenfarbe)}
+/* Rundes Lupenglas, das per JS bei Mausbewegung positioniert und mit dem
+   hochaufgeloesten Bild als vergroesserter Bildausschnitt gefuellt wird -
+   siehe main.js. pointer-events:none, damit es die Mausereignisse auf dem
+   darunterliegenden Bild nicht selbst abfaengt. */
+.flaechenplan-lupenglas{
+  position:absolute;width:160px;height:160px;border-radius:50%;
+  border:3px solid var(--flaeche-weiss);pointer-events:none;background-repeat:no-repeat;
+  box-shadow:0 2px 14px rgba(0,0,0,.35),inset 0 0 0 1px var(--rahmenfarbe);
+}
+.flaechenplan-bildunterschrift{margin-top:.6rem;font-size:.85rem;color:var(--textfarbe-gedaempft)}
+@media (hover:none){.flaechenplan-lupenglas{display:none}}
 .wunschflaeche-gruppe{margin:0 0 1.1rem}
 .wunschflaeche-gruppe:last-of-type{margin-bottom:0}
 .wunschflaeche-gruppe legend{

@@ -202,6 +202,11 @@ $f      = fortschritt();
 
 <?php include APP_ROOT . '/app/views/partials/fortschritt.php'; ?>
 
+<?php
+  $flaechenplanDatei      = APP_ROOT . '/public/assets/img/flaechenplan.jpg';
+  $flaechenplanGrossDatei = APP_ROOT . '/public/assets/img/flaechenplan-gross.jpg';
+  $flaechenplanVorhanden  = is_file($flaechenplanDatei);
+?>
 <section class="band band-bestellen" id="buchen" aria-labelledby="buchen-titel">
   <div class="wrap">
 
@@ -231,6 +236,8 @@ $f      = fortschritt();
       </p>
     <?php endif; ?>
 
+    <div class="<?= $flaechenplanVorhanden ? 'bestellen-grid' : '' ?>">
+    <div class="bestellen-formular-spalte">
     <form method="post" action="/senden/werbepartner" class="formular formular-breit" enctype="multipart/form-data" novalidate>
       <?= csrf_field() ?>
       <?= honeypot_field() ?>
@@ -296,8 +303,6 @@ $f      = fortschritt();
           $fk = config('flaechenkatalog');
           $gewaehlteWunschflaechen = $altw['wunschflaechen'] ?? [];
           $gewaehlteWunschflaechen = is_array($gewaehlteWunschflaechen) ? $gewaehlteWunschflaechen : [];
-          $flaechenplanDatei = APP_ROOT . '/public/assets/img/flaechenplan.jpg';
-          $flaechenplanGrossDatei = APP_ROOT . '/public/assets/img/flaechenplan-gross.jpg';
         ?>
         <div class="feld feld-wunschflaeche" data-wunschflaeche-block>
           <span class="feld-label">Wunschfläche <span class="feld-optional">(freiwillig)</span></span>
@@ -306,25 +311,10 @@ $f      = fortschritt();
             oder größeren Kartons skalieren wir Ihre Fläche proportional mit; der Preis bleibt
             gleich. Die Auswahl unten ist ein <strong>Wunsch, keine Zusage</strong> – die Fläche
             ist begrenzt, siehe Hinweis weiter unten vor dem Buchen-Button.
+            <?php if ($flaechenplanVorhanden): ?>
+              Den Flächenplan mit allen Kennungen sehen Sie rechts daneben.
+            <?php endif; ?>
           </p>
-
-          <?php if (is_file($flaechenplanDatei)): ?>
-            <figure class="flaechenplan-grafik">
-              <a href="<?= e(asset(is_file($flaechenplanGrossDatei) ? '/assets/img/flaechenplan-gross.jpg' : '/assets/img/flaechenplan.jpg')) ?>"
-                 target="_blank" rel="noopener">
-                <picture>
-                  <source srcset="<?= e(asset('/assets/img/flaechenplan.webp')) ?>" type="image/webp">
-                  <img src="<?= e(asset('/assets/img/flaechenplan.jpg')) ?>"
-                       alt="Flächenplan des Pizzakartons mit den benannten Werbeflächen auf Deckel, Boden und Seiten"
-                       loading="lazy">
-                </picture>
-              </a>
-              <figcaption>
-                Lage und Kennung aller Werbeflächen auf dem Karton (Bezugsmaß 32 × 32 cm).
-                Zum Vergrößern anklicken.
-              </figcaption>
-            </figure>
-          <?php endif; ?>
 
           <p class="feld-hilfe" data-wunschflaeche-hinweis>
             Wählen Sie oben zuerst eine Fläche aus – wir zeigen dann die passenden Positionen.
@@ -571,6 +561,30 @@ $f      = fortschritt();
         </p>
       </fieldset>
     </form>
+    </div>
+
+    <?php if ($flaechenplanVorhanden): ?>
+      <aside class="bestellen-grafik-spalte" aria-label="Flächenplan des Pizzakartons">
+        <div class="flaechenplan-lupe" data-flaechenplan-lupe
+             data-lupe-quelle="<?= e(asset(is_file($flaechenplanGrossDatei) ? '/assets/img/flaechenplan-gross.jpg' : '/assets/img/flaechenplan.jpg')) ?>">
+          <a href="<?= e(asset(is_file($flaechenplanGrossDatei) ? '/assets/img/flaechenplan-gross.jpg' : '/assets/img/flaechenplan.jpg')) ?>"
+             target="_blank" rel="noopener">
+            <picture>
+              <source srcset="<?= e(asset('/assets/img/flaechenplan.webp')) ?>" type="image/webp">
+              <img class="flaechenplan-bild" src="<?= e(asset('/assets/img/flaechenplan.jpg')) ?>"
+                   alt="Flächenplan des Pizzakartons mit den benannten Werbeflächen auf Deckel, Boden und Seiten"
+                   loading="lazy">
+            </picture>
+          </a>
+          <div class="flaechenplan-lupenglas" data-lupenglas hidden aria-hidden="true"></div>
+        </div>
+        <p class="flaechenplan-bildunterschrift">
+          Lage und Kennung aller Werbeflächen auf dem Karton (Bezugsmaß 32 × 32 cm). Mit der
+          Maus über den Plan fahren zum Vergrößern, anklicken für die volle Größe.
+        </p>
+      </aside>
+    <?php endif; ?>
+    </div>
   </div>
 </section>
 
