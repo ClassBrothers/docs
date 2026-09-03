@@ -151,8 +151,17 @@ return [
             'brutto'  => false,
             'text'    => 'Schmaler Streifen an der Kartonseite. Immer zu sehen, auch im Stapel.',
         ],
-        // "Seitenfläche innen" (nur bei geoeffnetem Deckel sichtbar, z.B. DSL/DSR) folgt als
-        // eigene Kachel, sobald der Kunde den Preis nennt - siehe Rueckfrage im Chat.
+        [
+            'id'      => 'seite-innen',
+            'gruppe'  => 'Seite',
+            'label'   => 'Seitenfläche innen',
+            'masse'   => '12 × 1 cm',
+            // Vorlaeufiger Preis auf ausdruecklichen Wunsch des Kunden - wird noch
+            // korrigiert, sobald der endgueltige Wert feststeht (siehe Chat).
+            'preis'   => 55500,    // 555,00 EUR netto, VORLAEUFIG
+            'brutto'  => false,
+            'text'    => 'Nur bei geöffnetem Deckel sichtbar (z. B. Deckelseiten DSL/DSR). Günstiger als die außen sichtbare Seitenfläche.',
+        ],
         [
             'id'      => 'fun-area',
             'gruppe'  => 'Fun Area',
@@ -176,7 +185,7 @@ return [
     // Kopfbereich oder Buchungsformular als Kaufargument platziert, siehe
     // Vorteilsliste, Bestaetigung und "Was wir sonst so koennen".
     'partnernachlass' => [
-        'prozent' => 15,
+        'prozent' => 20,
         'monate'  => 12,
     ],
 
@@ -219,9 +228,14 @@ return [
     //
     // Weiterhin offen aus Nachtrag 2, Punkt 0 - der Kunde muss noch bestaetigen:
     // - BF1-3: im Plan ohne Preis, deshalb vorerst nicht buchbar.
-    // - DSL/DSR: 12 × 1 cm aus der Legende uebernommen, das Layout selbst
-    //   beschriftet dieselben Felder mit 9,3 × 2,5 cm - unbedruckt und nicht
-    //   buchbar, die genaue Zahl wirkt sich deshalb auf nichts aus.
+    // - DSL/DSR sind jetzt als "Seitenfläche innen" buchbar (Preis 555 EUR
+    //   netto, VORLAEUFIG, wird noch korrigiert). Die Masse hier ist die
+    //   12 × 1 cm aus der Legende; das Layout selbst beschriftet dieselben
+    //   Felder mit 9,3 × 2,5 cm - dieser Widerspruch ist NICHT mehr
+    //   folgenlos, weil die Flaeche jetzt tatsaechlich bedruckt wird. Bitte
+    //   vor dem ersten Druck klaeren: welches Mass stimmt, und passt die
+    //   Legenden-Markierung "unbedruckt" noch, wenn hier jetzt Werbung
+    //   drauf soll?
     // -----------------------------------------------------------------
     'flaechenkatalog' => [
         'gruppen' => [
@@ -256,8 +270,8 @@ return [
             ['id' => 'BR1', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
             ['id' => 'BR2', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
             ['id' => 'BR3', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'DSL', 'bezeichnung' => 'Deckelseite links',            'masse' => '12 × 1 cm',     'gruppe' => 'seiten', 'paket' => null,           'buchbar' => false],
-            ['id' => 'DSR', 'bezeichnung' => 'Deckelseite rechts',           'masse' => '12 × 1 cm',     'gruppe' => 'seiten', 'paket' => null,           'buchbar' => false],
+            ['id' => 'DSL', 'bezeichnung' => 'Deckelseite links',            'masse' => '12 × 1 cm',     'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
+            ['id' => 'DSR', 'bezeichnung' => 'Deckelseite rechts',           'masse' => '12 × 1 cm',     'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
         ],
     ],
 

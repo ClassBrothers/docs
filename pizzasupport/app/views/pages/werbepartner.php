@@ -105,6 +105,7 @@ $f      = fortschritt();
     . '<circle cx="12" cy="12" r="11" fill="var(--akzent-waerme)"/>'
     . '<path d="M7 12.5l3 3 7-7" stroke="#241C18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
     . '</svg>';
+  $pnKauft = config('partnernachlass');
   $kauftPunkte = [
     'Gemeinschaft unterstützen – Ihr Budget hilft direkt der Freiburger Gastronomie.',
     'Coole, sympathische Werbung statt gewöhnlicher Anzeige.',
@@ -113,7 +114,7 @@ $f      = fortschritt();
     'Ihr Name, Logo und Profiltext dauerhaft auf pizzasupport.de – so lange die Website existiert.',
     'Stammkunden-Rabatt bei zukünftigen Auflagen.',
     'Als Stammkunde künftig vor anderen Ihre Fläche wählen.',
-    'Rabatt auf Aufträge bei unseren Aktionspartnern (Class Brothers, KI-Assistenz, Badische Entertainment und weitere).',
+    'Bis zu ' . (int) $pnKauft['prozent'] . ' % Rabatt auf Aufträge bei unseren Aktionspartnern (Class Brothers, KI-Assistenz, Badische Entertainment und weitere).',
   ];
 ?>
 <section class="band band-hell" aria-labelledby="kauft-titel">
