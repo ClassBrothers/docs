@@ -296,7 +296,8 @@ $f      = fortschritt();
           $fk = config('flaechenkatalog');
           $gewaehlteWunschflaechen = $altw['wunschflaechen'] ?? [];
           $gewaehlteWunschflaechen = is_array($gewaehlteWunschflaechen) ? $gewaehlteWunschflaechen : [];
-          $flaechenplanDatei = APP_ROOT . '/public/assets/img/flaechenplan.png';
+          $flaechenplanDatei = APP_ROOT . '/public/assets/img/flaechenplan.jpg';
+          $flaechenplanGrossDatei = APP_ROOT . '/public/assets/img/flaechenplan-gross.jpg';
         ?>
         <div class="feld feld-wunschflaeche" data-wunschflaeche-block>
           <span class="feld-label">Wunschfläche <span class="feld-optional">(freiwillig)</span></span>
@@ -309,10 +310,19 @@ $f      = fortschritt();
 
           <?php if (is_file($flaechenplanDatei)): ?>
             <figure class="flaechenplan-grafik">
-              <img src="<?= e(asset('/assets/img/flaechenplan.png')) ?>"
-                   alt="Flächenplan des Pizzakartons mit den benannten Werbeflächen auf Deckel, Boden und Seiten"
-                   loading="lazy">
-              <figcaption>Lage und Kennung aller Werbeflächen auf dem Karton (Bezugsmaß 32 × 32 cm).</figcaption>
+              <a href="<?= e(asset(is_file($flaechenplanGrossDatei) ? '/assets/img/flaechenplan-gross.jpg' : '/assets/img/flaechenplan.jpg')) ?>"
+                 target="_blank" rel="noopener">
+                <picture>
+                  <source srcset="<?= e(asset('/assets/img/flaechenplan.webp')) ?>" type="image/webp">
+                  <img src="<?= e(asset('/assets/img/flaechenplan.jpg')) ?>"
+                       alt="Flächenplan des Pizzakartons mit den benannten Werbeflächen auf Deckel, Boden und Seiten"
+                       loading="lazy">
+                </picture>
+              </a>
+              <figcaption>
+                Lage und Kennung aller Werbeflächen auf dem Karton (Bezugsmaß 32 × 32 cm).
+                Zum Vergrößern anklicken.
+              </figcaption>
             </figure>
           <?php endif; ?>
 

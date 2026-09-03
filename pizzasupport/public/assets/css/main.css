@@ -103,6 +103,7 @@
 /* --- Wunschflaeche beim Werbepartner ------------------------------------ */
 .feld-wunschflaeche{margin-top:1rem;margin-bottom:1.75rem}
 .flaechenplan-grafik{margin:0 0 1.25rem}
+.flaechenplan-grafik a{display:inline-block;max-width:420px}
 .flaechenplan-grafik img{width:100%;height:auto;display:block;border-radius:var(--radius-karte);border:1px solid var(--rahmenfarbe)}
 .flaechenplan-grafik figcaption{margin-top:.5rem;font-size:.85rem;color:var(--textfarbe-gedaempft)}
 .wunschflaeche-gruppe{margin:0 0 1.1rem}

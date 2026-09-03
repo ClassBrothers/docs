@@ -146,7 +146,7 @@ return [
             'id'      => 'seite',
             'gruppe'  => 'Seite',
             'label'   => 'Seitenfläche',
-            'masse'   => '93 × 23 mm',
+            'masse'   => '93 × 25 mm',
             'preis'   => 69900,    // 699,00 EUR netto
             'brutto'  => false,
             'text'    => 'Schmaler Streifen an der Kartonseite. Sichtbar im Stapel.',
@@ -196,14 +196,19 @@ return [
     // im Formular nicht auf (siehe Nachtrag 2, Punkt 2: "Nicht buchbare
     // Flaechen erscheinen nicht").
     //
-    // Offene Punkte aus Nachtrag 2, Punkt 0 - der Kunde muss sie noch
-    // bestaetigen:
+    // Nach Erhalt der Original-Grafik (FINAL_Pizzakarton_Layout_Flaechenplan_020926.jpg)
+    // mit lesbarer Legende korrigiert:
+    // - Seitenflaeche BH/BL/BR: 9,3 × 2,5 cm laut Legende (vorher versehentlich
+    //   an die alte Website-Angabe "93 × 23 mm" angeglichen). Das bestehende
+    //   werbeformate-Paket "seite" oben ist entsprechend mitgezogen (93 × 25 mm).
+    // - DF (Deckelblende): Legende nennt 32 × 4 cm, das Feld selbst im Layout
+    //   ist mit "32 x 3 cm" beschriftet - ein Widerspruch im Kundendokument,
+    //   der sich aber nicht auswirkt (nicht buchbar).
+    //
+    // Weiterhin offen aus Nachtrag 2, Punkt 0 - der Kunde muss noch bestaetigen:
     // - BF1-3: im Plan ohne Preis, deshalb vorerst nicht buchbar.
-    // - Seitenflaeche BH/BL/BR: hier auf 9,3 × 2,3 cm gesetzt (= die
-    //   bestehende Website-Angabe "93 × 23 mm"), der Flaechenplan selbst
-    //   nennt an anderer Stelle 9,3 × 2,5 cm.
-    // - DSL/DSR: 12 × 1 cm aus der Planlegende uebernommen (die Flaeche
-    //   selbst zeigt an anderer Stelle 9,3 × 2,5 cm) - unbedruckt und nicht
+    // - DSL/DSR: 12 × 1 cm aus der Legende uebernommen, das Layout selbst
+    //   beschriftet dieselben Felder mit 9,3 × 2,5 cm - unbedruckt und nicht
     //   buchbar, die genaue Zahl wirkt sich deshalb auf nichts aus.
     // -----------------------------------------------------------------
     'flaechenkatalog' => [
@@ -228,17 +233,17 @@ return [
             ['id' => 'BF3', 'bezeichnung' => 'Bodenfront · Partnerslot',     'masse' => '7,6 × 2,6 cm',  'gruppe' => 'boden',  'paket' => null,           'buchbar' => false],
             ['id' => 'B0',  'bezeichnung' => 'Boden außen · Marke',          'masse' => '32 × 32 cm',    'gruppe' => 'boden',  'paket' => null,           'buchbar' => false],
             ['id' => 'FA',  'bezeichnung' => 'Fun Area, 16 Felder, schwarzweiß', 'masse' => '28 × 19,3 cm', 'gruppe' => 'boden', 'paket' => 'fun-area',  'buchbar' => false],
-            ['id' => 'DF',  'bezeichnung' => 'Blende',                       'masse' => 'unbedruckt',    'gruppe' => 'boden',  'paket' => null,           'buchbar' => false],
+            ['id' => 'DF',  'bezeichnung' => 'Deckelblende',                 'masse' => '32 × 4 cm, unbedruckt',    'gruppe' => 'boden',  'paket' => null,           'buchbar' => false],
 
-            ['id' => 'BH1', 'bezeichnung' => 'Boden Rückwand',               'masse' => '9,3 × 2,3 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BH2', 'bezeichnung' => 'Boden Rückwand',               'masse' => '9,3 × 2,3 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BH3', 'bezeichnung' => 'Boden Rückwand',               'masse' => '9,3 × 2,3 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BL1', 'bezeichnung' => 'Boden Seite links',            'masse' => '9,3 × 2,3 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BL2', 'bezeichnung' => 'Boden Seite links',            'masse' => '9,3 × 2,3 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BL3', 'bezeichnung' => 'Boden Seite links',            'masse' => '9,3 × 2,3 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BR1', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,3 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BR2', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,3 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BR3', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,3 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
+            ['id' => 'BH1', 'bezeichnung' => 'Boden Rückwand',               'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
+            ['id' => 'BH2', 'bezeichnung' => 'Boden Rückwand',               'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
+            ['id' => 'BH3', 'bezeichnung' => 'Boden Rückwand',               'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
+            ['id' => 'BL1', 'bezeichnung' => 'Boden Seite links',            'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
+            ['id' => 'BL2', 'bezeichnung' => 'Boden Seite links',            'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
+            ['id' => 'BL3', 'bezeichnung' => 'Boden Seite links',            'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
+            ['id' => 'BR1', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
+            ['id' => 'BR2', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
+            ['id' => 'BR3', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
             ['id' => 'DSL', 'bezeichnung' => 'Deckelseite links',            'masse' => '12 × 1 cm',     'gruppe' => 'seiten', 'paket' => null,           'buchbar' => false],
             ['id' => 'DSR', 'bezeichnung' => 'Deckelseite rechts',           'masse' => '12 × 1 cm',     'gruppe' => 'seiten', 'paket' => null,           'buchbar' => false],
         ],
