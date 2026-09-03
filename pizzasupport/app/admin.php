@@ -110,6 +110,23 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['aktion'])) {
                     $meldung = 'Koordinaten gefunden und gespeichert.';
                 }
             }
+        } elseif ($aktion === 'adresse-setzen' && in_array($tabelle, ['gastro_bestellungen', 'werbebuchungen'], true) && $id > 0) {
+            $plz = trim((string) ($_POST['plz'] ?? ''));
+            $ort = trim((string) ($_POST['ort'] ?? ''));
+            $strasse = trim((string) ($_POST['strasse'] ?? ''));
+            if ($plz === '' || $ort === '' || ($tabelle === 'gastro_bestellungen' && $strasse === '')) {
+                $meldung = 'Adresse unvollständig, nichts gespeichert.';
+            } else {
+                // lat/lon geloescht: die alten Koordinaten gehoerten zur alten
+                // Adresse und waeren nach der Korrektur falsch - der Knopf
+                // "Koordinaten ermitteln" erscheint dadurch automatisch wieder.
+                if ($tabelle === 'gastro_bestellungen') {
+                    db_run('UPDATE gastro_bestellungen SET strasse = ?, plz = ?, ort = ?, lat = NULL, lon = NULL WHERE id = ?', [$strasse, $plz, $ort, $id]);
+                } else {
+                    db_run('UPDATE werbebuchungen SET plz = ?, ort = ?, lat = NULL, lon = NULL WHERE id = ?', [$plz, $ort, $id]);
+                }
+                $meldung = 'Adresse gespeichert. Koordinaten bitte neu ermitteln.';
+            }
         } elseif ($aktion === 'qr-freigeben' && $id > 0) {
             db_run('UPDATE qr_redirects SET aktiv = 1, gesperrt_am = ? WHERE id = ?', [gmdate('Y-m-d H:i:s'), $id]);
             $meldung = 'QR-Weiterleitung ist scharf, das Ziel ist jetzt fest.';
@@ -189,6 +206,23 @@ function admin_knopf_geocode(string $tabelle, int $id): string
          . '<button type="submit">Koordinaten ermitteln</button></form>';
 }
 
+/** Zugeklapptes Adressformular - Tippfehler in Strasse/PLZ/Ort korrigieren. */
+function admin_adresse_bearbeiten(string $tabelle, int $id, ?string $strasse, string $plz, string $ort): string
+{
+    $strassenfeld = $strasse !== null
+        ? '<label>Straße <input name="strasse" value="' . e($strasse) . '" required></label>'
+        : '';
+    return '<details class="adresse-bearbeiten"><summary>Adresse ändern</summary>'
+         . '<form method="post" class="inline">' . csrf_field()
+         . '<input type="hidden" name="tabelle" value="' . e($tabelle) . '">'
+         . '<input type="hidden" name="id" value="' . $id . '">'
+         . '<input type="hidden" name="aktion" value="adresse-setzen">'
+         . $strassenfeld
+         . '<label>PLZ <input name="plz" value="' . e($plz) . '" required></label>'
+         . '<label>Ort <input name="ort" value="' . e($ort) . '" required></label>'
+         . '<button type="submit">Speichern</button></form></details>';
+}
+
 /** Endgueltiges Loeschen, mit Rueckfrage im Browser vor dem Absenden. */
 function admin_knopf_loeschen(string $tabelle, int $id, string $frage): string
 {
@@ -254,7 +288,8 @@ function admin_seite(?string $meldung): void
             $lieferText .= '<br><small>' . zahl((int) $z['abruf_menge']) . ' je Abruf</small>';
         }
         echo '<tr>'
-           . '<td><strong>' . e($z['betrieb']) . '</strong><br><small>' . e($z['strasse']) . ', ' . e($z['plz']) . ' ' . e($z['ort']) . '<br>' . e($z['betriebsart']) . '</small></td>'
+           . '<td><strong>' . e($z['betrieb']) . '</strong><br><small>' . e($z['strasse']) . ', ' . e($z['plz']) . ' ' . e($z['ort']) . '<br>' . e($z['betriebsart']) . '</small>'
+           . admin_adresse_bearbeiten('gastro_bestellungen', (int) $z['id'], (string) $z['strasse'], (string) $z['plz'], (string) $z['ort']) . '</td>'
            . '<td><small>' . e($z['vorname']) . ' ' . e($z['nachname']) . '<br>' . e($z['email']) . '<br>' . e((string) decrypt_field($z['telefon_enc'])) . '</small></td>'
            . '<td><strong>' . zahl($gesamt) . '</strong><br><small>' . e(implode(', ', $zeilen)) . '</small>'
            . ((int) $z['versand_zuschlag_ok'] ? '<br><small>+ Versandzuschlag</small>' : '') . '</td>'
@@ -287,7 +322,8 @@ function admin_seite(?string $meldung): void
             $labels[] = $wf ? $wf['label'] : (string) $fid;
         }
         echo '<tr>'
-           . '<td><strong>' . e($z['firma']) . '</strong><br><small>' . e($z['art']) . '<br>' . e((string) $z['plz']) . ' ' . e((string) $z['ort']) . '</small></td>'
+           . '<td><strong>' . e($z['firma']) . '</strong><br><small>' . e($z['art']) . '<br>' . e((string) $z['plz']) . ' ' . e((string) $z['ort']) . '</small>'
+           . admin_adresse_bearbeiten('werbebuchungen', (int) $z['id'], null, (string) $z['plz'], (string) $z['ort']) . '</td>'
            . '<td><small>' . e($z['ansprechpartner']) . '<br>' . e($z['email']) . '<br>' . e((string) decrypt_field($z['telefon_enc'])) . '</small></td>'
            . '<td><small>' . e(implode(', ', $labels)) . ($z['coupon'] ? '<br>mit Coupon' : '') . '</small></td>'
            . '<td>' . e(preis((int) $z['summe_cent'])) . '<br><small>netto</small></td>'
