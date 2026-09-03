@@ -99,6 +99,19 @@
 /* --- Fun-Area-Flaechenrechner beim Werbepartner ------------------------- */
 .feld-funarea{margin-top:1rem;padding:1rem 1.15rem;background:var(--flaeche-hell);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte)}
 .feld-funarea .menge-wahl{margin-bottom:.75rem}
+
+/* --- Wunschflaeche beim Werbepartner ------------------------------------ */
+.feld-wunschflaeche{margin-top:1rem;margin-bottom:1.75rem}
+.flaechenplan-grafik{margin:0 0 1.25rem}
+.flaechenplan-grafik img{width:100%;height:auto;display:block;border-radius:var(--radius-karte);border:1px solid var(--rahmenfarbe)}
+.flaechenplan-grafik figcaption{margin-top:.5rem;font-size:.85rem;color:var(--textfarbe-gedaempft)}
+.wunschflaeche-gruppe{margin:0 0 1.1rem}
+.wunschflaeche-gruppe:last-of-type{margin-bottom:0}
+.wunschflaeche-gruppe legend{
+  font-family:var(--schrift-ui);font-size:.9rem;font-weight:700;color:var(--textfarbe-gedaempft);
+  padding:0 0 .35rem;margin-bottom:.5rem;border-bottom:1px solid var(--rahmenfarbe);width:100%;
+}
+
 @media (prefers-reduced-motion:reduce){.balken-fuellung{transition:none}}
 
 /* --- Schritte --------------------------------------------------------- */

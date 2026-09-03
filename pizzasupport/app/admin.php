@@ -321,11 +321,16 @@ function admin_seite(?string $meldung): void
             $wf = werbeformat((string) $fid);
             $labels[] = $wf ? $wf['label'] : (string) $fid;
         }
+        $wunschflaechen = json_decode((string) $z['wunschflaechen'], true) ?: [];
         echo '<tr>'
            . '<td><strong>' . e($z['firma']) . '</strong><br><small>' . e($z['art']) . '<br>' . e((string) $z['plz']) . ' ' . e((string) $z['ort']) . '</small>'
            . admin_adresse_bearbeiten('werbebuchungen', (int) $z['id'], null, (string) $z['plz'], (string) $z['ort']) . '</td>'
            . '<td><small>' . e($z['ansprechpartner']) . '<br>' . e($z['email']) . '<br>' . e((string) decrypt_field($z['telefon_enc'])) . '</small></td>'
-           . '<td><small>' . e(implode(', ', $labels)) . ($z['coupon'] ? '<br>mit Coupon' : '') . '</small></td>'
+           . '<td><small>' . e(implode(', ', $labels)) . ($z['coupon'] ? '<br>mit Coupon' : '') . '</small>'
+           . ($wunschflaechen
+                ? '<br><small><em>Wunsch: ' . e(implode(', ', $wunschflaechen)) . '</em>'
+                    . ($z['wunschflaeche_notiz'] ? ' – ' . e((string) $z['wunschflaeche_notiz']) : '') . '</small>'
+                : '') . '</td>'
            . '<td>' . e(preis((int) $z['summe_cent'])) . '<br><small>netto</small></td>'
            . '<td><small>' . e((string) ($z['motiv_name'] ?: ((int) $z['motiv_spaeter'] ? 'wird nachgereicht' : '–'))) . '</small></td>'
            . '<td>' . admin_status($z['status']) . '</td>'

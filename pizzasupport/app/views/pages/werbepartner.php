@@ -292,6 +292,63 @@ $f      = fortschritt();
           <?php endif; ?>
         </div>
 
+        <?php
+          $fk = config('flaechenkatalog');
+          $gewaehlteWunschflaechen = $altw['wunschflaechen'] ?? [];
+          $gewaehlteWunschflaechen = is_array($gewaehlteWunschflaechen) ? $gewaehlteWunschflaechen : [];
+          $flaechenplanDatei = APP_ROOT . '/public/assets/img/flaechenplan.png';
+        ?>
+        <div class="feld feld-wunschflaeche">
+          <span class="feld-label">Wunschfläche <span class="feld-optional">(freiwillig)</span></span>
+          <p class="feld-hilfe">
+            Alle Maße und Preise beziehen sich auf das Kartonformat 32 × 32 cm. Bei kleineren
+            oder größeren Kartons skalieren wir Ihre Fläche proportional mit; der Preis bleibt
+            gleich. Die Auswahl unten ist ein <strong>Wunsch, keine Zusage</strong> – die Fläche
+            ist begrenzt, siehe Hinweis weiter unten vor dem Buchen-Button.
+          </p>
+
+          <?php if (is_file($flaechenplanDatei)): ?>
+            <figure class="flaechenplan-grafik">
+              <img src="<?= e(asset('/assets/img/flaechenplan.png')) ?>"
+                   alt="Flächenplan des Pizzakartons mit den benannten Werbeflächen auf Deckel, Boden und Seiten"
+                   loading="lazy">
+              <figcaption>Lage und Kennung aller Werbeflächen auf dem Karton (Bezugsmaß 32 × 32 cm).</figcaption>
+            </figure>
+          <?php endif; ?>
+
+          <?php foreach ($fk['gruppen'] as $gruppeKey => $gruppeLabel):
+            $flaechenInGruppe = array_values(array_filter(
+                $fk['flaechen'],
+                fn (array $f): bool => $f['gruppe'] === $gruppeKey && $f['buchbar']
+            ));
+            if (!$flaechenInGruppe) {
+                continue;
+            }
+          ?>
+            <fieldset class="wunschflaeche-gruppe">
+              <legend><?= e($gruppeLabel) ?></legend>
+              <div class="wahl-gitter">
+                <?php foreach ($flaechenInGruppe as $flaeche): ?>
+                  <label class="wahl wahl-schmal">
+                    <input type="checkbox" name="wunschflaechen[]" value="<?= e($flaeche['id']) ?>"
+                           <?= in_array($flaeche['id'], $gewaehlteWunschflaechen, true) ? 'checked' : '' ?>>
+                    <span class="wahl-inhalt">
+                      <strong><?= e($flaeche['id']) ?></strong>
+                      <small><?= e($flaeche['bezeichnung']) ?> · <?= e($flaeche['masse']) ?></small>
+                    </span>
+                  </label>
+                <?php endforeach; ?>
+              </div>
+            </fieldset>
+          <?php endforeach; ?>
+
+          <div class="feld<?= isset($fehler['wunschflaeche_notiz']) ? ' feld-fehler' : '' ?>">
+            <label for="w-wunschflaeche-notiz">Anmerkungen zur Platzierung <span class="feld-optional">(freiwillig)</span></label>
+            <textarea id="w-wunschflaeche-notiz" name="wunschflaeche_notiz" rows="2" maxlength="500"><?= e(alt($altw, 'wunschflaeche_notiz')) ?></textarea>
+            <?php if (isset($fehler['wunschflaeche_notiz'])): ?><p class="feld-meldung"><?= e($fehler['wunschflaeche_notiz']) ?></p><?php endif; ?>
+          </div>
+        </div>
+
         <div class="feld feld-check feld-coupon">
           <label>
             <input type="checkbox" name="coupon" value="1" data-coupon <?= alt($altw, 'coupon') ? 'checked' : '' ?>>

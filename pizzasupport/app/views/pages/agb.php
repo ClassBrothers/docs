@@ -122,6 +122,21 @@ $mailLink    = firma_email_link();
       vollständig; weitere Ansprüche entstehen daraus nicht.
     </p>
 
+    <h2>§ 4b Bezugsmaß und Skalierung</h2>
+    <p>
+      Alle Flächenangaben und Preise beziehen sich auf das Kartonformat 32 × 32 cm. Es ist
+      unser Hauptmaß mit der größten Produktionszahl.
+    </p>
+    <p>
+      Wird eine Auflage in einem kleineren oder größeren Kartonformat produziert, werden die
+      Werbeflächen proportional mitskaliert. Die Preise orientieren sich unverändert an den
+      Flächen des Formats 32 × 32 cm. Ein Anspruch auf Minderung, Nachlass oder Erstattung
+      wegen abweichender Flächenmaße besteht nicht.
+    </p>
+    <p>
+      Mit der Buchung erkennen Sie diese Skalierung an.
+    </p>
+
     <h2>§ 5 Motive, Druckunterlagen und Vorbehalt</h2>
     <p>
       Druckfähige Unterlagen sind bis zu dem von uns mitgeteilten Termin einzureichen. Gehen

@@ -17,10 +17,16 @@ if (!rate_limit_ok('werbung', 5, 3600)) {
 }
 
 $erlaubteFormate = array_column(config('werbeformate'), 'id');
+$erlaubteWunschflaechen = array_column(
+    array_filter(config('flaechenkatalog.flaechen', []), fn (array $f): bool => $f['buchbar']),
+    'id'
+);
 
 $v = new Validator($_POST);
 $v->auswahl('art', 'Die Art des Buchenden', ['unternehmen', 'privat'])
   ->mehrfach('formate', 'Mindestens eine Werbefläche', $erlaubteFormate)
+  ->mehrfach('wunschflaechen', 'Die Wunschfläche', $erlaubteWunschflaechen, false)
+  ->langtext('wunschflaeche_notiz', 'Die Anmerkung zur Platzierung', false, 500)
   ->text('firma', 'Firma oder Name', true, 150)
   ->text('ansprechpartner', 'Der Ansprechpartner', true, 120)
   ->email('email', 'Die E-Mail-Adresse')
@@ -117,6 +123,17 @@ foreach ($d['formate'] as $id) {
         . ($id === 'fun-area' && $funFlaecheCm2 !== null ? ', ' . $funFlaecheCm2 . ' cm²' : '');
 }
 
+// Wunschflaeche: nur Anzeige/Wunsch, keine Preiswirkung - Kennung + Maß aus
+// dem Flaechenkatalog, nie aus dem Formular, damit hier nichts gefaelscht
+// ankommen kann.
+$wunschflaechenLabels = [];
+foreach ($d['wunschflaechen'] as $id) {
+    $flaeche = flaechenkatalog_eintrag($id);
+    if ($flaeche !== null) {
+        $wunschflaechenLabels[] = $id . ' – ' . $flaeche['bezeichnung'] . ' (' . $flaeche['masse'] . ')';
+    }
+}
+
 $rabatt = 0;
 if ($d['coupon']) {
     $rabatt = (int) round($netto * config('coupon_rabatt_prozent') / 100);
@@ -136,9 +153,10 @@ try {
              rechnung_enc, ustid_enc, plz, ort,
              formate, coupon, summe_cent,
              motiv_pfad, motiv_name, motiv_groesse, motiv_spaeter, zielurl, nachricht,
+             wunschflaechen, wunschflaeche_notiz,
              agb_ok, motivvorbehalt_ok, verbindlich_ok, karte_ok, datenschutz_ok, einwilligung_am, einwilligung_zweck,
              status, erstellt_am, quelle)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         [
             $d['art'], $d['firma'], $d['ansprechpartner'], $d['email'],
             encrypt_field($d['telefon']), $d['website'],
@@ -146,6 +164,7 @@ try {
             json_encode($d['formate'], JSON_UNESCAPED_UNICODE), $d['coupon'], $netto,
             $upload['pfad'] ?? null, $upload['name'] ?? null, $upload['groesse'] ?? null,
             $d['motiv_spaeter'], $d['zielurl'], $d['nachricht'],
+            $d['wunschflaechen'] ? json_encode($d['wunschflaechen'], JSON_UNESCAPED_UNICODE) : null, $d['wunschflaeche_notiz'],
             $d['agb_ok'], $d['motivvorbehalt_ok'], $d['verbindlich_ok'], $d['karte_ok'], $d['datenschutz_ok'],
             $jetzt, implode('; ', $zwecke),
             'neu', $jetzt, 'website',
@@ -183,6 +202,10 @@ mail_send(
     . "vielen Dank für Ihre Buchung. Wir haben Folgendes notiert:\n\n"
     . "Buchende Firma: {$d['firma']}\n"
     . "Flächen:\n{$formatText}\n"
+    . ($wunschflaechenLabels
+        ? "\nIhre Wunschfläche (ein Wunsch, keine Zusage – siehe unsere AGB):\n  - "
+          . implode("\n  - ", $wunschflaechenLabels) . "\n"
+        : '')
     . ($d['coupon'] ? 'Gutscheinmotiv: ja, ' . (int) config('coupon_rabatt_prozent') . " % Nachlass berücksichtigt\n" : '')
     . 'Auftragswert:   ' . preis($netto) . ' netto, ' . preis($brutto) . " brutto\n\n"
     . "So geht es weiter: Ihre Reservierung ist bis zum Startschuss kostenfrei und\n"
@@ -215,6 +238,10 @@ mail_ops(
     . "PLZ/Ort:        {$d['plz']} {$d['ort']}\n"
     . 'USt-IdNr.:      ' . ($d['ustid'] ?: '–') . "\n"
     . "Flächen:\n{$formatText}\n"
+    . ($wunschflaechenLabels
+        ? "Wunschfläche:\n  - " . implode("\n  - ", $wunschflaechenLabels) . "\n"
+          . 'Anmerkung dazu:  ' . ($d['wunschflaeche_notiz'] ?: '–') . "\n"
+        : '')
     . 'Coupon:         ' . ($d['coupon'] ? 'ja (-' . preis($rabatt) . ')' : 'nein') . "\n"
     . 'Auftragswert:   ' . preis($netto) . " netto\n"
     . 'Motiv:          ' . ($upload['name'] ?? ($d['motiv_spaeter'] ? 'wird nachgereicht' : 'keins')) . "\n"

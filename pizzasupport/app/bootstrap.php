@@ -102,6 +102,17 @@ function werbeformat(string $id): ?array
     return null;
 }
 
+/** Eine Flaeche aus dem Flaechenkatalog holen (Kennung wie im Flaechenplan). */
+function flaechenkatalog_eintrag(string $id): ?array
+{
+    foreach (config('flaechenkatalog.flaechen', []) as $f) {
+        if ($f['id'] === $id) {
+            return $f;
+        }
+    }
+    return null;
+}
+
 /** Ein Kartonformat aus der Konfiguration holen. */
 function kartonformat(string $id): ?array
 {
