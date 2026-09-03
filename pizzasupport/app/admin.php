@@ -94,6 +94,22 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['aktion'])) {
             }
             db_run("DELETE FROM {$tabelle} WHERE id = ?", [$id]);
             $meldung = 'Eintrag endgültig gelöscht.';
+        } elseif ($aktion === 'geocode' && in_array($tabelle, ['gastro_bestellungen', 'werbebuchungen'], true) && $id > 0) {
+            $z = db_all("SELECT * FROM {$tabelle} WHERE id = ?", [$id])[0] ?? null;
+            if (!$z) {
+                $meldung = 'Eintrag nicht gefunden.';
+            } else {
+                $adresse = $tabelle === 'gastro_bestellungen'
+                    ? $z['strasse'] . ', ' . $z['plz'] . ' ' . $z['ort'] . ', Deutschland'
+                    : $z['plz'] . ' ' . $z['ort'] . ', Deutschland';
+                $treffer = geocode_adresse($adresse);
+                if ($treffer === null) {
+                    $meldung = 'Adresse nicht gefunden. Schreibweise prüfen oder später erneut versuchen.';
+                } else {
+                    db_run("UPDATE {$tabelle} SET lat = ?, lon = ? WHERE id = ?", [$treffer['lat'], $treffer['lon'], $id]);
+                    $meldung = 'Koordinaten gefunden und gespeichert.';
+                }
+            }
         } elseif ($aktion === 'qr-freigeben' && $id > 0) {
             db_run('UPDATE qr_redirects SET aktiv = 1, gesperrt_am = ? WHERE id = ?', [gmdate('Y-m-d H:i:s'), $id]);
             $meldung = 'QR-Weiterleitung ist scharf, das Ziel ist jetzt fest.';
@@ -163,6 +179,16 @@ function admin_knopf(string $tabelle, array $z, string $aktion, string $label, s
          . '<button class="' . e($klasse) . '" type="submit">' . e($label) . '</button></form>';
 }
 
+/** Koordinaten ueber Nominatim ermitteln - erscheint nur ohne vorhandene Koordinaten. */
+function admin_knopf_geocode(string $tabelle, int $id): string
+{
+    return '<form method="post" class="inline">' . csrf_field()
+         . '<input type="hidden" name="tabelle" value="' . e($tabelle) . '">'
+         . '<input type="hidden" name="id" value="' . $id . '">'
+         . '<input type="hidden" name="aktion" value="geocode">'
+         . '<button type="submit">Koordinaten ermitteln</button></form>';
+}
+
 /** Endgueltiges Loeschen, mit Rueckfrage im Browser vor dem Absenden. */
 function admin_knopf_loeschen(string $tabelle, int $id, string $frage): string
 {
@@ -208,7 +234,11 @@ function admin_seite(?string $meldung): void
 
     // Gastro
     $lieferartLabels = ['gesamt' => 'Alles auf einmal', 'abruf' => 'Monatlicher Abruf', 'abholung' => 'Abholung'];
-    echo '<h2>Gastro-Bestellungen</h2><div class="tabelle-wrap"><table><thead><tr>'
+    echo '<h2>Gastro-Bestellungen</h2>'
+       . '<p class="hinweis-klein">„Koordinaten ermitteln" sucht die Adresse kostenlos bei OpenStreetMap '
+       . '(Nominatim) und setzt den Punkt auf der Teilnehmerkarte. Ohne Koordinaten erscheint ein Eintrag '
+       . 'weiterhin in der Liste, nur nicht auf der Karte.</p>'
+       . '<div class="tabelle-wrap"><table><thead><tr>'
        . '<th>Betrieb</th><th>Kontakt</th><th>Menge</th><th>Lieferung</th><th>Karte</th><th>Status</th><th>Aktion</th></tr></thead><tbody>';
     foreach (db_all('SELECT * FROM gastro_bestellungen ORDER BY id DESC LIMIT 200') as $z) {
         $positionen = db_all('SELECT format, menge FROM bestellpositionen WHERE bestellung_id = ? ORDER BY format', [(int) $z['id']]);
@@ -240,6 +270,7 @@ function admin_seite(?string $meldung): void
            . '<td class="aktionen">'
            . admin_knopf('gastro_bestellungen', $z, 'freigegeben', 'Freigeben', 'gut')
            . admin_knopf('gastro_bestellungen', $z, 'abgelehnt', 'Ablehnen', 'schlecht')
+           . ($z['lat'] === null ? admin_knopf_geocode('gastro_bestellungen', (int) $z['id']) : '')
            . admin_knopf_loeschen('gastro_bestellungen', (int) $z['id'], 'Bestellung von „' . $z['betrieb'] . '" endgültig löschen, mit allen Positionen? Das lässt sich nicht rückgängig machen.')
            . '</td></tr>';
     }
@@ -265,6 +296,7 @@ function admin_seite(?string $meldung): void
            . '<td class="aktionen">'
            . admin_knopf('werbebuchungen', $z, 'freigegeben', 'Freigeben', 'gut')
            . admin_knopf('werbebuchungen', $z, 'abgelehnt', 'Ablehnen', 'schlecht')
+           . ($z['lat'] === null ? admin_knopf_geocode('werbebuchungen', (int) $z['id']) : '')
            . admin_knopf_loeschen('werbebuchungen', (int) $z['id'], 'Buchung von „' . $z['firma'] . '" endgültig löschen, inklusive Motiv? Das lässt sich nicht rückgängig machen.')
            . '</td></tr>';
     }
