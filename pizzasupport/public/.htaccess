@@ -7,6 +7,12 @@
 Options -Indexes -MultiViews
 DirectoryIndex index.php
 
+# Alle Dateien sind UTF-8 (auch ohne diese Zeile setzt PHP den Charset
+# explizit per header(), siehe send_security_headers() - das hier ist nur
+# das Netz darunter, falls der Server je eine Datei ausserhalb von PHP
+# ausliefert).
+AddDefaultCharset UTF-8
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
 

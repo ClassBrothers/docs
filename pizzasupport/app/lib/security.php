@@ -121,6 +121,14 @@ function honeypot_ok(array $post): bool
  */
 function send_security_headers(string $nonce): void
 {
+    // Explizit setzen statt auf die PHP- oder Server-Voreinstellung zu
+    // vertrauen: Weicht der Default vom Datei-Encoding (UTF-8) ab, werden
+    // Umlaute und Sonderzeichen im Browser zu Mojibake (z.B. "Ã¼" statt "ü"),
+    // weil der HTTP-Header-Charset immer vor dem <meta charset> der Seite
+    // gilt. Wird von den JSON/XML-Routen in public/index.php gezielt
+    // ueberschrieben.
+    header('Content-Type: text/html; charset=UTF-8');
+
     $csp = implode('; ', [
         "default-src 'self'",
         "base-uri 'self'",
