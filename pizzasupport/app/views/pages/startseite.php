@@ -159,7 +159,8 @@ $f       = fortschritt();
       <li>
         <span class="schritt-nr" aria-hidden="true">2</span>
         <h3>Unternehmen buchen Flächen</h3>
-        <p>Handwerk, Dienstleister, Handel aus der Region – und Privatleute auf der Fun Area.</p>
+        <p>Handwerk, Dienstleister, Handel aus der Region – und kleine Betriebe, Start-ups
+           oder Vereine auf der Fun Area.</p>
       </li>
       <li>
         <span class="schritt-nr" aria-hidden="true">3</span>

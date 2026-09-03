@@ -48,7 +48,7 @@ $altMengen = $altw['menge'] ?? [];
     <?php endif; ?>
 
     <div class="bestellen-kopf">
-      <h2 id="bestellen-titel">Trag Deinen Betrieb ein</h2>
+      <h2 id="bestellen-titel">Trag Deine Gastronomie ein</h2>
       <p class="band-lead">
         Unverbindlich bis zum Startschuss. Wir melden uns, sobald die Produktion
         freigegeben ist – und vorher nur, wenn wir eine Rückfrage haben.
@@ -199,21 +199,12 @@ $altMengen = $altw['menge'] ?? [];
           </div>
         </div>
 
-        <div class="feld feld-check" data-versand-zuschlag
-             data-plz-von="<?= e($porto['plz_von']) ?>" data-plz-bis="<?= e($porto['plz_bis']) ?>"
-             data-freie-orte="<?= e(json_encode(array_map('mb_strtolower', $porto['freie_orte']), JSON_UNESCAPED_UNICODE)) ?>" hidden>
-          <label>
-            <input type="checkbox" id="g-versand-zuschlag" name="versand_zuschlag_ok" value="1"
-                   <?= alt($altw, 'versand_zuschlag_ok') ? 'checked' : '' ?>>
-            <span>
-              Außerhalb <?= e($porto['frei_in']) ?> berechnen wir eine Portopauschale von
-              <?= e(preis((int) $porto['pauschale_cent'], false)) ?> € netto zzgl.
-              <?= (int) config('mwst_prozent') ?> % MwSt. je angefangene <?= zahl((int) $porto['je_kartons']) ?>
-              Kartons. Damit bin ich einverstanden. <span class="pflicht" aria-hidden="true">*</span>
-            </span>
-          </label>
-          <?php if (isset($fehler['versand_zuschlag_ok'])): ?><p class="feld-meldung"><?= e($fehler['versand_zuschlag_ok']) ?></p><?php endif; ?>
-        </div>
+        <p class="feld-hilfe" data-versand-zuschlag
+           data-plz-von="<?= e($porto['plz_von']) ?>" data-plz-bis="<?= e($porto['plz_bis']) ?>"
+           data-freie-orte="<?= e(json_encode(array_map('mb_strtolower', $porto['freie_orte']), JSON_UNESCAPED_UNICODE)) ?>" hidden>
+          Außerhalb <?= e($porto['frei_in']) ?>: Abholung oder Lieferung nach Aufwand, wir
+          melden uns bei Dir dazu.
+        </p>
 
         <div class="feld">
           <label for="g-anmerkung">Willst Du uns noch etwas mitgeben? <span class="feld-optional">(freiwillig)</span></label>
@@ -226,9 +217,13 @@ $altMengen = $altw['menge'] ?? [];
         <p class="feld-hilfe">
           Wir lagern Deine Kartons und liefern ab, wenn Du sie brauchst. Eine Lieferung pro
           Monat ist für Dich kostenfrei, ab <?= zahl((int) $lieferung['abruf_min']) ?> Kartons
-          je Abruf. Wir bündeln Fahrten, deshalb kann eine zusätzliche Lieferung im selben
-          Monat bis zu <?= (int) $lieferung['zusatz_frist_werktage'] ?> Werktage dauern – länger
-          nicht. Abholen kannst Du jederzeit, kostenlos und ohne Mengenbeschränkung.
+          je Abruf. Brauchst Du im selben Monat noch eine, kostet die Zustellung im
+          Liefergebiet <?= e(preis((int) $lieferung['zusatz_pauschale_cent'], false)) ?> € netto ab
+          <?= zahl((int) $lieferung['zusatz_mindestmenge']) ?> Kartons; außerhalb des
+          Liefergebiets rechnen wir den Versand nach Aufwand ab und stimmen ihn vorher mit
+          Dir ab. Wir bündeln Fahrten, deshalb kann es bis zu
+          <?= (int) $lieferung['zusatz_frist_werktage'] ?> Werktage dauern – länger nicht.
+          Abholen kannst Du jederzeit, kostenlos und ohne Mengenbeschränkung.
         </p>
 
         <div class="feld">

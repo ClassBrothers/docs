@@ -52,20 +52,17 @@ if ($v->get('betriebsart') !== null && !in_array($v->get('betriebsart'), $betrie
     $v->fehlerSetzen('betriebsart', 'Bitte wähle eine Betriebsart aus der Liste.');
 }
 
-// Ausserhalb Freiburgs faellt eine Portopauschale an - die Zustimmung dazu
-// ist nur dann Pflicht, wenn die eingetragene PLZ ausserhalb liegt und der
-// Ort auch nicht in der Liste der angrenzenden Gemeinden steht.
+// Ausserhalb des kostenfreien Liefergebiets gibt es keinen festen Zuschlag,
+// sondern nur einen Hinweis im Formular - Abholung oder Lieferung nach
+// Aufwand, wir melden uns dazu (siehe Nachtrag 5). Kein Pflichtfeld, die
+// Spalte versand_zuschlag_ok haelt daher nur den serverseitig ermittelten
+// Befund fest, nie eine Angabe aus dem Formular.
 $plzWert   = $v->get('plz');
 $ortWert   = $v->get('ort');
 $plzAusserhalb = $plzWert !== null
     && ((int) $plzWert < (int) $porto['plz_von'] || (int) $plzWert > (int) $porto['plz_bis']);
 $ortIstFrei = $ortWert !== null && in_array(mb_strtolower($ortWert), array_map('mb_strtolower', $porto['freie_orte']), true);
 $ausserhalbFreiburg = $plzAusserhalb && !$ortIstFrei;
-$v->checkbox(
-    'versand_zuschlag_ok',
-    'Bitte bestätige den Versandzuschlag außerhalb ' . $porto['frei_in'] . '.',
-    $ausserhalbFreiburg
-);
 
 // Mengen je Format einsammeln und pruefen. Leer oder 0 heisst: dieses
 // Format wurde nicht bestellt.
@@ -192,7 +189,7 @@ try {
             $d['vorname'], $d['nachname'], $d['betrieb'], $d['strasse'], $d['plz'], $d['ort'],
             $d['email'], encrypt_field($d['telefon']), $d['website'],
             $d['betriebsart'], $d['anmerkung'],
-            $d['bestellung_ok'], $d['karte_ok'], $d['datenschutz_ok'], $d['versand_zuschlag_ok'],
+            $d['bestellung_ok'], $d['karte_ok'], $d['datenschutz_ok'], (int) $ausserhalbFreiburg,
             $einkaufspreisCent, $kartonsMonat, $lieferart, $abrufMenge,
             $jetzt, implode('; ', $zwecke), 'neu', $jetzt, 'website',
         ]
@@ -249,9 +246,8 @@ mail_send(
     . 'Lieferung: ' . $lieferartText
     . ($lieferart === 'abholung' ? ' – wir rufen Dich zur Terminvereinbarung an.' : '') . "\n\n"
     . ($ausserhalbFreiburg
-        ? 'Da Du außerhalb ' . $porto['frei_in'] . " bestellst, fällt eine Portopauschale von\n"
-          . preis((int) $porto['pauschale_cent'], false) . ' € netto zzgl. ' . (int) config('mwst_prozent')
-          . ' % MwSt. je angefangene ' . zahl((int) $porto['je_kartons']) . " Kartons an.\n\n"
+        ? 'Da Du außerhalb ' . $porto['frei_in'] . " bestellst: Abholung oder Lieferung nach\n"
+          . "Aufwand, wir melden uns bei Dir dazu.\n\n"
         : '')
     . "Wie es weitergeht: Wir sammeln weiter Betriebe und Werbepartner. Sobald genug\n"
     . "zusammengekommen ist, geben wir die Produktion frei und melden uns bei Dir. Die\n"

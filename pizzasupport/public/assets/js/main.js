@@ -412,7 +412,6 @@
     var plzBis = parseInt(versandBox.getAttribute('data-plz-bis'), 10);
     var freieOrte = [];
     try { freieOrte = JSON.parse(versandBox.getAttribute('data-freie-orte') || '[]'); } catch (eJson) { freieOrte = []; }
-    var versandCheckbox = versandBox.querySelector('input[type="checkbox"]');
 
     function versandPruefen() {
       var plz = parseInt(plzFeld.value, 10);
@@ -420,7 +419,6 @@
       var ortIstFrei = ortFeld && freieOrte.indexOf(ortFeld.value.trim().toLowerCase()) !== -1;
       var ausserhalb = plzAusserhalb && !ortIstFrei;
       versandBox.hidden = !ausserhalb;
-      if (!ausserhalb && versandCheckbox) { versandCheckbox.checked = false; }
     }
     plzFeld.addEventListener('input', versandPruefen);
     if (ortFeld) { ortFeld.addEventListener('input', versandPruefen); }

@@ -21,7 +21,7 @@ $faq = [
         'frage'   => 'Warum nennt ihr es nicht Crowdfunding?',
         'antwort' => '<p>Weil es keins ist. Niemand gibt Geld für ein Versprechen, niemand erwirbt einen
                       Anteil, niemand trägt ein Ausfallrisiko. Werbepartner buchen eine Leistung und
-                      zahlen erst an, wenn die Produktion feststeht. Betriebe zahlen gar nichts. Wir
+                      zahlen erst an, wenn die Produktion feststeht. Gastronomien zahlen gar nichts. Wir
                       nennen das Startschuss-Prinzip, weil es genau das beschreibt: Wir starten, wenn
                       genug zusammen ist.</p>',
     ],
@@ -48,7 +48,7 @@ $meta['jsonld'] = [
     <h1>Über uns: Warum ein Freiburger Projekt für Pizzakartons?</h1>
     <p class="hero-lead">
       Ein Freiburger Projekt für Pizzakartons entsteht nicht am Reißbrett, sondern an einem
-      Tresen. Wir haben zu oft gehört, wie sich die Rechnung für kleine Betriebe verschiebt –
+      Tresen. Wir haben zu oft gehört, wie sich die Rechnung für kleine Gastronomien verschiebt –
       und irgendwann gemerkt, dass wir eine der Stellschrauben tatsächlich drehen können.
       Was daraus geworden ist, steht hier.
     </p>
@@ -73,7 +73,7 @@ $meta['jsonld'] = [
     <p>
       Wir kennen uns mit Druck aus, mit Werbung sowieso, und wir wissen, wie man lokale
       Unternehmen zusammenbringt. Die Rechnung dahinter ist simpel: Auf einem Pizzakarton ist
-      Platz. Platz, für den jemand bezahlt. Wenn genug Betriebe mitmachen, wird die Auflage
+      Platz. Platz, für den jemand bezahlt. Wenn genug Gastronomien mitmachen, wird die Auflage
       groß genug, dass die Fläche für Werbekunden interessant wird – und dann trägt sich das
       Ganze selbst.
     </p>
@@ -120,7 +120,7 @@ $meta['jsonld'] = [
       Unser Punkt ist ein anderer: Zwischen der Absicht und dem Betrieb, der sie umsetzen
       muss, liegt eine Lücke. Die füllen wir. Nicht mit einer Forderung, sondern mit einem
       Karton, der nichts kostet. Wenn die Stadt irgendwann Lust hat, sich das anzuschauen –
-      wir sind gesprächsbereit, und ein Projekt, das lokale Betriebe entlastet und lokale
+      wir sind gesprächsbereit, und ein Projekt, das lokale Gastronomien entlastet und lokale
       Werbung stärkt, passt eigentlich ganz gut in die Gegend.
       <a href="/verpackungssteuer-freiburg.html">Unsere Einordnung der Steuer.</a>
     </p>

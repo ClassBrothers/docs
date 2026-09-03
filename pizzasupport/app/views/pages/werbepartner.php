@@ -490,7 +490,7 @@ $f      = fortschritt();
             </label>
             <label class="wahl wahl-schmal">
               <input type="radio" name="art" value="privat" <?= alt($altw, 'art') === 'privat' ? 'checked' : '' ?>>
-              <span class="wahl-inhalt"><strong>Privatperson</strong><small>für die Fun Area auf der Unterseite</small></span>
+              <span class="wahl-inhalt"><strong>Privatperson</strong><small>mit gesetzlichem Widerrufsrecht als Verbraucher</small></span>
             </label>
           </div>
           <?php if (isset($fehler['art'])): ?><p class="feld-meldung"><?= e($fehler['art']) ?></p><?php endif; ?>
