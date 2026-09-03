@@ -558,6 +558,41 @@
         + ' · unverbindlich, verbindlich wird die Auftragsbestätigung';
     }
 
+    /* Wunschflaeche: nur Positionen zeigen, die zu einer gerade gewaehlten */
+    /* Flaeche passen - wer "Deckel groß" bucht, soll nicht zwischen Slots  */
+    /* fuer "Deckel klein" oder Seitenflaechen waehlen muessen.             */
+    var wunschBlock = document.querySelector('[data-wunschflaeche-block]');
+    if (wunschBlock) {
+      var wunschHinweis = wunschBlock.querySelector('[data-wunschflaeche-hinweis]');
+      var wunschGruppen = wunschBlock.querySelectorAll('[data-wunschflaeche-gruppe]');
+      var wunschLabels  = wunschBlock.querySelectorAll('[data-paket]');
+
+      function wunschflaechenAktualisieren() {
+        var gewaehltePakete = [];
+        Array.prototype.forEach.call(rechner.querySelectorAll('input[type="checkbox"]:checked'), function (cb) {
+          gewaehltePakete.push(cb.value);
+        });
+
+        Array.prototype.forEach.call(wunschLabels, function (label) {
+          var passt = gewaehltePakete.indexOf(label.getAttribute('data-paket')) !== -1;
+          label.hidden = !passt;
+          if (!passt) {
+            var eingabe = label.querySelector('input');
+            if (eingabe) { eingabe.checked = false; }
+          }
+        });
+
+        Array.prototype.forEach.call(wunschGruppen, function (gruppe) {
+          gruppe.hidden = !gruppe.querySelector('[data-paket]:not([hidden])');
+        });
+
+        if (wunschHinweis) { wunschHinweis.hidden = gewaehltePakete.length > 0; }
+      }
+
+      rechner.addEventListener('change', wunschflaechenAktualisieren);
+      wunschflaechenAktualisieren();
+    }
+
     rechner.addEventListener('change', neuRechnen);
     if (couponFeld) { couponFeld.addEventListener('change', neuRechnen); }
     neuRechnen();

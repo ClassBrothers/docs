@@ -298,7 +298,7 @@ $f      = fortschritt();
           $gewaehlteWunschflaechen = is_array($gewaehlteWunschflaechen) ? $gewaehlteWunschflaechen : [];
           $flaechenplanDatei = APP_ROOT . '/public/assets/img/flaechenplan.png';
         ?>
-        <div class="feld feld-wunschflaeche">
+        <div class="feld feld-wunschflaeche" data-wunschflaeche-block>
           <span class="feld-label">Wunschfläche <span class="feld-optional">(freiwillig)</span></span>
           <p class="feld-hilfe">
             Alle Maße und Preise beziehen sich auf das Kartonformat 32 × 32 cm. Bei kleineren
@@ -316,6 +316,10 @@ $f      = fortschritt();
             </figure>
           <?php endif; ?>
 
+          <p class="feld-hilfe" data-wunschflaeche-hinweis>
+            Wählen Sie oben zuerst eine Fläche aus – wir zeigen dann die passenden Positionen.
+          </p>
+
           <?php foreach ($fk['gruppen'] as $gruppeKey => $gruppeLabel):
             $flaechenInGruppe = array_values(array_filter(
                 $fk['flaechen'],
@@ -325,11 +329,11 @@ $f      = fortschritt();
                 continue;
             }
           ?>
-            <fieldset class="wunschflaeche-gruppe">
+            <fieldset class="wunschflaeche-gruppe" data-wunschflaeche-gruppe hidden>
               <legend><?= e($gruppeLabel) ?></legend>
               <div class="wahl-gitter">
                 <?php foreach ($flaechenInGruppe as $flaeche): ?>
-                  <label class="wahl wahl-schmal">
+                  <label class="wahl wahl-schmal" data-paket="<?= e((string) $flaeche['paket']) ?>" hidden>
                     <input type="checkbox" name="wunschflaechen[]" value="<?= e($flaeche['id']) ?>"
                            <?= in_array($flaeche['id'], $gewaehlteWunschflaechen, true) ? 'checked' : '' ?>>
                     <span class="wahl-inhalt">

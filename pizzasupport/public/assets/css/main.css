@@ -255,6 +255,10 @@
 .wahl-gitter-preis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .wahl-reihe{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:.25rem}
 .wahl{position:relative;display:block;cursor:pointer}
+/* Wie bei .modal/.consent/.teilnehmer-eintrag: eigenes display:block
+   sticht sonst das hidden-Attribut aus (hier fuer die Wunschflaechen-
+   Filterung nach gewaehltem Paket gebraucht). */
+.wahl[hidden]{display:none}
 .wahl-schmal{flex:1 1 220px}
 .wahl input{position:absolute;opacity:0;width:1px;height:1px}
 .wahl-inhalt{
