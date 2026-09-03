@@ -148,6 +148,12 @@ $meta['jsonld'] = [
       lieber jemanden neben sich haben.
     </p>
     <p>
+      <strong><a href="https://snackworks.de" target="_blank" rel="noopener" data-follow>SnackWorks</a></strong>
+      — Snackautomaten für Unternehmen, Hotels, Schulen, Bildungseinrichtungen und
+      Fitnessstudios: überall dort, wo ein Snack im richtigen Moment die Welt verändern kann.
+      Seit 2026 versorgt SnackWorks Freiburg mit Automaten in jeder Größe.
+    </p>
+    <p>
       <strong><a href="https://badische-entertainment.com" target="_blank" rel="noopener" data-follow>Badische Entertainment GmbH</a></strong>
       — Veranstaltungen, Livemusik und Bühnenprogramm in der Region. Von der Firmenfeier bis
       zum Stadtfest. Ohne die Gastro-Erfahrung von hier gäbe es Pizza Support nicht.
