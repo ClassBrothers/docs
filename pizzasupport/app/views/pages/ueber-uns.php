@@ -190,6 +190,12 @@ $meta['jsonld'] = [
         zum Stadtfest. Ohne die Gastro-Erfahrung von hier gäbe es Pizza Support nicht.
       </p>
     </div>
+    <?php $pn = config('partnernachlass'); ?>
+    <p>
+      Und weil Sie uns unterstützen, unterstützen wir Sie zurück: Wer als Werbepartner eine
+      Fläche bucht, bekommt <?= (int) $pn['prozent'] ?> % Nachlass auf Leistungen dieser vier
+      Häuser, <?= (int) $pn['monate'] ?> Monate ab der Buchung.
+    </p>
   </div>
 </section>
 

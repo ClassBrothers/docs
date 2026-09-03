@@ -200,6 +200,23 @@ $f      = fortschritt();
   </div>
 </section>
 
+<?php $pn = config('partnernachlass'); ?>
+<section class="band" aria-labelledby="vorteile-titel">
+  <div class="wrap schmal">
+    <h2 id="vorteile-titel">Auf einen Blick</h2>
+    <ul class="liste-check">
+      <li>Sympathischer Kontext: Ihr Motiv liegt beim Essen auf dem Tisch, nicht zwischen Werbeanzeigen.</li>
+      <li>Bis zum Startschuss unverbindlich und ohne Zahlung – Sie reservieren, nicht kaufen.</li>
+      <li><?= (int) config('coupon_rabatt_prozent') ?> % Nachlass auf den Listenpreis bei einem Gutscheinmotiv.</li>
+      <li>
+        <?= (int) $pn['prozent'] ?> % Nachlass auf Leistungen unserer eigenen Häuser
+        (<a href="/ueber-uns.html#sonst-titel">Class Brothers, KI-Assistenz, SnackWorks, Badische
+        Entertainment</a>), <?= (int) $pn['monate'] ?> Monate ab Ihrer Buchung.
+      </li>
+    </ul>
+  </div>
+</section>
+
 <?php include APP_ROOT . '/app/views/partials/fortschritt.php'; ?>
 
 <?php
@@ -564,6 +581,37 @@ $f      = fortschritt();
     </div>
 
     <?php if ($flaechenplanVorhanden): ?>
+      <?php
+        // Umrandungen je Paket, von Hand aus der Originalgrafik (2000 x 4545 px)
+        // abgemessen und in Prozent der Bildmasse umgerechnet, damit sie bei
+        // jeder Anzeigegroesse an der richtigen Stelle bleiben. Die Seitenflaechen-
+        // Faecher (BH/BL/BR) sind dabei zu drei Streifen zusammengefasst statt
+        // einzeln neun Kaesten zu zeichnen - reicht als Orientierung.
+        $flaechenplanUmrandungen = [
+            'deckel-klein' => [
+                ['left' => 18.2, 'top' => 31.7, 'width' => 20.0, 'height' => 4.4],  // D3
+                ['left' => 40.0, 'top' => 22.1, 'width' => 20.0, 'height' => 4.4],  // D5
+                ['left' => 61.9, 'top' => 8.0,  'width' => 20.0, 'height' => 4.4],  // D7
+            ],
+            'deckel-mittel' => [
+                ['left' => 40.0, 'top' => 27.0, 'width' => 20.0, 'height' => 8.8],  // D6
+                ['left' => 61.9, 'top' => 13.3, 'width' => 20.0, 'height' => 8.8],  // D8
+            ],
+            'deckel-gross' => [
+                ['left' => 18.2, 'top' => 17.7, 'width' => 20.0, 'height' => 13.6], // D2
+                ['left' => 40.0, 'top' => 8.0,  'width' => 20.0, 'height' => 13.6], // D4
+                ['left' => 61.9, 'top' => 22.5, 'width' => 20.0, 'height' => 13.6], // D9
+            ],
+            'seite' => [
+                ['left' => 13.5, 'top' => 37.4, 'width' => 73.0, 'height' => 4.4],  // BH1-3
+                ['left' => 4.5,  'top' => 41.8, 'width' => 9.0,  'height' => 32.8], // BL1-3
+                ['left' => 86.5, 'top' => 41.8, 'width' => 9.0,  'height' => 32.8], // BR1-3
+            ],
+            'fun-area' => [
+                ['left' => 17.7, 'top' => 53.7, 'width' => 65.0, 'height' => 20.9], // FA
+            ],
+        ];
+      ?>
       <aside class="bestellen-grafik-spalte" aria-label="Flächenplan des Pizzakartons">
         <div class="flaechenplan-lupe" data-flaechenplan-lupe
              data-lupe-quelle="<?= e(asset(is_file($flaechenplanGrossDatei) ? '/assets/img/flaechenplan-gross.jpg' : '/assets/img/flaechenplan.jpg')) ?>">
@@ -576,11 +624,19 @@ $f      = fortschritt();
                    loading="lazy">
             </picture>
           </a>
+          <?php foreach ($flaechenplanUmrandungen as $paketId => $kaesten): ?>
+            <?php foreach ($kaesten as $kasten): ?>
+              <div class="flaechenplan-umrandung" data-paket-umrandung="<?= e($paketId) ?>"
+                   data-left="<?= e((string) $kasten['left']) ?>" data-top="<?= e((string) $kasten['top']) ?>"
+                   data-width="<?= e((string) $kasten['width']) ?>" data-height="<?= e((string) $kasten['height']) ?>"></div>
+            <?php endforeach; ?>
+          <?php endforeach; ?>
           <div class="flaechenplan-lupenglas" data-lupenglas hidden aria-hidden="true"></div>
         </div>
         <p class="flaechenplan-bildunterschrift">
           Lage und Kennung aller Werbeflächen auf dem Karton (Bezugsmaß 32 × 32 cm). Mit der
-          Maus über den Plan fahren zum Vergrößern, anklicken für die volle Größe.
+          Maus über den Plan fahren zum Vergrößern, anklicken für die volle Größe. Bewegen Sie
+          die Maus über eine Fläche oben im Formular, um sie hier orange hervorzuheben.
         </p>
       </aside>
     <?php endif; ?>

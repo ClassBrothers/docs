@@ -593,6 +593,26 @@
       wunschflaechenAktualisieren();
     }
 
+    /* Beim Ueberfahren einer Formatauswahl die passenden Umrandungen auf     */
+    /* dem Flaechenplan rechts aufleuchten lassen - reine Orientierungshilfe, */
+    /* wirkt sich auf nichts Verbindliches aus.                              */
+    var alleUmrandungen = document.querySelectorAll('[data-paket-umrandung]');
+    if (alleUmrandungen.length) {
+      Array.prototype.forEach.call(rechner.querySelectorAll('label.wahl'), function (label) {
+        var eingabe = label.querySelector('input[type="checkbox"]');
+        if (!eingabe) { return; }
+        var passende = document.querySelectorAll('[data-paket-umrandung="' + eingabe.value + '"]');
+        if (!passende.length) { return; }
+
+        label.addEventListener('mouseenter', function () {
+          Array.prototype.forEach.call(passende, function (kasten) { kasten.classList.add('ist-aktiv'); });
+        });
+        label.addEventListener('mouseleave', function () {
+          Array.prototype.forEach.call(passende, function (kasten) { kasten.classList.remove('ist-aktiv'); });
+        });
+      });
+    }
+
     rechner.addEventListener('change', neuRechnen);
     if (couponFeld) { couponFeld.addEventListener('change', neuRechnen); }
     neuRechnen();
@@ -648,6 +668,33 @@
       lupenHalter.addEventListener('mouseleave', function () {
         lupenglas.hidden = true;
       });
+    }
+
+    // Umrandungen je Paket: Position/Groesse kommen als Prozentwerte vom
+    // Server (data-Attribute), werden hier in Pixel auf dem tatsaechlich
+    // gerenderten Bild umgerechnet - direkt als CSS-Prozent im Markup bleiben
+    // sie 0x0, weil das Bild "loading=lazy" traegt und beim ersten Skriptlauf
+    // noch nicht geladen ist (clientWidth/-Height dann 0, kein Fehler, nur
+    // ein leeres Bild ohne bekannte Groesse).
+    var umrandungen = lupenHalter.querySelectorAll('[data-paket-umrandung]');
+    if (umrandungen.length && lupenBild) {
+      var umrandungenPositionieren = function () {
+        var breite = lupenBild.clientWidth;
+        var hoehe = lupenBild.clientHeight;
+        if (!breite || !hoehe) { return; }
+        Array.prototype.forEach.call(umrandungen, function (kasten) {
+          kasten.style.left   = (parseFloat(kasten.getAttribute('data-left'))   / 100 * breite) + 'px';
+          kasten.style.top    = (parseFloat(kasten.getAttribute('data-top'))    / 100 * hoehe)  + 'px';
+          kasten.style.width  = (parseFloat(kasten.getAttribute('data-width'))  / 100 * breite) + 'px';
+          kasten.style.height = (parseFloat(kasten.getAttribute('data-height')) / 100 * hoehe)  + 'px';
+        });
+      };
+      if (lupenBild.complete) {
+        umrandungenPositionieren();
+      } else {
+        lupenBild.addEventListener('load', umrandungenPositionieren);
+      }
+      window.addEventListener('resize', umrandungenPositionieren);
     }
   }
 

@@ -112,7 +112,11 @@
   .bestellen-grafik-spalte{position:static;max-width:340px;margin:2rem auto 0}
 }
 
-.flaechenplan-lupe{position:relative}
+/* aspect-ratio noetig: ohne feste Hoehe koennen die absolut positionierten
+   Kinder (Lupenglas, Umrandungen) ihre height:% nicht aufloesen - dieselbe
+   Falle wie schon bei .psk-map/.teilnehmer-eintrag/.wahl in dieser Datei,
+   nur diesmal bei der Hoehe statt beim hidden-Attribut. */
+.flaechenplan-lupe{position:relative;aspect-ratio:2000/4545}
 .flaechenplan-lupe a{display:block}
 .flaechenplan-bild{width:100%;height:auto;display:block;border-radius:var(--radius-karte);border:1px solid var(--rahmenfarbe)}
 /* Rundes Lupenglas, das per JS bei Mausbewegung positioniert und mit dem
@@ -126,6 +130,16 @@
 }
 .flaechenplan-bildunterschrift{margin-top:.6rem;font-size:.85rem;color:var(--textfarbe-gedaempft)}
 @media (hover:none){.flaechenplan-lupenglas{display:none}}
+
+/* Umrandung je Paket - liegt die ganze Zeit im DOM (Position in % der
+   Bildmasse), wird per JS nur ein-/ausgeblendet, wenn die passende
+   Formatauswahl im Formular unter der Maus ist. */
+.flaechenplan-umrandung{
+  position:absolute;border:3px solid var(--akzent-waerme);border-radius:4px;
+  opacity:0;transition:opacity .12s ease;pointer-events:none;
+  box-shadow:0 0 0 1px rgba(0,0,0,.25);
+}
+.flaechenplan-umrandung.ist-aktiv{opacity:1}
 .wunschflaeche-gruppe{margin:0 0 1.1rem}
 .wunschflaeche-gruppe:last-of-type{margin-bottom:0}
 .wunschflaeche-gruppe legend{

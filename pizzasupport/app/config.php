@@ -168,6 +168,16 @@ return [
     'coupon_rabatt_prozent' => 10,
     'mwst_prozent'          => 19,
 
+    // Partnernachlass fuer buchende Werbepartner (Nachtrag 1 Punkt 6 + 5
+    // Punkt 2): Rabatt auf Leistungen der vier Haeuser aus "Was wir sonst
+    // so koennen", nicht auf die Werbebuchung selbst. Bewusst nicht im
+    // Kopfbereich oder Buchungsformular als Kaufargument platziert, siehe
+    // Vorteilsliste, Bestaetigung und "Was wir sonst so koennen".
+    'partnernachlass' => [
+        'prozent' => 15,
+        'monate'  => 12,
+    ],
+
     // -----------------------------------------------------------------
     // Fun Area: Preis nach tatsaechlicher Flaeche statt Festpreis
     // (Nachtrag 2+5). Flaeche wird auf eine Nachkommastelle gerundet,

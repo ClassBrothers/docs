@@ -217,6 +217,12 @@ mail_send(
     . ($d['motiv_spaeter'] || empty($upload['pfad'])
         ? "Ihr Motiv reichen Sie später ein – wir melden uns rechtzeitig vor der Druckfreigabe.\n\n"
         : 'Ihr Motiv (' . ($upload['name'] ?? '') . ") ist bei uns eingegangen und wird geprüft.\n\n")
+    . ($d['art'] === 'unternehmen'
+        ? 'Und weil Sie uns unterstützen, unterstützen wir Sie zurück: Auf alle Leistungen unserer '
+          . 'eigenen Häuser bekommen Sie als Werbepartner ' . (int) config('partnernachlass.prozent')
+          . ' % Nachlass, ' . (int) config('partnernachlass.monate') . ' Monate ab dieser Buchung. '
+          . "Melden Sie sich einfach, wenn Sie etwas brauchen: " . url('/ueber-uns.html#sonst-titel') . "\n\n"
+        : '')
     . 'Den aktuellen Projektstand sehen Sie hier: ' . url('/teilnehmer.html') . "\n"
     . ($d['art'] === 'privat'
         ? "\n" . str_repeat('-', 40) . "\nWIDERRUFSBELEHRUNG\n" . str_repeat('-', 40) . "\n\n"
@@ -258,5 +264,11 @@ flash_set(
     . ' netto notiert. Bis zum Startschuss ist sie kostenfrei und unverbindlich – sobald er fällt, '
     . 'erhalten Sie eine Auftragsbestätigung und eine Teilrechnung über '
     . (int) config('startschuss.anzahlung') . ' % des Auftragswerts.'
+    . ($d['art'] === 'unternehmen'
+        ? ' Und weil Sie uns unterstützen, unterstützen wir Sie zurück: Auf alle Leistungen unserer '
+          . 'eigenen Häuser bekommen Sie als Werbepartner ' . (int) config('partnernachlass.prozent')
+          . ' % Nachlass, ' . (int) config('partnernachlass.monate') . ' Monate ab dieser Buchung – '
+          . 'mehr dazu im Abschnitt „Was wir sonst so können" auf unserer Über-uns-Seite.'
+        : '')
 );
 redirect('/werbepartner.html?gebucht=1#danke');
