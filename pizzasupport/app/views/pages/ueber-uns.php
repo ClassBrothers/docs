@@ -136,7 +136,7 @@ $meta['jsonld'] = [
       Sie über die Kartons hinaus etwas brauchen: Hier sind wir zu Hause.
     </p>
     <div class="partner-eintrag">
-      <a class="partner-logo-link" href="https://class-brothers.com" target="_blank" rel="noopener" data-follow>
+      <a class="partner-logo-box" href="https://class-brothers.com" target="_blank" rel="noopener" data-follow>
         <picture>
           <source srcset="<?= e(asset('/assets/img/logo-class-brothers.webp')) ?>" type="image/webp">
           <img src="<?= e(asset('/assets/img/logo-class-brothers.png')) ?>" alt="Logo Class Brothers GmbH" class="partner-logo" width="139" height="48" loading="lazy" decoding="async">
@@ -150,7 +150,7 @@ $meta['jsonld'] = [
       </p>
     </div>
     <div class="partner-eintrag">
-      <a class="partner-logo-link" href="https://ki-assistenz.com" target="_blank" rel="noopener" data-follow>
+      <a class="partner-logo-box" href="https://ki-assistenz.com" target="_blank" rel="noopener" data-follow>
         <picture>
           <source srcset="<?= e(asset('/assets/img/logo-ki-assistenz.webp')) ?>" type="image/webp">
           <img src="<?= e(asset('/assets/img/logo-ki-assistenz.png')) ?>" alt="Logo KI-Assistenz" class="partner-logo" width="100" height="48" loading="lazy" decoding="async">
@@ -164,7 +164,7 @@ $meta['jsonld'] = [
       </p>
     </div>
     <div class="partner-eintrag">
-      <a class="partner-logo-link" href="https://snackworks.de" target="_blank" rel="noopener" data-follow>
+      <a class="partner-logo-box" href="https://snackworks.de" target="_blank" rel="noopener" data-follow>
         <picture>
           <source srcset="<?= e(asset('/assets/img/logo-snackworks.webp')) ?>" type="image/webp">
           <img src="<?= e(asset('/assets/img/logo-snackworks.png')) ?>" alt="Logo SnackWorks" class="partner-logo" width="124" height="48" loading="lazy" decoding="async">
@@ -178,7 +178,7 @@ $meta['jsonld'] = [
       </p>
     </div>
     <div class="partner-eintrag">
-      <a class="partner-logo-link" href="https://badische-entertainment.com" target="_blank" rel="noopener" data-follow>
+      <a class="partner-logo-box" href="https://badische-entertainment.com" target="_blank" rel="noopener" data-follow>
         <picture>
           <source srcset="<?= e(asset('/assets/img/logo-badische-entertainment.webp')) ?>" type="image/webp">
           <img src="<?= e(asset('/assets/img/logo-badische-entertainment.png')) ?>" alt="Logo Badische Entertainment GmbH" class="partner-logo" width="72" height="48" loading="lazy" decoding="async">
