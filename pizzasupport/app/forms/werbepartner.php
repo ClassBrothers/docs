@@ -41,6 +41,7 @@ $v->auswahl('art', 'Die Art des Buchenden', ['unternehmen', 'privat'])
   ->checkbox('coupon', '', false)
   ->checkbox('motiv_spaeter', '', false)
   ->checkbox('karte_ok', '', false)
+  ->checkbox('naechste_auflage_bevorzugt', '', false)
   ->checkbox('agb_ok', 'Ohne Zustimmung zu den AGB können wir die Buchung nicht annehmen.')
   ->checkbox('motivvorbehalt_ok', 'Bitte bestätigen Sie, dass Sie den Motiv-Vorbehalt kennen.')
   ->checkbox('verbindlich_ok', 'Bitte bestätigen Sie die verbindliche Buchung für den Fall, dass das Projekt zustande kommt.')
@@ -146,6 +147,11 @@ if ($d['karte_ok']) {
     $zwecke[] = 'Nennung auf der öffentlichen Teilnehmerkarte';
 }
 
+// Bestaetigungslink per Mail (Double-Opt-in): erst nach Klick gilt die
+// Buchung als bestaetigt und die Wunschflaeche wird fest vergeben - siehe
+// werbebuchung-bestaetigen.php.
+$bestaetigungToken = bin2hex(random_bytes(32));
+
 try {
     db_run(
         'INSERT INTO werbebuchungen
@@ -155,8 +161,9 @@ try {
              motiv_pfad, motiv_name, motiv_groesse, motiv_spaeter, zielurl, nachricht,
              wunschflaechen, wunschflaeche_notiz,
              agb_ok, motivvorbehalt_ok, verbindlich_ok, karte_ok, datenschutz_ok, einwilligung_am, einwilligung_zweck,
+             naechste_auflage_bevorzugt, bestaetigung_token,
              status, erstellt_am, quelle)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         [
             $d['art'], $d['firma'], $d['ansprechpartner'], $d['email'],
             encrypt_field($d['telefon']), $d['website'],
@@ -167,6 +174,7 @@ try {
             $d['wunschflaechen'] ? json_encode($d['wunschflaechen'], JSON_UNESCAPED_UNICODE) : null, $d['wunschflaeche_notiz'],
             $d['agb_ok'], $d['motivvorbehalt_ok'], $d['verbindlich_ok'], $d['karte_ok'], $d['datenschutz_ok'],
             $jetzt, implode('; ', $zwecke),
+            $d['naechste_auflage_bevorzugt'], $bestaetigungToken,
             'neu', $jetzt, 'website',
         ]
     );
@@ -197,9 +205,16 @@ $formatText = '  - ' . implode("\n  - ", $gewaehlteLabels);
 
 mail_send(
     $d['email'],
-    'Ihre Reservierung bei Pizza Support',
+    'Bitte bestätigen Sie Ihre Reservierung bei Pizza Support',
     "Guten Tag {$d['ansprechpartner']},\n\n"
-    . "vielen Dank für Ihre Buchung. Wir haben Folgendes notiert:\n\n"
+    . "vielen Dank für Ihre Buchung. Bitte bestätigen Sie sie noch mit einem Klick auf\n"
+    . "diesen Link, erst danach ist Ihre Wunschfläche für Sie reserviert:\n\n"
+    . url('/werbebuchung-bestaetigen?token=' . $bestaetigungToken) . "\n\n"
+    . ($wunschflaechenLabels
+        ? "Die Fläche ist begrenzt, wir vergeben in der Reihenfolge der Bestätigungen -\n"
+          . "je früher der Klick, desto sicherer die gewünschte Position.\n\n"
+        : '')
+    . "Wir haben Folgendes notiert:\n\n"
     . "Buchende Firma: {$d['firma']}\n"
     . "Flächen:\n{$formatText}\n"
     . ($wunschflaechenLabels
@@ -253,16 +268,20 @@ mail_ops(
     . 'Motiv:          ' . ($upload['name'] ?? ($d['motiv_spaeter'] ? 'wird nachgereicht' : 'keins')) . "\n"
     . 'QR-Ziel:        ' . ($d['zielurl'] ?: '–') . "\n"
     . 'Karte:          ' . ($d['karte_ok'] ? 'JA – bitte freigeben' : 'nein') . "\n"
+    . 'Nächste Auflage bevorzugt: ' . ($d['naechste_auflage_bevorzugt'] ? 'ja' : 'nein') . "\n"
     . 'Anmerkung:      ' . ($d['nachricht'] ?: '–') . "\n\n"
+    . "Noch unbestätigt - die Wunschfläche wird erst nach Klick auf den Bestätigungslink\n"
+    . "in der Kundenmail fest vergeben.\n\n"
     . 'Freigabe: ' . url('/admin'),
     $d['email']
 );
 
 flash_set(
     'werbung_ok',
-    'Herzlichen Dank für Ihre Unterstützung! Wir haben Ihre Reservierung über ' . preis($netto)
-    . ' netto notiert. Bis zum Startschuss ist sie kostenfrei und unverbindlich – sobald er fällt, '
-    . 'erhalten Sie eine Auftragsbestätigung und eine Teilrechnung über '
+    'Fast geschafft: Bitte bestätigen Sie den Link, den wir Ihnen gerade geschickt haben – '
+    . 'erst danach ist Ihre Wunschfläche für Sie reserviert. Wir haben eine Reservierung über '
+    . preis($netto) . ' netto notiert. Bis zum Startschuss ist sie kostenfrei und unverbindlich – '
+    . 'sobald er fällt, erhalten Sie eine Auftragsbestätigung und eine Teilrechnung über '
     . (int) config('startschuss.anzahlung') . ' % des Auftragswerts.'
     . ($d['art'] === 'unternehmen'
         ? ' Und weil Sie uns unterstützen, unterstützen wir Sie zurück: Auf alle Leistungen unserer '

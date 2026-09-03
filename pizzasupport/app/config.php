@@ -145,12 +145,14 @@ return [
         [
             'id'      => 'seite',
             'gruppe'  => 'Seite',
-            'label'   => 'Seitenfläche',
+            'label'   => 'Seitenfläche außen',
             'masse'   => '93 × 25 mm',
             'preis'   => 69900,    // 699,00 EUR netto
             'brutto'  => false,
-            'text'    => 'Schmaler Streifen an der Kartonseite. Sichtbar im Stapel.',
+            'text'    => 'Schmaler Streifen an der Kartonseite. Immer zu sehen, auch im Stapel.',
         ],
+        // "Seitenfläche innen" (nur bei geoeffnetem Deckel sichtbar, z.B. DSL/DSR) folgt als
+        // eigene Kachel, sobald der Kunde den Preis nennt - siehe Rueckfrage im Chat.
         [
             'id'      => 'fun-area',
             'gruppe'  => 'Fun Area',
@@ -301,6 +303,7 @@ return [
         '/datenschutz.html',
         '/agb.html',
         '/newsletter-bestaetigt.html',
+        '/werbebuchung-bestaetigt.html',
     ],
 
     // Priority/Changefreq je Seite. Was hier fehlt, bekommt die

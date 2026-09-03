@@ -631,7 +631,7 @@
     var lupenQuelle = lupenHalter.getAttribute('data-lupe-quelle');
 
     if (lupenBild && lupenglas && lupenQuelle) {
-      var ZOOM = 3;
+      var ZOOM = 4;
       lupenglas.style.backgroundImage = 'url(' + lupenQuelle + ')';
 
       // Hochaufgeloeste Datei schon beim Laden der Seite anfordern, damit sie
@@ -650,10 +650,14 @@
 
         var groesse = lupenglas.offsetWidth;
         var halb = groesse / 2;
-        // Lupe am Bildrand einklemmen, aber immer noch auf den Cursor
-        // zentriert, solange genug Platz ist.
-        var lupeX = Math.max(0, Math.min(x - halb, rect.width - groesse));
-        var lupeY = Math.max(0, Math.min(y - halb, rect.height - groesse));
+        // Lupe darf bis zu 10% ihrer eigenen Groesse ueber den Bildrand
+        // hinausragen - sonst laesst sich eine duenne Randflaeche (z.B. eine
+        // Seitenflaeche direkt am Rand) nie mittig vergroessern, weil die
+        // Lupe dafuer weiter nach aussen muesste, als eine strikte Klemmung
+        // am Bildrand erlaubt.
+        var ueberhang = groesse * 0.1;
+        var lupeX = Math.max(-ueberhang, Math.min(x - halb, rect.width - groesse + ueberhang));
+        var lupeY = Math.max(-ueberhang, Math.min(y - halb, rect.height - groesse + ueberhang));
         lupenglas.style.left = lupeX + 'px';
         lupenglas.style.top = lupeY + 'px';
 

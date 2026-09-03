@@ -312,6 +312,10 @@ function admin_seite(?string $meldung): void
     echo '</tbody></table></div>';
 
     // Werbung
+    $vergebenNachBuchung = [];
+    foreach (db_all('SELECT werbebuchung_id, kennung FROM flaechen_vergabe') as $v) {
+        $vergebenNachBuchung[(int) $v['werbebuchung_id']][] = $v['kennung'];
+    }
     echo '<h2>Werbebuchungen</h2><div class="tabelle-wrap"><table><thead><tr>'
        . '<th>Firma</th><th>Kontakt</th><th>Flächen</th><th>Wert</th><th>Motiv</th><th>Status</th><th>Aktion</th></tr></thead><tbody>';
     foreach (db_all('SELECT * FROM werbebuchungen ORDER BY id DESC LIMIT 200') as $z) {
@@ -322,6 +326,7 @@ function admin_seite(?string $meldung): void
             $labels[] = $wf ? $wf['label'] : (string) $fid;
         }
         $wunschflaechen = json_decode((string) $z['wunschflaechen'], true) ?: [];
+        $fest = $vergebenNachBuchung[(int) $z['id']] ?? [];
         echo '<tr>'
            . '<td><strong>' . e($z['firma']) . '</strong><br><small>' . e($z['art']) . '<br>' . e((string) $z['plz']) . ' ' . e((string) $z['ort']) . '</small>'
            . admin_adresse_bearbeiten('werbebuchungen', (int) $z['id'], null, (string) $z['plz'], (string) $z['ort']) . '</td>'
@@ -330,7 +335,11 @@ function admin_seite(?string $meldung): void
            . ($wunschflaechen
                 ? '<br><small><em>Wunsch: ' . e(implode(', ', $wunschflaechen)) . '</em>'
                     . ($z['wunschflaeche_notiz'] ? ' – ' . e((string) $z['wunschflaeche_notiz']) : '') . '</small>'
-                : '') . '</td>'
+                : '')
+           . '<br><small>' . ($z['bestaetigt_am'] ? 'bestätigt am ' . e((string) $z['bestaetigt_am']) : 'noch nicht bestätigt') . '</small>'
+           . ($fest ? '<br><small><strong>fest vergeben: ' . e(implode(', ', $fest)) . '</strong></small>' : '')
+           . ((int) $z['naechste_auflage_bevorzugt'] ? '<br><small>möchte bei nächster Auflage bevorzugt kontaktiert werden</small>' : '')
+           . '</td>'
            . '<td>' . e(preis((int) $z['summe_cent'])) . '<br><small>netto</small></td>'
            . '<td><small>' . e((string) ($z['motiv_name'] ?: ((int) $z['motiv_spaeter'] ? 'wird nachgereicht' : '–'))) . '</small></td>'
            . '<td>' . admin_status($z['status']) . '</td>'

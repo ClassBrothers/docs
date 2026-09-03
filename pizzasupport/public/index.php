@@ -66,6 +66,7 @@ $seiten = [
     '/datenschutz.html'                => 'datenschutz',
     '/agb.html'                        => 'agb',
     '/newsletter-bestaetigt.html'      => 'newsletter-bestaetigt',
+    '/werbebuchung-bestaetigt.html'    => 'werbebuchung-bestaetigt',
 ];
 
 // -----------------------------------------------------------------------
@@ -168,6 +169,12 @@ if (isset($umleitungen[$pfad])) {
 // Newsletter-Bestaetigung aus der Double-Opt-in-Mail
 if ($pfad === '/newsletter-bestaetigen') {
     require APP_ROOT . '/app/forms/newsletter-bestaetigen.php';
+    exit;
+}
+
+// Werbebuchungs-Bestaetigung aus der Buchungsmail
+if ($pfad === '/werbebuchung-bestaetigen') {
+    require APP_ROOT . '/app/forms/werbebuchung-bestaetigen.php';
     exit;
 }
 

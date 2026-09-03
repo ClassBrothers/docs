@@ -48,6 +48,19 @@ $faq = [
                       werden hier ausgegeben, also funktionieren Angebote am besten, die man von hier
                       aus erreichen kann. Bei überregionalen Marken schauen wir uns den Einzelfall an.</p>',
     ],
+    [
+        'frage'   => 'Welche Vorgaben an das Layout gelten?',
+        'antwort' => '<p>Gastronomie muss Spaß machen und Werbung darf nicht stören. Damit unsere Aktion
+                      noch viele Auflagen haben wird, erwarten wir bei den Motiven echte Kreativität und
+                      lehnen langweilige Stockmotive auch gerne ab. Pizza Support braucht Anzeigenmotive,
+                      die so cool sind, dass man sich jeden Pizzakarton am liebsten an den Kühlschrank
+                      hängen würde! Wir erwarten, dass die Anzeigen in den Kontext „Pizza“ gebracht
+                      werden – auch wenn das super ungelenk oder an den Haaren herbeigezogen ist. Es geht
+                      nicht um Perfektion, es geht darum, gemeinsam wieder Spaß zu haben und sich nicht zu
+                      ernst zu nehmen. Je witziger alle Motive sind, desto viraler wird die Aktion, was
+                      wieder mehr Aufmerksamkeit für alle Werbepartner bringt. Unser Kreativ-Team
+                      unterstützt Sie gerne bei der Findung und Umsetzung des perfekten Motivs.</p>',
+    ],
 ];
 
 $meta['titel']        = 'Werbung auf Pizzakartons in Freiburg buchen | Pizza Support';
@@ -81,6 +94,36 @@ $f      = fortschritt();
       <a class="btn btn-primaer btn-gross" href="#buchen">Fläche buchen</a>
       <a class="btn btn-sekundaer btn-gross" href="#preise">Preise ansehen</a>
     </div>
+  </div>
+</section>
+
+<?php
+  // Ein wiederverwendetes Icon (Haeckchen im Kreis) statt acht verschiedener
+  // Piktogramme - haelt den Abschnitt schlicht, ohne eine ganze Icon-
+  // Bibliothek einzubinden.
+  $kauftHaeckchen = '<svg class="kauft-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">'
+    . '<circle cx="12" cy="12" r="11" fill="var(--akzent-waerme)"/>'
+    . '<path d="M7 12.5l3 3 7-7" stroke="#241C18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+    . '</svg>';
+  $kauftPunkte = [
+    'Gemeinschaft unterstützen – Ihr Budget hilft direkt der Freiburger Gastronomie.',
+    'Coole, sympathische Werbung statt gewöhnlicher Anzeige.',
+    'Viralität und Aufmerksamkeit: ein Pizzakarton wird gesehen, nicht weggeklickt.',
+    'SEO-Backlink von pizzasupport.de für Ihre eigene Website.',
+    'Ihr Name, Logo und Profiltext dauerhaft auf pizzasupport.de – so lange die Website existiert.',
+    'Stammkunden-Rabatt bei zukünftigen Auflagen.',
+    'Als Stammkunde künftig vor anderen Ihre Fläche wählen.',
+    'Rabatt auf Aufträge bei unseren Aktionspartnern (Class Brothers, KI-Assistenz, Badische Entertainment und weitere).',
+  ];
+?>
+<section class="band band-hell" aria-labelledby="kauft-titel">
+  <div class="wrap">
+    <h2 id="kauft-titel">Was ein Unternehmen wirklich kauft</h2>
+    <ul class="kauft-liste">
+      <?php foreach ($kauftPunkte as $punkt): ?>
+        <li><?= $kauftHaeckchen ?><span><?= e($punkt) ?></span></li>
+      <?php endforeach; ?>
+    </ul>
   </div>
 </section>
 
@@ -320,6 +363,10 @@ $f      = fortschritt();
           $fk = config('flaechenkatalog');
           $gewaehlteWunschflaechen = $altw['wunschflaechen'] ?? [];
           $gewaehlteWunschflaechen = is_array($gewaehlteWunschflaechen) ? $gewaehlteWunschflaechen : [];
+          // Permanente "bereits verkauft"-Markierung: erst nach dem
+          // Bestaetigungsklick fest vergeben (siehe werbebuchung-bestaetigen.php),
+          // ab dann fuer niemanden mehr waehlbar.
+          $vergebeneKennungen = array_column(db_all('SELECT kennung FROM flaechen_vergabe'), 'kennung');
         ?>
         <div class="feld feld-wunschflaeche" data-wunschflaeche-block>
           <span class="feld-label">Wunschfläche <span class="feld-optional">(freiwillig)</span></span>
@@ -349,13 +396,17 @@ $f      = fortschritt();
             <fieldset class="wunschflaeche-gruppe" data-wunschflaeche-gruppe hidden>
               <legend><?= e($gruppeLabel) ?></legend>
               <div class="wahl-gitter">
-                <?php foreach ($flaechenInGruppe as $flaeche): ?>
-                  <label class="wahl wahl-schmal" data-paket="<?= e((string) $flaeche['paket']) ?>" hidden>
+                <?php foreach ($flaechenInGruppe as $flaeche):
+                  $istVergeben = in_array($flaeche['id'], $vergebeneKennungen, true);
+                ?>
+                  <label class="wahl wahl-schmal<?= $istVergeben ? ' wahl-vergeben' : '' ?>" data-paket="<?= e((string) $flaeche['paket']) ?>" hidden>
                     <input type="checkbox" name="wunschflaechen[]" value="<?= e($flaeche['id']) ?>"
+                           <?= $istVergeben ? 'disabled' : '' ?>
                            <?= in_array($flaeche['id'], $gewaehlteWunschflaechen, true) ? 'checked' : '' ?>>
                     <span class="wahl-inhalt">
                       <strong><?= e($flaeche['id']) ?></strong>
                       <small><?= e($flaeche['bezeichnung']) ?> · <?= e($flaeche['masse']) ?></small>
+                      <?php if ($istVergeben): ?><em class="wahl-vergeben-marke">bereits verkauft</em><?php endif; ?>
                     </span>
                   </label>
                 <?php endforeach; ?>
@@ -551,6 +602,13 @@ $f      = fortschritt();
           </label>
         </div>
 
+        <div class="feld feld-check">
+          <label>
+            <input type="checkbox" name="naechste_auflage_bevorzugt" value="1" <?= alt($altw, 'naechste_auflage_bevorzugt') ? 'checked' : '' ?>>
+            <span>Bei der nächsten Auflage bevorzugt kontaktieren. Ich möchte meine Fläche früher auswählen.</span>
+          </label>
+        </div>
+
         <div class="feld feld-check<?= isset($fehler['datenschutz_ok']) ? ' feld-fehler' : '' ?>">
           <label>
             <input type="checkbox" name="datenschutz_ok" value="1" required>
@@ -594,6 +652,7 @@ $f      = fortschritt();
                 ['left' => 61.9, 'top' => 8.0,  'width' => 20.0, 'height' => 4.4],  // D7
             ],
             'deckel-mittel' => [
+                ['left' => 18.2, 'top' => 8.0,  'width' => 20.0, 'height' => 8.8],  // D1 (Markenfeld, gleiche Groesse wie D6/D8 - bleibt selbst nicht buchbar)
                 ['left' => 40.0, 'top' => 27.0, 'width' => 20.0, 'height' => 8.8],  // D6
                 ['left' => 61.9, 'top' => 13.3, 'width' => 20.0, 'height' => 8.8],  // D8
             ],
@@ -606,6 +665,7 @@ $f      = fortschritt();
                 ['left' => 13.5, 'top' => 37.4, 'width' => 73.0, 'height' => 4.4],  // BH1-3
                 ['left' => 4.5,  'top' => 41.8, 'width' => 9.0,  'height' => 32.8], // BL1-3
                 ['left' => 86.5, 'top' => 41.8, 'width' => 9.0,  'height' => 32.8], // BR1-3
+                ['left' => 13.5, 'top' => 75.0, 'width' => 82.0, 'height' => 3.4],  // BF1-3 (Bodenfront, vom Kunden als "Seiten-Flaeche an der Front" bezeichnet)
             ],
             'fun-area' => [
                 ['left' => 17.7, 'top' => 53.7, 'width' => 65.0, 'height' => 20.9], // FA
