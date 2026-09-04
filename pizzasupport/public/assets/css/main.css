@@ -756,3 +756,20 @@
   .hero-text { padding: 1.5rem 1.25rem; }
 }
 
+.hero-lead{font-size:.95rem}
+
+/* .btn-sekundaer.btn-gross: eigene, gruene Akzentfarbe statt der
+   Standard-Akzentfarbe (Rot), damit sich die zweite Hero-Aktion von der
+   ersten (rot) klar unterscheidet. */
+.btn-sekundaer.btn-gross{color:#3e6b43;border-color:#3e6b43}
+.btn-sekundaer.btn-gross:hover{color:#2c5330;border-color:#2c5330;background:rgba(62,107,67,.08)}
+
+/* .btn-primaer.kopf-cta: behebt den alten Kontrastfehler im Kopfbereich
+   (siehe Etappe 3) - .kopf-nav a:hover ist spezifischer als .btn-primaer:hover
+   und faerbte die Schrift beim Ueberfahren in dieselbe Akzentfarbe wie den
+   Hintergrund-Verlauf, wodurch die Beschriftung praktisch verschwand. Jetzt
+   ausdruecklich weiss im Normalzustand, im Hover-Zustand ein klar
+   umrissener heller Knopf mit roter Schrift statt rot auf rot. */
+.btn-primaer.kopf-cta{color:#fff}
+.btn-primaer.kopf-cta:hover{background:#fff;border-color:var(--akzent);color:var(--akzent)}
+
