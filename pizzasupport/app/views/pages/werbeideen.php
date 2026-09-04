@@ -8,16 +8,31 @@ $meta['jsonld'] = [
     jsonld_breadcrumb(['Start' => '/', 'Für Unternehmen' => '/werbepartner.html', 'Werbeideen' => '/werbeideen.html']),
 ];
 ?>
-<section class="seiten-hero">
-  <div class="wrap schmal">
-    <p class="kicker">Für Unternehmen und Selbstständige</p>
-    <h1>Was drucken Sie drauf?</h1>
-    <p class="hero-lead">
-      Ein Pizzakarton liegt zwanzig Minuten lang direkt vor jemandem, der nichts anderes
-      vorhat als essen. Kein Wegklicken, kein Weiterscrollen, kein Werbeblocker. Die Frage
-      ist nur, was in dieser Zeit dort zu lesen sein soll. Hier sind Ideen von Betrieben
-      aus der Region – zum Abgucken, Weiterdenken und Besserwissen.
-    </p>
+<section class="hero hero-werbeideen">
+  <div class="wrap hero-innen">
+    <div class="hero-text">
+      <p class="kicker">Für Unternehmen und Selbstständige</p>
+      <h1>Was drucken Sie drauf?</h1>
+      <p class="hero-lead">
+        Ein Pizzakarton liegt zwanzig Minuten lang direkt vor jemandem, der nichts anderes
+        vorhat als essen. Kein Wegklicken, kein Weiterscrollen, kein Werbeblocker. Die Frage
+        ist nur, was in dieser Zeit dort zu lesen sein soll. Hier sind Ideen von Betrieben
+        aus der Region – zum Abgucken, Weiterdenken und Besserwissen.
+      </p>
+      <div class="hero-aktionen">
+        <a class="btn btn-primaer btn-gross" href="/werbepartner.html#buchen">Fläche buchen</a>
+      </div>
+    </div>
+    <aside class="hero-karton" aria-label="Pizzakarton mit Werbefläche">
+      <figure class="hero-bild">
+        <picture>
+          <source srcset="<?= e(asset('/assets/img/pizzakarton-mit-werbung.webp')) ?>" type="image/webp">
+          <img src="<?= e(asset('/assets/img/pizzakarton-mit-werbung.png')) ?>"
+               alt="Pizzakarton mit Werbefläche auf dem Deckel"
+               width="472" height="529" fetchpriority="high" decoding="async">
+        </picture>
+      </figure>
+    </aside>
   </div>
 </section>
 

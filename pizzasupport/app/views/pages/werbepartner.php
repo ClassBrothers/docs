@@ -76,24 +76,36 @@ $erfolg = flash_get('werbung_ok');
 $f      = fortschritt();
 ?>
 
-<section class="seiten-hero seiten-hero-seriös">
-  <div class="wrap schmal">
-    <p class="kicker">Für Unternehmen und Selbstständige</p>
-    <h1>Werbung auf Pizzakartons in Freiburg buchen</h1>
-    <p class="hero-lead">
-      Werbung auf Pizzakartons in Freiburg erreicht Menschen beim Essen
-      in sympathischem Kontext. Sie buchen eine feste Fläche auf Deckel oder Seite,
-      wir drucken sie in 4c, liefern sie aus und die Freiburger Gastronomie gibt
-      die Kartons an tausende Gäste weiter.<br>
-      Ihr Budget bezahlt damit zwei Dinge gleichzeitig: die sympathische Wahrnehmung
-      Ihrer Marke und die Unterstützung von Gastro und Gästen. Wer in Freiburg wirbt
-      und dabei etwas zurückgeben will, findet dafür kaum eine direktere Fläche als
-      den Pizzakarton, der abends auf dem Tisch liegt.
-    </p>
-    <div class="hero-aktionen">
-      <a class="btn btn-primaer btn-gross" href="#buchen">Fläche buchen</a>
-      <a class="btn btn-sekundaer btn-gross" href="#preise">Preise ansehen</a>
+<section class="hero hero-werbepartner">
+  <div class="wrap hero-innen">
+    <div class="hero-text">
+      <p class="kicker">Für Unternehmen und Selbstständige</p>
+      <h1>Werbung auf Pizzakartons in Freiburg buchen</h1>
+      <p class="hero-lead">
+        Werbung auf Pizzakartons in Freiburg erreicht Menschen beim Essen
+        in sympathischem Kontext. Sie buchen eine feste Fläche auf Deckel oder Seite,
+        wir drucken sie in 4c, liefern sie aus und die Freiburger Gastronomie gibt
+        die Kartons an tausende Gäste weiter.<br>
+        Ihr Budget bezahlt damit zwei Dinge gleichzeitig: die sympathische Wahrnehmung
+        Ihrer Marke und die Unterstützung von Gastro und Gästen. Wer in Freiburg wirbt
+        und dabei etwas zurückgeben will, findet dafür kaum eine direktere Fläche als
+        den Pizzakarton, der abends auf dem Tisch liegt.
+      </p>
+      <div class="hero-aktionen">
+        <a class="btn btn-primaer btn-gross" href="#buchen">Fläche buchen</a>
+        <a class="btn btn-sekundaer btn-gross" href="#preise">Preise ansehen</a>
+      </div>
     </div>
+    <aside class="hero-karton" aria-label="Pizzakarton mit Werbefläche">
+      <figure class="hero-bild">
+        <picture>
+          <source srcset="<?= e(asset('/assets/img/pizzakarton-mit-werbung.webp')) ?>" type="image/webp">
+          <img src="<?= e(asset('/assets/img/pizzakarton-mit-werbung.png')) ?>"
+               alt="Pizzakarton mit Werbefläche auf dem Deckel"
+               width="472" height="529" fetchpriority="high" decoding="async">
+        </picture>
+      </figure>
+    </aside>
   </div>
 </section>
 

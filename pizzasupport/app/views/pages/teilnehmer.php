@@ -47,17 +47,32 @@ $nlFehler    = flash_get('newsletter_fehler', []);
 $nlErfolg    = flash_get('newsletter_ok');
 ?>
 
-<section class="seiten-hero">
-  <div class="wrap schmal">
-    <p class="kicker">Der aktuelle Stand</p>
-    <h1>Wer ist bei Pizza Support dabei?</h1>
-    <p class="hero-lead">
-      Hier sehen Sie, wer bei Pizza Support dabei ist: die Gastronomien, die Kartons abnehmen,
-      und die Unternehmen, die sie finanzieren. Die Liste wächst mit jeder Eintragung, und
-      der Startschuss fällt, sobald beide Seiten stehen. Wer noch fehlt, kann jederzeit
-      dazukommen – <a href="/#bestellen">als Gastronomie hier</a> oder
-      <a href="/werbepartner.html">als Werbepartner hier</a>.
-    </p>
+<section class="hero hero-teilnehmer">
+  <div class="wrap hero-innen">
+    <div class="hero-text">
+      <p class="kicker">Der aktuelle Stand</p>
+      <h1>Wer ist bei Pizza Support dabei?</h1>
+      <p class="hero-lead">
+        Hier sehen Sie, wer bei Pizza Support dabei ist: die Gastronomien, die Kartons abnehmen,
+        und die Unternehmen, die sie finanzieren. Die Liste wächst mit jeder Eintragung, und
+        der Startschuss fällt, sobald beide Seiten stehen. Wer noch fehlt, kann jederzeit
+        dazukommen – <a href="/#bestellen">als Gastronomie hier</a> oder
+        <a href="/werbepartner.html">als Werbepartner hier</a>.
+      </p>
+      <div class="hero-aktionen">
+        <a class="btn btn-primaer btn-gross" href="/#bestellen">Jetzt mitmachen</a>
+      </div>
+    </div>
+    <aside class="hero-karton" aria-label="Pizzakarton mit Werbefläche">
+      <figure class="hero-bild">
+        <picture>
+          <source srcset="<?= e(asset('/assets/img/pizzakarton-mit-werbung.webp')) ?>" type="image/webp">
+          <img src="<?= e(asset('/assets/img/pizzakarton-mit-werbung.png')) ?>"
+               alt="Pizzakarton mit Werbefläche auf dem Deckel"
+               width="472" height="529" fetchpriority="high" decoding="async">
+        </picture>
+      </figure>
+    </aside>
   </div>
 </section>
 

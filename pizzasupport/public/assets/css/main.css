@@ -773,3 +773,17 @@
 .btn-primaer.kopf-cta{color:#fff}
 .btn-primaer.kopf-cta:hover{background:#fff;border-color:var(--akzent);color:var(--akzent)}
 
+/* Hero-Hintergrund je Seite: .hero liest den Bild-Wert ueber die
+   CSS-Variable --holz-bild (siehe :root weiter oben), eine Modifier-Klasse
+   pro Seite ueberschreibt sie lokal fuer genau diese Seite. Zeigt eine
+   Datei (noch) nicht auf dem Server, faellt background-image lautlos auf
+   "kein Bild" zurueck (nie ein kaputtes Bildsymbol) - die Seite bleibt
+   nutzbar, nur ohne Fotohintergrund, bis das echte Foto da ist.
+   VORLAEUFIG alle vier auf das Holztisch-Bild der Startseite gesetzt,
+   damit der Eindruck schon jetzt stimmt - austauschen, sobald eigene
+   Fotos je Seite vorliegen (siehe Bildliste im Lieferbericht). */
+.hero-werbepartner{--holz-bild:url('/assets/img/holz-tisch.jpg')}
+.hero-werbeideen{--holz-bild:url('/assets/img/holz-tisch.jpg')}
+.hero-teilnehmer{--holz-bild:url('/assets/img/holz-tisch.jpg')}
+.hero-ueber-uns{--holz-bild:url('/assets/img/holz-tisch.jpg')}
+

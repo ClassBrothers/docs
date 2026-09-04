@@ -22,6 +22,15 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $GLOBALS['csp_nonce'] = base64_encode(random_bytes(16));
 send_security_headers($GLOBALS['csp_nonce']);
 
+// Session hier und nicht erst bei Bedarf starten: Layout und Stoerer
+// (siehe layout.php) greifen ausserhalb des Output-Buffers der
+// eigentlichen Seite auf die Session zu (flash_get, csrf_field). Auf
+// Seiten ohne eigenes Formular im Seiteninhalt (z.B. werbeideen.php,
+// ueber-uns.php) war das der allererste Session-Zugriff ueberhaupt - zu
+// diesem Zeitpunkt ist bereits echte Ausgabe (Kopf, Navigation) gesendet,
+// "headers already sent" verhinderte den Session-Start lautlos.
+session_boot();
+
 // -----------------------------------------------------------------------
 // Formularverarbeitung
 // -----------------------------------------------------------------------

@@ -42,16 +42,31 @@ $meta['jsonld'] = [
 ];
 ?>
 
-<section class="seiten-hero">
-  <div class="wrap schmal">
-    <p class="kicker">Wer wir sind</p>
-    <h1>Über uns: Warum ein Freiburger Projekt für Pizzakartons?</h1>
-    <p class="hero-lead">
-      Ein Freiburger Projekt für Pizzakartons entsteht nicht am Reißbrett, sondern an einem
-      Tresen. Wir haben zu oft gehört, wie sich die Rechnung für kleine Gastronomien verschiebt –
-      und irgendwann gemerkt, dass wir eine der Stellschrauben tatsächlich drehen können.
-      Was daraus geworden ist, steht hier.
-    </p>
+<section class="hero hero-ueber-uns">
+  <div class="wrap hero-innen">
+    <div class="hero-text">
+      <p class="kicker">Wer wir sind</p>
+      <h1>Über uns: Warum ein Freiburger Projekt für Pizzakartons?</h1>
+      <p class="hero-lead">
+        Ein Freiburger Projekt für Pizzakartons entsteht nicht am Reißbrett, sondern an einem
+        Tresen. Wir haben zu oft gehört, wie sich die Rechnung für kleine Gastronomien verschiebt –
+        und irgendwann gemerkt, dass wir eine der Stellschrauben tatsächlich drehen können.
+        Was daraus geworden ist, steht hier.
+      </p>
+      <div class="hero-aktionen">
+        <a class="btn btn-primaer btn-gross" href="/kontakt.html">Kontakt aufnehmen</a>
+      </div>
+    </div>
+    <aside class="hero-karton" aria-label="Pizzakarton mit Werbefläche">
+      <figure class="hero-bild">
+        <picture>
+          <source srcset="<?= e(asset('/assets/img/pizzakarton-mit-werbung.webp')) ?>" type="image/webp">
+          <img src="<?= e(asset('/assets/img/pizzakarton-mit-werbung.png')) ?>"
+               alt="Pizzakarton mit Werbefläche auf dem Deckel"
+               width="472" height="529" fetchpriority="high" decoding="async">
+        </picture>
+      </figure>
+    </aside>
   </div>
 </section>
 
