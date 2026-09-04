@@ -145,7 +145,12 @@
 /* --- Fläche buchen: Formular links, Flächenplan mit Lupe rechts -------- */
 .bestellen-grid{display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start}
 .bestellen-formular-spalte{min-width:0}
-.bestellen-grafik-spalte{position:sticky;top:1.5rem}
+/* top muss die Hoehe des sticky Headers (siehe .kopf in critical.css,
+   position:sticky;top:0) einrechnen, sonst rutscht die Grafik beim
+   Scrollen unter den Header und wird oben abgeschnitten - beide Elemente
+   sind unabhaengig voneinander sticky und wuerden sonst um dieselbe
+   Bildschirmzeile konkurrieren. */
+.bestellen-grafik-spalte{position:sticky;top:calc(76px + 1rem)}
 @media (max-width:900px){
   .bestellen-grid{display:block}
   .bestellen-grafik-spalte{position:static;max-width:340px;margin:2rem auto 0}

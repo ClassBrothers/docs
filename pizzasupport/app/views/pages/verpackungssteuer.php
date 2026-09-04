@@ -146,6 +146,7 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
         <thead>
           <tr>
             <th scope="col">Kartons pro Woche</th>
+            <th scope="col">Kartons pro Monat</th>
             <th scope="col">Steuer im Monat</th>
             <th scope="col">Kartoneinkauf im Monat</th>
             <th scope="col">Zusammen</th>
@@ -160,6 +161,7 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
           ?>
             <tr>
               <th scope="row"><?= zahl($b['kartons']) ?><span class="tabelle-sub"><?= e($b['label']) ?></span></th>
+              <td><?= zahl($proMonat) ?></td>
               <td><?= e(preis($steuer)) ?></td>
               <td><?= e(preis($einkauf)) ?></td>
               <td><strong><?= e(preis($steuer + $einkauf)) ?></strong></td>
