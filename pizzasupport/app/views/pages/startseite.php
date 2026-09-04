@@ -96,6 +96,15 @@ $f       = fortschritt();
     </div>
 
     <aside class="hero-karton" aria-label="Werbeflächen auf dem Karton">
+      <div class="hero-pfeil" aria-hidden="true">
+        <span class="hero-pfeil-text">So könnte<br>das aussehen</span>
+        <svg viewBox="0 0 90 90" width="64" height="64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6,8 C40,4 58,24 54,50 C51,68 40,78 26,80"
+                stroke="#2b231f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14,66 L26,80 L38,64"
+                stroke="#2b231f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       <figure class="hero-bild">
         <picture>
           <source srcset="<?= e(asset('/assets/img/pizzakarton-mit-werbung.webp')) ?>" type="image/webp">
@@ -112,31 +121,77 @@ $f       = fortschritt();
 <?php include APP_ROOT . '/app/views/partials/fortschritt.php'; ?>
 
 <section class="band band-hell" id="story" aria-labelledby="story-titel">
-  <div class="wrap schmal">
-    <h2 id="story-titel">Warum sind die Pizzakartons kostenlos?</h2>
-    <p>
-      Kostenlose Pizzakartons bringen Pizzerien und Restaurants finanzielle Unterstützung.
-      Die 50ct, die man in Freiburg für die Verpackungssteuer abgeben muss, werden durch
-      den Wegfall des Einkaufspreises des Pizzakartons reduziert.
-      Als Kreativagentur lieben wir die Gastro, arbeiten mit Eventagenturen und wissen,
-      wie die finanzielle Belastung in der Gastro aussieht. Und dann kam in Freiburg die
-      Verpackungssteuer dazu. Bei ein paar hundert Kartons in der Woche summiert sich
-      das schnell zu einer Position, die vorher nicht im Plan stand und die für Gast und
-      Gastro erstmal Mehrkosten bedeutet.
-    </p>
-    <p>
-      Wie mit unseren Werbemotiven auf Pizzakartons halten wir es auch hier: Keine Politik.
-      Wir haben ein Problem gesehen und eine Lösung gefunden. Der Deckel des Pizzakartons ist
-      eine super Werbefläche, die einfach ungenutzt ist. Sympathische Werbefläche auf Pizzakartons,
-      mit der regionale Unternehmen die Gastronomie vor Ort unterstützen können.
-      Eine Win-Win Situation für alle. Die Werbung bezahlt den Karton und macht eine
-      Einsparung für Gast und Gastro möglich.
-    </p>
-    <p>
-      Initiiert wird die Aktion "PizzaSupport" von der <?= e(config('firma.name')) ?> hier in Freiburg
-      in Kooperation mit der Eventagentur <?= e(config('partner_gastro')) ?>. Von der Gastro für die Gastro.
-      <a href="/ueber-uns.html">Mehr dazu hier.</a>
-    </p>
+  <div class="wrap">
+    <h2 id="story-titel" class="zentriert">Warum sind die Pizzakartons kostenlos?</h2>
+
+    <div class="warum-liste">
+      <article class="warum-punkt">
+        <div class="warum-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M9.5 15.5c.6.7 1.5 1 2.5 1 1.7 0 3-.9 3-2s-1.3-1.7-3-2-3-.9-3-2 1.3-2 3-2c1 0 1.9.3 2.5 1"/>
+            <path d="M12 6.5v1M12 16.5v1"/>
+          </svg>
+        </div>
+        <div class="warum-text">
+          <h3>Die Verpackungssteuer wird spürbar leichter</h3>
+          <p>
+            Kostenlose Pizzakartons bringen Pizzerien und Restaurants finanzielle Unterstützung.
+            Die 50ct, die man in Freiburg für die Verpackungssteuer abgeben muss, werden durch
+            den Wegfall des Einkaufspreises des Pizzakartons reduziert. Als Kreativagentur lieben
+            wir die Gastro, arbeiten mit Eventagenturen und wissen, wie die finanzielle Belastung
+            in der Gastro aussieht. Und dann kam in Freiburg die Verpackungssteuer dazu. Bei ein
+            paar hundert Kartons in der Woche summiert sich das schnell zu einer Position, die
+            vorher nicht im Plan stand und die für Gast und Gastro erstmal Mehrkosten bedeutet.
+          </p>
+        </div>
+      </article>
+
+      <input type="checkbox" id="warum-mehr-schalter" class="warum-mehr-schalter">
+      <label for="warum-mehr-schalter" class="warum-mehr-knopf">Mehr lesen</label>
+      <div class="warum-mehr-inhalt">
+        <article class="warum-punkt warum-punkt-rechts">
+          <div class="warum-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="8" width="18" height="12" rx="1.5"/>
+              <path d="M3 8l4-4h10l4 4"/>
+              <path d="M9 12h6"/>
+            </svg>
+          </div>
+          <div class="warum-text">
+            <h3>Eine ungenutzte Fläche wird zur Lösung</h3>
+            <p>
+              Wie mit unseren Werbemotiven auf Pizzakartons halten wir es auch hier: Keine Politik.
+              Wir haben ein Problem gesehen und eine Lösung gefunden. Der Deckel des Pizzakartons
+              ist eine super Werbefläche, die einfach ungenutzt ist. Sympathische Werbefläche auf
+              Pizzakartons, mit der regionale Unternehmen die Gastronomie vor Ort unterstützen
+              können. Eine Win-Win-Situation für alle. Die Werbung bezahlt den Karton und macht
+              eine Einsparung für Gast und Gastro möglich.
+            </p>
+          </div>
+        </article>
+
+        <article class="warum-punkt">
+          <div class="warum-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 12l4 4 4-4"/>
+              <path d="M8 16V5"/>
+              <path d="M20 12l-4-4-4 4"/>
+              <path d="M16 8v11"/>
+            </svg>
+          </div>
+          <div class="warum-text">
+            <h3>Von der Gastro für die Gastro</h3>
+            <p>
+              Initiiert wird die Aktion "PizzaSupport" von der <?= e(config('firma.name')) ?> hier
+              in Freiburg in Kooperation mit der Eventagentur <?= e(config('partner_gastro')) ?>.
+              Von der Gastro für die Gastro.
+              <a href="/ueber-uns.html">Mehr dazu hier.</a>
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -268,6 +323,7 @@ $f       = fortschritt();
             <small><?= $wf['brutto'] ? 'inkl. ' . (int) config('mwst_prozent') . ' % MwSt.' : 'netto' ?></small>
           </p>
           <p class="preis-text"><?= e($wf['text']) ?></p>
+          <a class="btn btn-primaer preis-karte-btn" href="/werbepartner.html?format=<?= e($wf['id']) ?>#buchen">Bestellen</a>
         </article>
       <?php endforeach; ?>
     </div>

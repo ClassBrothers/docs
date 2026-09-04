@@ -617,6 +617,19 @@
   }
 
   /* ------------------------------------------------------------------ */
+  /* Vorauswahl eines Formats über ?format=... in der URL - kommt vom     */
+  /* "Bestellen"-Knopf auf den Preiskacheln der Startseite.               */
+  /* ------------------------------------------------------------------ */
+  var vorauswahl = new URLSearchParams(window.location.search).get('format');
+  if (vorauswahl && rechner) {
+    var vorausgewaehlt = rechner.querySelector('input[type="checkbox"][name="formate[]"][value="' + vorauswahl.replace(/"/g, '') + '"]');
+    if (vorausgewaehlt && !vorausgewaehlt.checked) {
+      vorausgewaehlt.checked = true;
+      vorausgewaehlt.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Flächenplan: Mouse-Over-Lupe. Zeigt an der Cursorposition einen      */
   /* vergrößerten Ausschnitt aus der hochaufgelösten Grafik, damit auch   */
   /* die kleine Beschriftung lesbar wird. Nur mit echter Maus - auf       */

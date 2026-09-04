@@ -29,7 +29,30 @@
    leicht versetzt, wie schon im Vorgaenger-Design - reines CSS, keine
    Bilddatei, keine Layout-Verschiebung beim Laden (die SVG traegt feste
    Masse). */
-.hero-karton{min-width:0}
+.hero-karton{min-width:0;position:relative}
+
+/* Handgezeichneter Pfeil "So könnte das aussehen" - deutet auf das
+   Kartonbild, nur auf der Startseite eingebaut (siehe startseite.php).
+   Ausserhalb sichtbarer Reichweite von .hero versteckt sich das per
+   overflow:hidden von selbst, deshalb absichtlich knapp positioniert. */
+.hero-pfeil{
+  position:absolute;top:-1rem;left:-.5rem;z-index:2;
+  display:flex;align-items:flex-start;gap:.35rem;
+  color:#2b231f;transform:rotate(-6deg);pointer-events:none;
+}
+.hero-pfeil svg{
+  display:block;flex-shrink:0;margin-top:.3rem;
+  filter:drop-shadow(0 0 2px #fff8ee) drop-shadow(0 0 2px #fff8ee) drop-shadow(0 0 3px #fff8ee);
+}
+.hero-pfeil-text{
+  font-family:var(--schrift-kopf);font-style:italic;font-weight:700;
+  font-size:.9rem;line-height:1.2;white-space:nowrap;
+  background:rgba(255,250,244,.94);padding:.25rem .6rem;border-radius:8px;
+  box-shadow:0 2px 6px rgba(60,30,10,.22);
+}
+@media (max-width:900px){
+  .hero-pfeil{display:none}
+}
 .karton-skizze{
   position:relative;background:var(--flaeche-weiss);border:2px solid var(--rahmenfarbe);
   border-radius:var(--radius-karte);padding:2.25rem 1.25rem 1.25rem;box-shadow:var(--schatten);
@@ -199,13 +222,14 @@
 
 /* --- Preise ----------------------------------------------------------- */
 .preis-gitter{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin-top:1.75rem}
-.preis-karte{background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-top:4px solid var(--akzent);border-radius:var(--radius-karte);padding:1.5rem}
+.preis-karte{display:flex;flex-direction:column;background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-top:4px solid var(--akzent);border-radius:var(--radius-karte);padding:1.5rem}
 .preis-karte-fun{border-top-color:var(--akzent-sekundaer);background:#f3f8f2}
 .preis-karte h3{margin:0 0 .25rem}
 .preis-masse{font-size:.85rem;color:var(--textfarbe-gedaempft);margin:0 0 .75rem}
 .preis-zahl{font-family:var(--schrift-kopf);font-size:1.75rem;font-weight:700;color:var(--akzent);margin:0 0 .6rem;line-height:1.1}
 .preis-zahl small{display:block;font-family:var(--schrift-text);font-size:.78rem;font-weight:500;color:var(--textfarbe-gedaempft)}
-.preis-text{margin:0;font-size:.94rem;color:var(--textfarbe-gedaempft)}
+.preis-text{margin:0 0 1.1rem;font-size:.94rem;color:var(--textfarbe-gedaempft);flex-grow:1}
+.preis-karte-btn{align-self:flex-start}
 
 .tabelle-wrap{overflow-x:auto;margin-top:1.5rem;border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);background:var(--flaeche-weiss)}
 .preistabelle{width:100%;border-collapse:collapse;min-width:560px}
@@ -786,6 +810,44 @@
 .hero-werbeideen{--holz-bild:url('/assets/img/holz-tisch.jpg')}
 .hero-teilnehmer{--holz-bild:url('/assets/img/holz-tisch.jpg')}
 .hero-ueber-uns{--holz-bild:url('/assets/img/holz-tisch.jpg')}
+
+/* --- "Warum kostenlos": volle Breite, wechselnde Icon-Seite, auf ---
+   schmalen Bildschirmen klappt der zweite und dritte Punkt hinter einem
+   "Mehr lesen" ein - ganz ohne JavaScript ueber <details>/<summary>. */
+.warum-liste{display:flex;flex-direction:column;gap:2.25rem;margin-top:2rem;max-width:900px;margin-left:auto;margin-right:auto}
+.warum-punkt{display:flex;align-items:center;gap:1.75rem}
+.warum-punkt-rechts{flex-direction:row-reverse}
+.warum-icon{
+  flex-shrink:0;width:64px;height:64px;border-radius:50%;
+  background:var(--flaeche-hell-zwei);color:var(--akzent);
+  display:flex;align-items:center;justify-content:center;
+}
+.warum-icon svg{width:30px;height:30px}
+.warum-text h3{margin:0 0 .4rem;font-family:var(--schrift-kopf);font-size:1.1rem;color:var(--flaeche-dunkel)}
+.warum-text p{margin:0}
+
+@media (max-width:640px){
+  .warum-punkt,.warum-punkt-rechts{flex-direction:column;text-align:center;gap:.85rem}
+}
+
+/* Checkbox-Trick statt <details>: neuere Chromium-Versionen clippen den
+   Inhalt eines geschlossenen <details> ueber die interne ::details-content
+   Pseudo-Box (block-size:0), was sich vom Kind-Element aus nicht mehr
+   zuverlaessig ueberschreiben laesst - eine unsichtbare Checkbox plus
+   Sibling-Selektor braucht diesen Umweg nicht und bleibt ohne JavaScript
+   bedienbar (Klick auf das Label, Leertaste im Fokus). */
+.warum-mehr-schalter{position:absolute;width:1px;height:1px;opacity:0}
+.warum-mehr-knopf{display:none}
+.warum-mehr-inhalt{display:flex;flex-direction:column;gap:2.25rem;margin-top:2.25rem}
+
+@media (max-width:780px){
+  .warum-mehr-knopf{
+    display:inline-block;cursor:pointer;margin-top:.5rem;
+    font-family:var(--schrift-ui);font-weight:700;font-size:.9rem;color:var(--akzent);
+  }
+  .warum-mehr-inhalt{display:none}
+  .warum-mehr-schalter:checked ~ .warum-mehr-inhalt{display:flex}
+}
 
 /* Etappe 3, offene Punkte aus dem Aenderungspaket: */
 
