@@ -787,3 +787,33 @@
 .hero-teilnehmer{--holz-bild:url('/assets/img/holz-tisch.jpg')}
 .hero-ueber-uns{--holz-bild:url('/assets/img/holz-tisch.jpg')}
 
+/* Etappe 3, offene Punkte aus dem Aenderungspaket: */
+
+/* 1) "Im roten Abschnitt steht ein roter Button auf rotem Grund" -
+   .band-cta hat einen roten Hintergrund, .btn-primaer darauf denselben
+   Rotton. Wie schon fuer .btn-sekundaer auf farbigen Baendern: umgekehrte
+   Farben, heller Knopf mit roter Schrift statt rot auf rot. */
+.band-cta .btn-primaer{background:#fff;color:var(--akzent);box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.band-cta .btn-primaer:hover{background:#fff5f0;color:var(--akzent-glut)}
+.band-cta .btn-primaer::after{display:none}
+
+/* 2) Zählanzeige zentrieren und ueber die Breite strecken - wirkte
+   gedraengt, weil die Zahlen linksbuendig dicht beieinander standen. */
+.fortschritt-zahlen{justify-content:center}
+@media (min-width:640px){
+  .fortschritt-zahlen{justify-content:space-evenly;gap:1rem}
+}
+
+/* 3) Haeufige Fragen im Layout zentrieren. */
+.faq-liste{margin-left:auto;margin-right:auto}
+.faq > h2{margin-left:auto;margin-right:auto}
+@media (min-width:640px){
+  .faq{text-align:center}
+  .faq-liste{text-align:left}
+}
+
+/* 4) "Trag Deine Gastronomie ein": Formular zentrieren, stand bisher
+   linksbuendig in der vollen Breite von .wrap. */
+.bestellen-kopf{margin-left:auto;margin-right:auto;text-align:center}
+.formular-breit{margin-left:auto;margin-right:auto}
+
