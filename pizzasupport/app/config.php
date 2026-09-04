@@ -155,12 +155,12 @@ return [
             'id'      => 'seite-innen',
             'gruppe'  => 'Seite',
             'label'   => 'Seitenfläche innen',
-            'masse'   => '12 × 1 cm',
+            'masse'   => '93 × 23 mm',
             // Vorlaeufiger Preis auf ausdruecklichen Wunsch des Kunden - wird noch
             // korrigiert, sobald der endgueltige Wert feststeht (siehe Chat).
             'preis'   => 55500,    // 555,00 EUR netto, VORLAEUFIG
             'brutto'  => false,
-            'text'    => 'Nur bei geöffnetem Deckel sichtbar (z. B. Deckelseiten DSL/DSR). Günstiger als die außen sichtbare Seitenfläche.',
+            'text'    => 'Nur bei geöffnetem Deckel sichtbar (DIN1/2, DSL1/2, DSR1/2). Günstiger als die außen sichtbare Seitenfläche.',
         ],
         [
             'id'      => 'fun-area',
@@ -226,16 +226,13 @@ return [
     //   ist mit "32 x 3 cm" beschriftet - ein Widerspruch im Kundendokument,
     //   der sich aber nicht auswirkt (nicht buchbar).
     //
+    // Vom Kunden bestaetigt (nicht die Legende der Planzeichnung, die hier
+    // in die Irre fuehrt): die innen liegenden Seitenflaechen heissen
+    // DIN1, DIN2, DSL1, DSL2, DSR1, DSR2 und sind je 93 × 23 mm - alle
+    // sechs buchbar als "Seitenfläche innen".
+    //
     // Weiterhin offen aus Nachtrag 2, Punkt 0 - der Kunde muss noch bestaetigen:
     // - BF1-3: im Plan ohne Preis, deshalb vorerst nicht buchbar.
-    // - DSL/DSR sind jetzt als "Seitenfläche innen" buchbar (Preis 555 EUR
-    //   netto, VORLAEUFIG, wird noch korrigiert). Die Masse hier ist die
-    //   12 × 1 cm aus der Legende; das Layout selbst beschriftet dieselben
-    //   Felder mit 9,3 × 2,5 cm - dieser Widerspruch ist NICHT mehr
-    //   folgenlos, weil die Flaeche jetzt tatsaechlich bedruckt wird. Bitte
-    //   vor dem ersten Druck klaeren: welches Mass stimmt, und passt die
-    //   Legenden-Markierung "unbedruckt" noch, wenn hier jetzt Werbung
-    //   drauf soll?
     // -----------------------------------------------------------------
     'flaechenkatalog' => [
         'gruppen' => [
@@ -270,8 +267,12 @@ return [
             ['id' => 'BR1', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
             ['id' => 'BR2', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
             ['id' => 'BR3', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'DSL', 'bezeichnung' => 'Deckelseite links',            'masse' => '12 × 1 cm',     'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
-            ['id' => 'DSR', 'bezeichnung' => 'Deckelseite rechts',           'masse' => '12 × 1 cm',     'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
+            ['id' => 'DIN1', 'bezeichnung' => 'Seitenfläche innen',         'masse' => '93 × 23 mm',    'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
+            ['id' => 'DIN2', 'bezeichnung' => 'Seitenfläche innen',         'masse' => '93 × 23 mm',    'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
+            ['id' => 'DSL1', 'bezeichnung' => 'Seitenfläche innen',         'masse' => '93 × 23 mm',    'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
+            ['id' => 'DSL2', 'bezeichnung' => 'Seitenfläche innen',         'masse' => '93 × 23 mm',    'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
+            ['id' => 'DSR1', 'bezeichnung' => 'Seitenfläche innen',         'masse' => '93 × 23 mm',    'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
+            ['id' => 'DSR2', 'bezeichnung' => 'Seitenfläche innen',         'masse' => '93 × 23 mm',    'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
         ],
     ],
 
