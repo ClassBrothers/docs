@@ -140,6 +140,19 @@
   box-shadow:0 0 0 1px rgba(0,0,0,.25);
 }
 .flaechenplan-umrandung.ist-aktiv{opacity:1}
+
+/* Permanente "verkauft"-Markierung auf der Grafik, unabhaengig vom Hover-
+   Effekt oben - liegt einfach als Prozentwert im DOM, kein JS noetig, siehe
+   werbepartner.php. */
+.flaechenplan-verkauft{
+  position:absolute;background:rgba(43,35,31,.72);border:2px solid var(--akzent);
+  border-radius:4px;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+}
+.flaechenplan-verkauft span{
+  font-family:var(--schrift-ui);font-size:.62rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.04em;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);
+}
 .wunschflaeche-gruppe{margin:0 0 1.1rem}
 .wunschflaeche-gruppe:last-of-type{margin-bottom:0}
 .wunschflaeche-gruppe legend{

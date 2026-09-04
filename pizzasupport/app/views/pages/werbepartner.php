@@ -681,6 +681,50 @@ $f      = fortschritt();
             'fun-area' => [
                 ['left' => 17.7, 'top' => 53.7, 'width' => 65.0, 'height' => 20.9], // FA
             ],
+            'seite-innen' => [
+                ['left' => 16.0, 'top' => 2.5,  'width' => 18.5, 'height' => 3.0],  // DIN1
+                ['left' => 65.5, 'top' => 2.5,  'width' => 18.5, 'height' => 3.0],  // DIN2
+                ['left' => 6.0,  'top' => 7.0,  'width' => 6.9,  'height' => 8.5],  // DSL1
+                ['left' => 6.0,  'top' => 29.0, 'width' => 6.9,  'height' => 8.3],  // DSL2
+                ['left' => 87.1, 'top' => 7.0,  'width' => 6.9,  'height' => 8.5],  // DSR1
+                ['left' => 87.1, 'top' => 29.0, 'width' => 6.9,  'height' => 8.3],  // DSR2
+            ],
+        ];
+
+        // Permanente "bereits verkauft"-Markierung direkt auf der Grafik, je
+        // einzelner Kennung (anders als $flaechenplanUmrandungen oben, das nur
+        // je Paket-Gruppe eine Kastenform fuer den Hover-Effekt kennt). Bewusst
+        // per CSS-Prozentwert statt per JS-Pixelberechnung positioniert: Die
+        // Markierung steht dauerhaft, es gibt also nicht das Problem verspätet
+        // geladener Bildmasse, das bei den Hover-Kaesten den Umweg ueber JS
+        // noetig machte. Deckt alle aktuell buchbaren Kennungen ab; kommt eine
+        // neue Kennung hinzu, ohne dass sie hier ergaenzt wird, erscheint fuer
+        // sie einfach keine Markierung auf der Grafik (die Picker-Markierung
+        // im Formular oben greift davon unabhaengig immer).
+        $flaechenplanKennungKoordinaten = [
+            'D2'   => ['left' => 18.2, 'top' => 17.7, 'width' => 20.0, 'height' => 13.6],
+            'D3'   => ['left' => 18.2, 'top' => 31.7, 'width' => 20.0, 'height' => 4.4],
+            'D4'   => ['left' => 40.0, 'top' => 8.0,  'width' => 20.0, 'height' => 13.6],
+            'D5'   => ['left' => 40.0, 'top' => 22.1, 'width' => 20.0, 'height' => 4.4],
+            'D6'   => ['left' => 40.0, 'top' => 27.0, 'width' => 20.0, 'height' => 8.8],
+            'D7'   => ['left' => 61.9, 'top' => 8.0,  'width' => 20.0, 'height' => 4.4],
+            'D8'   => ['left' => 61.9, 'top' => 13.3, 'width' => 20.0, 'height' => 8.8],
+            'D9'   => ['left' => 61.9, 'top' => 22.5, 'width' => 20.0, 'height' => 13.6],
+            'DIN1' => ['left' => 16.0, 'top' => 2.5,  'width' => 18.5, 'height' => 3.0],
+            'DIN2' => ['left' => 65.5, 'top' => 2.5,  'width' => 18.5, 'height' => 3.0],
+            'DSL1' => ['left' => 6.0,  'top' => 7.0,  'width' => 6.9,  'height' => 8.5],
+            'DSL2' => ['left' => 6.0,  'top' => 29.0, 'width' => 6.9,  'height' => 8.3],
+            'DSR1' => ['left' => 87.1, 'top' => 7.0,  'width' => 6.9,  'height' => 8.5],
+            'DSR2' => ['left' => 87.1, 'top' => 29.0, 'width' => 6.9,  'height' => 8.3],
+            'BH1'  => ['left' => 15.5, 'top' => 38.5, 'width' => 22.0, 'height' => 3.0],
+            'BH2'  => ['left' => 40.0, 'top' => 38.5, 'width' => 21.0, 'height' => 3.0],
+            'BH3'  => ['left' => 63.5, 'top' => 38.5, 'width' => 21.5, 'height' => 3.0],
+            'BL1'  => ['left' => 6.0,  'top' => 44.0, 'width' => 6.0,  'height' => 8.0],
+            'BL2'  => ['left' => 6.0,  'top' => 54.0, 'width' => 6.0,  'height' => 9.0],
+            'BL3'  => ['left' => 6.0,  'top' => 65.0, 'width' => 6.0,  'height' => 8.5],
+            'BR1'  => ['left' => 86.0, 'top' => 44.0, 'width' => 8.0,  'height' => 8.0],
+            'BR2'  => ['left' => 86.0, 'top' => 54.0, 'width' => 8.0,  'height' => 9.0],
+            'BR3'  => ['left' => 86.0, 'top' => 65.0, 'width' => 8.0,  'height' => 8.5],
         ];
       ?>
       <aside class="bestellen-grafik-spalte" aria-label="Flächenplan des Pizzakartons">
@@ -702,6 +746,28 @@ $f      = fortschritt();
                    data-width="<?= e((string) $kasten['width']) ?>" data-height="<?= e((string) $kasten['height']) ?>"></div>
             <?php endforeach; ?>
           <?php endforeach; ?>
+          <?php
+            // Position per <style nonce>-Regel statt per style="" -Attribut:
+            // Die CSP dieser Seite erlaubt keine Inline-style-Attribute (nur
+            // Stylesheets von 'self' und genonctes CSS), ein rohes
+            // style="left:...%" waere von der CSP blockiert worden.
+            $verkauftMitKoordinaten = array_filter(
+                $vergebeneKennungen,
+                fn (string $kennung): bool => isset($flaechenplanKennungKoordinaten[$kennung])
+            );
+          ?>
+          <?php if ($verkauftMitKoordinaten): ?>
+            <style nonce="<?= e($GLOBALS['csp_nonce'] ?? '') ?>">
+              <?php foreach ($verkauftMitKoordinaten as $i => $kennung): $k = $flaechenplanKennungKoordinaten[$kennung]; ?>
+                .flaechenplan-verkauft-<?= (int) $i ?>{left:<?= e((string) $k['left']) ?>%;top:<?= e((string) $k['top']) ?>%;width:<?= e((string) $k['width']) ?>%;height:<?= e((string) $k['height']) ?>%}
+              <?php endforeach; ?>
+            </style>
+            <?php foreach (array_values($verkauftMitKoordinaten) as $i => $kennung): ?>
+              <div class="flaechenplan-verkauft flaechenplan-verkauft-<?= (int) $i ?>" title="<?= e($kennung) ?> bereits verkauft">
+                <span>verkauft</span>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
           <div class="flaechenplan-lupenglas" data-lupenglas hidden aria-hidden="true"></div>
         </div>
         <p class="flaechenplan-bildunterschrift">
