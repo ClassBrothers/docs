@@ -119,13 +119,6 @@
 .rechner-hinweis{margin:.25rem 0 0;font-size:.92rem;color:var(--textfarbe-gedaempft)}
 .rechner-steuer{margin:.75rem 0 0;font-size:.88rem;font-style:italic;color:var(--textfarbe-gedaempft)}
 
-/* --- Fun-Area-Flaechenrechner beim Werbepartner ------------------------- */
-.feld-funarea{margin-top:1rem;padding:1rem 1.15rem;background:var(--flaeche-hell);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte)}
-.feld-funarea .menge-wahl{margin-bottom:.75rem}
-
-/* --- Wunschflaeche beim Werbepartner ------------------------------------ */
-.feld-wunschflaeche{margin-top:1rem;margin-bottom:1.75rem}
-
 /* --- Fläche buchen: Formular links, Flächenplan mit Lupe rechts -------- */
 .bestellen-grid{display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start}
 .bestellen-formular-spalte{min-width:0}
@@ -176,9 +169,9 @@
   font-family:var(--schrift-ui);font-size:.62rem;font-weight:800;text-transform:uppercase;
   letter-spacing:.04em;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);
 }
-.wunschflaeche-gruppe{margin:0 0 1.1rem}
-.wunschflaeche-gruppe:last-of-type{margin-bottom:0}
-.wunschflaeche-gruppe legend{
+.flaechen-gruppe{margin:0 0 1.1rem}
+.flaechen-gruppe:last-of-type{margin-bottom:0}
+.flaechen-gruppe legend{
   font-family:var(--schrift-ui);font-size:.9rem;font-weight:700;color:var(--textfarbe-gedaempft);
   padding:0 0 .35rem;margin-bottom:.5rem;border-bottom:1px solid var(--rahmenfarbe);width:100%;
 }

@@ -7,7 +7,7 @@ $faq = [
         'frage'   => 'Was kosten die Pizzakartons für meinen Betrieb?',
         'antwort' => '<p>Nichts. Kein Cent, keine versteckte Gebühr, keine Mindestabnahme gegen Rechnung.
                       Die Kartons sind vollständig durch die Werbeflächen finanziert, die Unternehmen und
-                      Privatleute auf Deckel, Seite und Boden buchen. Du bezahlst weder Druck noch
+                      StartUps auf Deckel, Seite und Boden buchen. Du bezahlst weder Druck noch
                       Lieferung. Was Du einbringst, ist Dein Bedarf – je mehr Gastronomien mitmachen,
                       desto attraktiver werden die Flächen für die
                       <a href="/werbepartner.html">Werbepartner</a>.</p>',
@@ -23,7 +23,7 @@ $faq = [
     [
         'frage'   => 'Welche Werbung landet auf meinen Kartons?',
         'antwort' => '<p>Handwerk aus dem Viertel, der Steuerberater um die Ecke, das Fitnessstudio,
-                      der Heiratsantrag auf der Fun Area. Was nicht draufkommt: Essens-Lieferdienste,
+                      das neu gegründete StartUp von nebenan. Was nicht draufkommt: Essens-Lieferdienste,
                       also Deine direkte Konkurrenz. Dazu nichts Politisches, nichts Religiöses und
                       nichts, was ohne Sachkenntnis Meinung macht. Wir behalten uns bei jedem Motiv
                       das letzte Wort vor.</p>',
@@ -214,8 +214,8 @@ $f       = fortschritt();
       <li>
         <span class="schritt-nr" aria-hidden="true">2</span>
         <h3>Unternehmen buchen Flächen</h3>
-        <p>Handwerk, Dienstleister, Handel aus der Region – und kleine Betriebe, Start-ups
-           oder Vereine auf der Fun Area.</p>
+        <p>Handwerk, Dienstleister, Handel aus der Region – und StartUps oder
+           Selbstständige auf den günstigen StartUp-Feldern.</p>
       </li>
       <li>
         <span class="schritt-nr" aria-hidden="true">3</span>
@@ -309,21 +309,23 @@ $f       = fortschritt();
   <div class="wrap">
     <h2 id="flaechen-titel">Was kostet eine Fläche auf dem Karton?</h2>
     <p class="band-lead">
-      Für Unternehmen gibt es feste Pakete, keine Rechnerei nach Quadratzentimetern.
-      Für alle anderen die Fun Area auf der Unterseite. Unser Lagerbestand: 42.000 Kartons,
-      bereit für die erste Auflage.
+      Feste Einzelpreise je Fläche, keine Rechnerei nach Quadratzentimetern. Unsere Auflage:
+      <?= zahl((int) config('auflage')) ?> Kartons, bereit für die erste Runde.
     </p>
     <div class="preis-gitter">
-      <?php foreach (config('werbeformate') as $wf): ?>
-        <article class="preis-karte<?= $wf['id'] === 'fun-area' ? ' preis-karte-fun' : '' ?>">
-          <h3><?= e($wf['label']) ?></h3>
-          <p class="preis-masse"><?= e($wf['masse']) ?></p>
+      <?php foreach (flaechenkatalog_preisstufen() as $stufe): ?>
+        <article class="preis-karte<?= $stufe['gruppe'] === 'boden' ? ' preis-karte-fun' : '' ?>">
+          <h3><?= e($stufe['bezeichnung']) ?></h3>
+          <p class="preis-masse"><?= e($stufe['masse']) ?></p>
           <p class="preis-zahl">
-            <?= $wf['id'] === 'fun-area' ? 'ab ' : '' ?><?= e(preis($wf['preis'])) ?>
-            <small><?= $wf['brutto'] ? 'inkl. ' . (int) config('mwst_prozent') . ' % MwSt.' : 'netto' ?></small>
+            <?= e(preis($stufe['preis'])) ?>
+            <small>netto</small>
           </p>
-          <p class="preis-text"><?= e($wf['text']) ?></p>
-          <a class="btn btn-primaer preis-karte-btn" href="/werbepartner.html?format=<?= e($wf['id']) ?>#buchen">Bestellen</a>
+          <p class="preis-text">
+            <?= count($stufe['codes']) ?> Fläche<?= count($stufe['codes']) === 1 ? '' : 'n' ?> verfügbar
+            (<?= e(implode(', ', $stufe['codes'])) ?>).
+          </p>
+          <a class="btn btn-primaer preis-karte-btn" href="/flaeche-buchen.html#gruppe-<?= e($stufe['gruppe']) ?>">Bestellen</a>
         </article>
       <?php endforeach; ?>
     </div>

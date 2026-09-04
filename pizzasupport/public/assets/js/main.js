@@ -426,30 +426,7 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* Buchen-Knopf beim Werbepartner: Button-Lösung nach § 312j BGB.      */
-  /* Der statische Text im HTML ist die rechtssichere Vorgabe für         */
-  /* Privatpersonen; nur bei erkennbarer Unternehmensbuchung wird auf     */
-  /* den freundlicheren Text wechselt - das braucht kein JavaScript,      */
-  /* also bleibt ohne Skript die sichere Formulierung stehen.             */
-  /* ------------------------------------------------------------------ */
-  var buchenKnopf = document.querySelector('[data-buchen-knopf]');
-  if (buchenKnopf) {
-    var artFelder = document.querySelectorAll('input[name="art"]');
-    var knopfBeschriften = function () {
-      var gewaehlt = document.querySelector('input[name="art"]:checked');
-      var istUnternehmen = gewaehlt && gewaehlt.value === 'unternehmen';
-      buchenKnopf.textContent = buchenKnopf.getAttribute(
-        istUnternehmen ? 'data-label-unternehmen' : 'data-label-privat'
-      );
-    };
-    Array.prototype.forEach.call(artFelder, function (f) {
-      f.addEventListener('change', knopfBeschriften);
-    });
-    knopfBeschriften();
-  }
-
-  /* ------------------------------------------------------------------ */
-  /* Auftragswert auf der Werbepartner-Seite                             */
+  /* Auftragswert auf der Buchungsseite                                   */
   /*                                                                     */
   /* Reine Anzeigehilfe. Verbindlich ist ausschließlich die Berechnung    */
   /* auf dem Server - hier wird nichts übertragen, was zählt.            */
@@ -466,74 +443,11 @@
 
     var euro = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' });
 
-    /* Fun Area: Preis haengt von der gewaehlten Flaeche ab, nicht von      */
-    /* einem Festpreis. Das Ergebnis wird als data-preis auf die Checkbox   */
-    /* geschrieben, danach rechnet neuRechnen() ganz normal weiter.         */
-    var funareaBlock = document.querySelector('[data-funarea-block]');
-    var funareaCheckbox = document.querySelector('[data-funarea-checkbox]');
-    if (funareaBlock && funareaCheckbox) {
-      var faBreiteFeld = funareaBlock.querySelector('[data-funarea-breite-feld]');
-      var faHoeheFeld  = funareaBlock.querySelector('[data-funarea-hoehe-feld]');
-      var faErgebnis   = funareaBlock.querySelector('[data-funarea-ergebnis]');
-      var faErgebnisText = faErgebnis ? faErgebnis.textContent : '';
-      var faPreisJeCm2 = parseInt(funareaBlock.getAttribute('data-preis-je-cm2'), 10) || 0;
-      var faMindest    = parseFloat(funareaBlock.getAttribute('data-min-flaeche')) || 0;
-
-      function funareaAktualisieren() {
-        funareaBlock.hidden = !funareaCheckbox.checked;
-        if (!funareaCheckbox.checked) { return; }
-
-        var breite = parseFloat((faBreiteFeld.value || '').replace(',', '.'));
-        var hoehe  = parseFloat((faHoeheFeld.value || '').replace(',', '.'));
-        if (isNaN(breite) || isNaN(hoehe) || breite <= 0 || hoehe <= 0) {
-          funareaCheckbox.setAttribute('data-preis', '0');
-          if (faErgebnis) { faErgebnis.textContent = faErgebnisText; }
-          return;
-        }
-        // Flaeche auf eine Nachkommastelle runden, danach multiplizieren.
-        var flaeche = Math.round(breite * hoehe * 10) / 10;
-        var preisCent = Math.round(flaeche * faPreisJeCm2);
-        funareaCheckbox.setAttribute('data-preis', String(preisCent));
-
-        if (faErgebnis) {
-          if (flaeche < faMindest) {
-            faErgebnis.textContent = 'Mindestens ' + faMindest.toLocaleString('de-DE') + ' cm² nötig - aktuell '
-              + flaeche.toLocaleString('de-DE') + ' cm².';
-          } else {
-            faErgebnis.textContent = flaeche.toLocaleString('de-DE') + ' cm² · '
-              + euro.format(preisCent / 100) + ' brutto.';
-          }
-        }
-      }
-
-      Array.prototype.forEach.call(funareaBlock.querySelectorAll('[data-funarea-breite]'), function (knopf) {
-        knopf.addEventListener('click', function () {
-          faBreiteFeld.value = knopf.getAttribute('data-funarea-breite');
-          faHoeheFeld.value = knopf.getAttribute('data-funarea-hoehe');
-          funareaAktualisieren();
-          neuRechnenAusloesen();
-        });
-      });
-      faBreiteFeld.addEventListener('input', function () { funareaAktualisieren(); neuRechnenAusloesen(); });
-      faHoeheFeld.addEventListener('input', function () { funareaAktualisieren(); neuRechnenAusloesen(); });
-      funareaCheckbox.addEventListener('change', funareaAktualisieren);
-      funareaAktualisieren();
-    }
-
-    function neuRechnenAusloesen() {
-      rechner.dispatchEvent(new Event('change'));
-    }
-
     function neuRechnen() {
       var netto = 0;
       var anzahl = 0;
       Array.prototype.forEach.call(rechner.querySelectorAll('input[type="checkbox"]:checked'), function (cb) {
-        var preis = parseInt(cb.getAttribute('data-preis'), 10) || 0;
-        // Brutto-Preise auf netto zurückrechnen, wie es der Server auch tut.
-        if (cb.getAttribute('data-brutto') === '1') {
-          preis = Math.round(preis / (1 + MWST / 100));
-        }
-        netto += preis;
+        netto += parseInt(cb.getAttribute('data-preis'), 10) || 0;
         anzahl++;
       });
 
@@ -554,41 +468,6 @@
       summeHinweis.textContent = euro.format(brutto / 100) + ' brutto'
         + (rabatt ? ' · Gutschein-Nachlass ' + euro.format(rabatt / 100) + ' berücksichtigt' : '')
         + ' · unverbindlich, verbindlich wird die Auftragsbestätigung';
-    }
-
-    /* Wunschflaeche: nur Positionen zeigen, die zu einer gerade gewaehlten */
-    /* Flaeche passen - wer "Deckel groß" bucht, soll nicht zwischen Slots  */
-    /* fuer "Deckel klein" oder Seitenflaechen waehlen muessen.             */
-    var wunschBlock = document.querySelector('[data-wunschflaeche-block]');
-    if (wunschBlock) {
-      var wunschHinweis = wunschBlock.querySelector('[data-wunschflaeche-hinweis]');
-      var wunschGruppen = wunschBlock.querySelectorAll('[data-wunschflaeche-gruppe]');
-      var wunschLabels  = wunschBlock.querySelectorAll('[data-paket]');
-
-      function wunschflaechenAktualisieren() {
-        var gewaehltePakete = [];
-        Array.prototype.forEach.call(rechner.querySelectorAll('input[type="checkbox"]:checked'), function (cb) {
-          gewaehltePakete.push(cb.value);
-        });
-
-        Array.prototype.forEach.call(wunschLabels, function (label) {
-          var passt = gewaehltePakete.indexOf(label.getAttribute('data-paket')) !== -1;
-          label.hidden = !passt;
-          if (!passt) {
-            var eingabe = label.querySelector('input');
-            if (eingabe) { eingabe.checked = false; }
-          }
-        });
-
-        Array.prototype.forEach.call(wunschGruppen, function (gruppe) {
-          gruppe.hidden = !gruppe.querySelector('[data-paket]:not([hidden])');
-        });
-
-        if (wunschHinweis) { wunschHinweis.hidden = gewaehltePakete.length > 0; }
-      }
-
-      rechner.addEventListener('change', wunschflaechenAktualisieren);
-      wunschflaechenAktualisieren();
     }
 
     /* Beim Ueberfahren einer Formatauswahl die passenden Umrandungen auf     */
@@ -614,19 +493,6 @@
     rechner.addEventListener('change', neuRechnen);
     if (couponFeld) { couponFeld.addEventListener('change', neuRechnen); }
     neuRechnen();
-  }
-
-  /* ------------------------------------------------------------------ */
-  /* Vorauswahl eines Formats über ?format=... in der URL - kommt vom     */
-  /* "Bestellen"-Knopf auf den Preiskacheln der Startseite.               */
-  /* ------------------------------------------------------------------ */
-  var vorauswahl = new URLSearchParams(window.location.search).get('format');
-  if (vorauswahl && rechner) {
-    var vorausgewaehlt = rechner.querySelector('input[type="checkbox"][name="formate[]"][value="' + vorauswahl.replace(/"/g, '') + '"]');
-    if (vorausgewaehlt && !vorausgewaehlt.checked) {
-      vorausgewaehlt.checked = true;
-      vorausgewaehlt.dispatchEvent(new Event('change', { bubbles: true }));
-    }
   }
 
   /* ------------------------------------------------------------------ */

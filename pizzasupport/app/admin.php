@@ -329,19 +329,17 @@ function admin_seite(?string $meldung): void
         $formate = json_decode((string) $z['formate'], true) ?: [];
         $labels  = [];
         foreach ($formate as $fid) {
-            $wf = werbeformat((string) $fid);
-            $labels[] = $wf ? $wf['label'] : (string) $fid;
+            $flaeche = flaechenkatalog_eintrag((string) $fid);
+            $labels[] = $flaeche ? $fid . ' – ' . $flaeche['bezeichnung'] : (string) $fid;
         }
-        $wunschflaechen = json_decode((string) $z['wunschflaechen'], true) ?: [];
         $fest = $vergebenNachBuchung[(int) $z['id']] ?? [];
         echo '<tr>'
-           . '<td><strong>' . e($z['firma']) . '</strong><br><small>' . e($z['art']) . '<br>' . e((string) $z['plz']) . ' ' . e((string) $z['ort']) . '</small>'
+           . '<td><strong>' . e($z['firma']) . '</strong><br><small>' . e((string) $z['plz']) . ' ' . e((string) $z['ort']) . '</small>'
            . admin_adresse_bearbeiten('werbebuchungen', (int) $z['id'], null, (string) $z['plz'], (string) $z['ort']) . '</td>'
            . '<td><small>' . e($z['ansprechpartner']) . '<br>' . e($z['email']) . '<br>' . e((string) decrypt_field($z['telefon_enc'])) . '</small></td>'
            . '<td><small>' . e(implode(', ', $labels)) . ($z['coupon'] ? '<br>mit Coupon' : '') . '</small>'
-           . ($wunschflaechen
-                ? '<br><small><em>Wunsch: ' . e(implode(', ', $wunschflaechen)) . '</em>'
-                    . ($z['wunschflaeche_notiz'] ? ' – ' . e((string) $z['wunschflaeche_notiz']) : '') . '</small>'
+           . ($z['wunschflaeche_notiz']
+                ? '<br><small><em>Anmerkung zur Platzierung: ' . e((string) $z['wunschflaeche_notiz']) . '</em></small>'
                 : '')
            . '<br><small>' . ($z['bestaetigt_am'] ? 'bestätigt am ' . e((string) $z['bestaetigt_am']) : 'noch nicht bestätigt') . '</small>'
            . ($fest ? '<br><small><strong>fest vergeben: ' . e(implode(', ', $fest)) . '</strong></small>' : '')

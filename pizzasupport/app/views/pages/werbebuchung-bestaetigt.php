@@ -23,7 +23,7 @@ $label = static function (string $kennung): string {
       </p>
       <?php if ($vergeben): ?>
         <p class="hinweis hinweis-ok" role="status">
-          Diese Wunschfläche gehört jetzt fest zu Ihrer Buchung:
+          Diese Fläche(n) gehören jetzt fest zu Ihrer Buchung:
           <strong><?= e(implode(', ', array_map($label, $vergeben))) ?></strong>
         </p>
       <?php endif; ?>

@@ -182,24 +182,25 @@ $meta['jsonld'] = [
 
 <section class="band band-hell">
   <div class="wrap">
-    <h2>Die Fun Area – die unkonventionelle Fläche</h2>
+    <h2>Die StartUp-Felder – die unkonventionelle Fläche</h2>
     <p>
-      Auf der Unterseite jedes Kartons sammeln wir kleine, frei zuschneidbare Flächen –
-      ab <?= e(preis((int) werbeformat('fun-area')['preis'])) ?> je nach gewählter Größe.
-      Gedacht für kleine Betriebe, Start-ups, Vereine und Suchanzeigen, die mit wenig Fläche
-      viel sagen wollen. Entdeckt wird sie, wenn jemand den leeren Karton hochhebt – was dort
-      steht, muss keinen Zweck erfüllen.
+      Auf der Unterseite jedes Kartons sammeln wir kleine Flächen für StartUps und
+      Selbstständige – Feld S ab <?= e(preis((int) flaechenkatalog_eintrag('SU-S1')['preis'])) ?>,
+      Feld M ab <?= e(preis((int) flaechenkatalog_eintrag('SU-M1')['preis'])) ?>, jeweils netto.
+      Gedacht für junge Unternehmen und kleine lokale Anbieter, die mit wenig Fläche viel sagen
+      wollen. Entdeckt wird sie, wenn jemand den leeren Karton hochhebt – was dort steht, muss
+      keinen Zweck erfüllen.
     </p>
 
     <ul class="liste-check">
-      <li>„TuS Sportverein sucht Trainer. Bezahlung: Respekt.“</li>
       <li>„3 Mitarbeitende gesucht. Kein Anschreiben nötig.“</li>
       <li>„Neu im Viertel: unser kleiner Laden um die Ecke.“</li>
-      <li>„Marie, willst Du mich heiraten? – Der Typ mit der Salami“</li>
+      <li>„Frisch gegründet: unsere Kanzlei sagt Hallo.“</li>
+      <li>„Handwerk gesucht? Wir sind schneller als der Ofen heiß wird.“</li>
     </ul>
 
     <p>
-      Wer eine gute Idee hat, sollte sie schnell buchen. Die Fun Area ist begrenzt, und
+      Wer eine gute Idee hat, sollte sie schnell buchen. Die StartUp-Felder sind begrenzt, und
       erfahrungsgemäß sind es genau diese kleinen Flächen, über die am meisten geredet wird.
     </p>
   </div>

@@ -67,6 +67,7 @@ if (isset($formulare[$pfad])) {
 $seiten = [
     '/'                                => 'startseite',
     '/werbepartner.html'               => 'werbepartner',
+    '/flaeche-buchen.html'             => 'flaeche-buchen',
     '/werbeideen.html'                 => 'werbeideen',
     '/teilnehmer.html'                 => 'teilnehmer',
     '/fuer-gaeste.html'                => 'fuer-gaeste',
@@ -127,14 +128,14 @@ switch ($pfad) {
         echo json_encode([
             'stand'       => date('c'),
             'teilnehmer'  => teilnehmer_liste(),
-            'fortschritt' => fortschritt(),
+            'fortschritt' => fortschritt_oeffentlich(),
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         exit;
 
     case '/api/fortschritt.json':
         header('Content-Type: application/json; charset=UTF-8');
         header('Cache-Control: public, max-age=120');
-        echo json_encode(fortschritt(), JSON_UNESCAPED_UNICODE);
+        echo json_encode(fortschritt_oeffentlich(), JSON_UNESCAPED_UNICODE);
         exit;
 }
 
@@ -163,6 +164,7 @@ $umleitungen = [
     '/index.php'           => '/',
     '/home'                => '/',
     '/werbepartner'        => '/werbepartner.html',
+    '/flaeche-buchen'      => '/flaeche-buchen.html',
     '/werbeideen'          => '/werbeideen.html',
     '/teilnehmer'          => '/teilnehmer.html',
     '/ueber-uns'           => '/ueber-uns.html',

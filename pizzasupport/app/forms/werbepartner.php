@@ -3,7 +3,7 @@
 
 declare(strict_types=1);
 
-$zurueck = '/werbepartner.html#buchen';
+$zurueck = '/flaeche-buchen.html';
 
 if (!honeypot_ok($_POST)) {
     flash_set('werbung_ok', 'Vielen Dank, Ihre Buchung ist bei uns eingegangen.');
@@ -16,18 +16,15 @@ if (!rate_limit_ok('werbung', 5, 3600)) {
     redirect($zurueck);
 }
 
-$erlaubteFormate = array_column(config('werbeformate'), 'id');
-$erlaubteWunschflaechen = array_column(
+$erlaubteFlaechen = array_column(
     array_filter(config('flaechenkatalog.flaechen', []), fn (array $f): bool => $f['buchbar']),
     'id'
 );
 
 $v = new Validator($_POST);
-$v->auswahl('art', 'Die Art des Buchenden', ['unternehmen', 'privat'])
-  ->mehrfach('formate', 'Mindestens eine Werbefläche', $erlaubteFormate)
-  ->mehrfach('wunschflaechen', 'Die Wunschfläche', $erlaubteWunschflaechen, false)
-  ->langtext('wunschflaeche_notiz', 'Die Anmerkung zur Platzierung', false, 500)
-  ->text('firma', 'Firma oder Name', true, 150)
+$v->mehrfach('flaechen', 'Mindestens eine Werbefläche', $erlaubteFlaechen)
+  ->langtext('notiz', 'Die Anmerkung zur Platzierung', false, 500)
+  ->text('firma', 'Firma', true, 150)
   ->text('ansprechpartner', 'Der Ansprechpartner', true, 120)
   ->email('email', 'Die E-Mail-Adresse')
   ->telefon('telefon', 'Die Telefonnummer')
@@ -54,30 +51,6 @@ if ($ustid !== null && $ustid !== '' && !preg_match('/^[A-Z]{2}[0-9A-Z]{6,14}$/i
     $v->fehlerSetzen('ustid', 'Diese USt-IdNr. sieht nicht richtig aus, zum Beispiel DE123456789.');
 }
 
-// Fun Area: Preis haengt von der tatsaechlich gewaehlten Flaeche ab, nicht
-// von einem Festpreis (Nachtrag 2+5). Flaeche auf eine Nachkommastelle
-// runden, danach mit dem Preis je cm² multiplizieren.
-$funArea       = config('fun_area');
-$funFlaecheCm2 = null;
-$funPreisCent  = null;
-if (in_array('fun-area', $v->get('formate') ?? [], true)) {
-    $breiteRoh = str_replace(',', '.', trim((string) ($_POST['fun_breite'] ?? '')));
-    $hoeheRoh  = str_replace(',', '.', trim((string) ($_POST['fun_hoehe'] ?? '')));
-    if ($breiteRoh === '' || !is_numeric($breiteRoh) || (float) $breiteRoh <= 0) {
-        $v->fehlerSetzen('fun_breite', 'Bitte geben Sie die Breite der Fun-Area-Fläche in Zentimetern an.');
-    } elseif ($hoeheRoh === '' || !is_numeric($hoeheRoh) || (float) $hoeheRoh <= 0) {
-        $v->fehlerSetzen('fun_hoehe', 'Bitte geben Sie die Höhe der Fun-Area-Fläche in Zentimetern an.');
-    } else {
-        $funFlaecheCm2 = round(((float) $breiteRoh) * ((float) $hoeheRoh), 1);
-        if ($funFlaecheCm2 < (float) $funArea['mindestflaeche_cm2']) {
-            $v->fehlerSetzen('fun_hoehe', 'Die Fläche muss mindestens ' . $funArea['mindestflaeche_cm2']
-                . ' cm² groß sein, aktuell ' . $funFlaecheCm2 . ' cm².');
-        } else {
-            $funPreisCent = (int) round($funFlaecheCm2 * (int) $funArea['preis_je_cm2_cent']);
-        }
-    }
-}
-
 $upload = upload_motiv($_FILES['motiv'] ?? null);
 if (!$upload['ok']) {
     $v->fehlerSetzen('motiv', (string) $upload['fehler']);
@@ -101,38 +74,19 @@ if (!$v->ok()) {
 $d = $v->daten();
 
 // -----------------------------------------------------------------------
-// Auftragswert berechnen. Massgeblich sind die Preise aus der Konfiguration,
-// niemals ein Wert aus dem Formular.
+// Auftragswert berechnen. Massgeblich sind die Preise aus dem
+// Flaechenkatalog, niemals ein Wert aus dem Formular.
 // -----------------------------------------------------------------------
 $mwst    = (int) config('mwst_prozent');
 $netto   = 0;
 $gewaehlteLabels = [];
-foreach ($d['formate'] as $id) {
-    $wf = werbeformat($id);
-    if ($wf === null) {
+foreach ($d['flaechen'] as $id) {
+    $flaeche = flaechenkatalog_eintrag($id);
+    if ($flaeche === null || $flaeche['preis'] === null) {
         continue;
     }
-    // Fun Area hat keinen Festpreis mehr: die Flaeche kommt aus dem
-    // Formular, der Preis je cm² ausschliesslich aus der Konfiguration.
-    $liniePreis = ($id === 'fun-area' && $funPreisCent !== null) ? $funPreisCent : (int) $wf['preis'];
-    // Brutto-Preise auf netto zurueckrechnen, damit die Schwelle eine
-    // einheitliche Bezugsgroesse hat.
-    $netto += $wf['brutto']
-        ? (int) round($liniePreis / (1 + $mwst / 100))
-        : $liniePreis;
-    $gewaehlteLabels[] = $wf['label'] . ' (' . $wf['masse'] . ')'
-        . ($id === 'fun-area' && $funFlaecheCm2 !== null ? ', ' . $funFlaecheCm2 . ' cm²' : '');
-}
-
-// Wunschflaeche: nur Anzeige/Wunsch, keine Preiswirkung - Kennung + Maß aus
-// dem Flaechenkatalog, nie aus dem Formular, damit hier nichts gefaelscht
-// ankommen kann.
-$wunschflaechenLabels = [];
-foreach ($d['wunschflaechen'] as $id) {
-    $flaeche = flaechenkatalog_eintrag($id);
-    if ($flaeche !== null) {
-        $wunschflaechenLabels[] = $id . ' – ' . $flaeche['bezeichnung'] . ' (' . $flaeche['masse'] . ')';
-    }
+    $netto += (int) $flaeche['preis'];
+    $gewaehlteLabels[] = $id . ' – ' . $flaeche['bezeichnung'] . ' (' . $flaeche['masse'] . ')';
 }
 
 $rabatt = 0;
@@ -148,8 +102,9 @@ if ($d['karte_ok']) {
 }
 
 // Bestaetigungslink per Mail (Double-Opt-in): erst nach Klick gilt die
-// Buchung als bestaetigt und die Wunschflaeche wird fest vergeben - siehe
-// werbebuchung-bestaetigen.php.
+// Buchung als bestaetigt und die Flaechen werden fest vergeben - siehe
+// werbebuchung-bestaetigen.php. Bis dahin koennte theoretisch eine zweite
+// Buchung dieselbe Flaeche waehlen; wer zuerst bestaetigt, bekommt sie.
 $bestaetigungToken = bin2hex(random_bytes(32));
 
 try {
@@ -159,19 +114,19 @@ try {
              rechnung_enc, ustid_enc, plz, ort,
              formate, coupon, summe_cent,
              motiv_pfad, motiv_name, motiv_groesse, motiv_spaeter, zielurl, nachricht,
-             wunschflaechen, wunschflaeche_notiz,
+             wunschflaeche_notiz,
              agb_ok, motivvorbehalt_ok, verbindlich_ok, karte_ok, datenschutz_ok, einwilligung_am, einwilligung_zweck,
              naechste_auflage_bevorzugt, bestaetigung_token,
              status, erstellt_am, quelle)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         [
-            $d['art'], $d['firma'], $d['ansprechpartner'], $d['email'],
+            'unternehmen', $d['firma'], $d['ansprechpartner'], $d['email'],
             encrypt_field($d['telefon']), $d['website'],
             encrypt_field($d['rechnung']), encrypt_field($d['ustid']), $d['plz'], $d['ort'],
-            json_encode($d['formate'], JSON_UNESCAPED_UNICODE), $d['coupon'], $netto,
+            json_encode($d['flaechen'], JSON_UNESCAPED_UNICODE), $d['coupon'], $netto,
             $upload['pfad'] ?? null, $upload['name'] ?? null, $upload['groesse'] ?? null,
             $d['motiv_spaeter'], $d['zielurl'], $d['nachricht'],
-            $d['wunschflaechen'] ? json_encode($d['wunschflaechen'], JSON_UNESCAPED_UNICODE) : null, $d['wunschflaeche_notiz'],
+            $d['notiz'],
             $d['agb_ok'], $d['motivvorbehalt_ok'], $d['verbindlich_ok'], $d['karte_ok'], $d['datenschutz_ok'],
             $jetzt, implode('; ', $zwecke),
             $d['naechste_auflage_bevorzugt'], $bestaetigungToken,
@@ -208,19 +163,14 @@ mail_send(
     'Bitte bestätigen Sie Ihre Reservierung bei Pizza Support',
     "Guten Tag {$d['ansprechpartner']},\n\n"
     . "vielen Dank für Ihre Buchung. Bitte bestätigen Sie sie noch mit einem Klick auf\n"
-    . "diesen Link, erst danach ist Ihre Wunschfläche für Sie reserviert:\n\n"
+    . "diesen Link, erst danach sind Ihre Flächen für Sie reserviert:\n\n"
     . url('/werbebuchung-bestaetigen?token=' . $bestaetigungToken) . "\n\n"
-    . ($wunschflaechenLabels
-        ? "Die Fläche ist begrenzt, wir vergeben in der Reihenfolge der Bestätigungen -\n"
-          . "je früher der Klick, desto sicherer die gewünschte Position.\n\n"
-        : '')
+    . "Die Fläche ist begrenzt, wir vergeben in der Reihenfolge der Bestätigungen -\n"
+    . "je früher der Klick, desto sicherer Ihre gewählte Fläche.\n\n"
     . "Wir haben Folgendes notiert:\n\n"
     . "Buchende Firma: {$d['firma']}\n"
     . "Flächen:\n{$formatText}\n"
-    . ($wunschflaechenLabels
-        ? "\nIhre Wunschfläche (ein Wunsch, keine Zusage – siehe unsere AGB):\n  - "
-          . implode("\n  - ", $wunschflaechenLabels) . "\n"
-        : '')
+    . ($d['notiz'] ? "\nAnmerkung zur Platzierung: {$d['notiz']}\n" : '')
     . ($d['coupon'] ? 'Gutscheinmotiv: ja, ' . (int) config('coupon_rabatt_prozent') . " % Nachlass berücksichtigt\n" : '')
     . 'Auftragswert:   ' . preis($netto) . ' netto, ' . preis($brutto) . " brutto\n\n"
     . "So geht es weiter: Ihre Reservierung ist bis zum Startschuss kostenfrei und\n"
@@ -232,17 +182,11 @@ mail_send(
     . ($d['motiv_spaeter'] || empty($upload['pfad'])
         ? "Ihr Motiv reichen Sie später ein – wir melden uns rechtzeitig vor der Druckfreigabe.\n\n"
         : 'Ihr Motiv (' . ($upload['name'] ?? '') . ") ist bei uns eingegangen und wird geprüft.\n\n")
-    . ($d['art'] === 'unternehmen'
-        ? 'Und weil Sie uns unterstützen, unterstützen wir Sie zurück: Auf alle Leistungen unserer '
-          . 'eigenen Häuser bekommen Sie als Werbepartner ' . (int) config('partnernachlass.prozent')
-          . ' % Nachlass, ' . (int) config('partnernachlass.monate') . ' Monate ab dieser Buchung. '
-          . "Melden Sie sich einfach, wenn Sie etwas brauchen: " . url('/ueber-uns.html#sonst-titel') . "\n\n"
-        : '')
+    . 'Und weil Sie uns unterstützen, unterstützen wir Sie zurück: Auf alle Leistungen unserer '
+    . 'eigenen Häuser bekommen Sie als Werbepartner ' . (int) config('partnernachlass.prozent')
+    . ' % Nachlass, ' . (int) config('partnernachlass.monate') . ' Monate ab dieser Buchung. '
+    . "Melden Sie sich einfach, wenn Sie etwas brauchen: " . url('/ueber-uns.html#sonst-titel') . "\n\n"
     . 'Den aktuellen Projektstand sehen Sie hier: ' . url('/teilnehmer.html') . "\n"
-    . ($d['art'] === 'privat'
-        ? "\n" . str_repeat('-', 40) . "\nWIDERRUFSBELEHRUNG\n" . str_repeat('-', 40) . "\n\n"
-          . widerrufsbelehrung_text() . "\n"
-        : '')
     . mail_signatur(),
     (string) env('MAIL_TO_OPS')
 );
@@ -250,7 +194,6 @@ mail_send(
 mail_ops(
     'Neue Werbebuchung: ' . $d['firma'] . ' (' . preis($netto) . ' netto)',
     "Neue Buchung über die Website:\n\n"
-    . "Art:            {$d['art']}\n"
     . "Firma:          {$d['firma']}\n"
     . "Ansprechpartner:{$d['ansprechpartner']}\n"
     . "E-Mail:         {$d['email']}\n"
@@ -259,10 +202,7 @@ mail_ops(
     . "PLZ/Ort:        {$d['plz']} {$d['ort']}\n"
     . 'USt-IdNr.:      ' . ($d['ustid'] ?: '–') . "\n"
     . "Flächen:\n{$formatText}\n"
-    . ($wunschflaechenLabels
-        ? "Wunschfläche:\n  - " . implode("\n  - ", $wunschflaechenLabels) . "\n"
-          . 'Anmerkung dazu:  ' . ($d['wunschflaeche_notiz'] ?: '–') . "\n"
-        : '')
+    . 'Anmerkung zur Platzierung: ' . ($d['notiz'] ?: '–') . "\n"
     . 'Coupon:         ' . ($d['coupon'] ? 'ja (-' . preis($rabatt) . ')' : 'nein') . "\n"
     . 'Auftragswert:   ' . preis($netto) . " netto\n"
     . 'Motiv:          ' . ($upload['name'] ?? ($d['motiv_spaeter'] ? 'wird nachgereicht' : 'keins')) . "\n"
@@ -270,7 +210,7 @@ mail_ops(
     . 'Karte:          ' . ($d['karte_ok'] ? 'JA – bitte freigeben' : 'nein') . "\n"
     . 'Nächste Auflage bevorzugt: ' . ($d['naechste_auflage_bevorzugt'] ? 'ja' : 'nein') . "\n"
     . 'Anmerkung:      ' . ($d['nachricht'] ?: '–') . "\n\n"
-    . "Noch unbestätigt - die Wunschfläche wird erst nach Klick auf den Bestätigungslink\n"
+    . "Noch unbestätigt - die Flächen werden erst nach Klick auf den Bestätigungslink\n"
     . "in der Kundenmail fest vergeben.\n\n"
     . 'Freigabe: ' . url('/admin'),
     $d['email']
@@ -279,15 +219,13 @@ mail_ops(
 flash_set(
     'werbung_ok',
     'Fast geschafft: Bitte bestätigen Sie den Link, den wir Ihnen gerade geschickt haben – '
-    . 'erst danach ist Ihre Wunschfläche für Sie reserviert. Wir haben eine Reservierung über '
+    . 'erst danach sind Ihre Flächen für Sie reserviert. Wir haben eine Reservierung über '
     . preis($netto) . ' netto notiert. Bis zum Startschuss ist sie kostenfrei und unverbindlich – '
     . 'sobald er fällt, erhalten Sie eine Auftragsbestätigung und eine Teilrechnung über '
-    . (int) config('startschuss.anzahlung') . ' % des Auftragswerts.'
-    . ($d['art'] === 'unternehmen'
-        ? ' Und weil Sie uns unterstützen, unterstützen wir Sie zurück: Auf alle Leistungen unserer '
-          . 'eigenen Häuser bekommen Sie als Werbepartner ' . (int) config('partnernachlass.prozent')
-          . ' % Nachlass, ' . (int) config('partnernachlass.monate') . ' Monate ab dieser Buchung – '
-          . 'mehr dazu im Abschnitt „Was wir sonst so können" auf unserer Über-uns-Seite.'
-        : '')
+    . (int) config('startschuss.anzahlung') . ' % des Auftragswerts. '
+    . 'Und weil Sie uns unterstützen, unterstützen wir Sie zurück: Auf alle Leistungen unserer '
+    . 'eigenen Häuser bekommen Sie als Werbepartner ' . (int) config('partnernachlass.prozent')
+    . ' % Nachlass, ' . (int) config('partnernachlass.monate') . ' Monate ab dieser Buchung – '
+    . 'mehr dazu im Abschnitt „Was wir sonst so können" auf unserer Über-uns-Seite.'
 );
-redirect('/werbepartner.html?gebucht=1#danke');
+redirect('/flaeche-buchen.html?gebucht=1#danke');

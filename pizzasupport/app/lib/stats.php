@@ -49,41 +49,57 @@ function fortschritt(): array
     }
 
     // Schwellenwerte fuer den Startschuss rechnen immer mit den echten,
-    // ungeschoenten Zahlen - die Mindestanzeige weiter unten betrifft
-    // ausschliesslich das, was auf der Startseite zu sehen ist.
+    // ungeschoenten Zahlen.
     $q_betriebe = $cfg['betriebe'] > 0 ? min(1.0, $betriebe / $cfg['betriebe']) : 0.0;
     $q_budget   = $cfg['budget_cent'] > 0 ? min(1.0, $budget / $cfg['budget_cent']) : 0.0;
-    $ausgeloest = ($betriebe >= $cfg['betriebe'] && $budget >= $cfg['budget_cent']);
 
-    // Mindestanzeige, damit die Startseite nicht mit Nullen dasteht, bevor
-    // die ersten echten Eintragungen da sind. Sobald eine Zahl die
-    // Voreinstellung uebersteigt, zeigen wir nur noch die echte Zahl.
-    $mindest           = config('fortschritt_mindestanzeige', []);
-    $betriebe_anzeige  = max($betriebe, (int) ($mindest['betriebe'] ?? 0));
-    $unternehmen_anzeige = max($unternehmen, (int) ($mindest['unternehmen'] ?? 0));
-    $kartons_anzeige   = max($kartons, (int) ($mindest['kartons'] ?? 0));
-
-    // Der Balken fuer "Gastronomie" zeigt dieselbe Zahl wie die
-    // Fortschrittsanzeige direkt daneben ("16 von 40") - sonst wirkt ein
-    // Balken bei 0 % neben einer Mindestanzeige von 16 unstimmig.
-    $q_betriebe_anzeige = $cfg['betriebe'] > 0 ? min(1.0, $betriebe_anzeige / $cfg['betriebe']) : 0.0;
+    $betriebe_erreicht = $betriebe >= $cfg['betriebe'];
+    $budget_erreicht   = $budget >= $cfg['budget_cent'];
+    $ausgeloest        = $betriebe_erreicht && $budget_erreicht;
 
     return [
-        'betriebe'         => $betriebe_anzeige,
-        'betriebe_ziel'    => $cfg['betriebe'],
-        'betriebe_prozent' => (int) round($q_betriebe_anzeige * 100),
-        'unternehmen'      => $unternehmen_anzeige,
-        'budget_cent'      => $budget,
-        'budget_ziel_cent' => $cfg['budget_cent'],
-        'budget_prozent'   => (int) round($q_budget * 100),
-        'kartons'          => $kartons_anzeige,
+        'betriebe'          => $betriebe,
+        'betriebe_ziel'     => $cfg['betriebe'],
+        'betriebe_prozent'  => (int) round($q_betriebe * 100),
+        'betriebe_erreicht' => $betriebe_erreicht,
+        'unternehmen'       => $unternehmen,
+        'budget_cent'       => $budget,
+        'budget_ziel_cent'  => $cfg['budget_cent'],
+        'budget_prozent'    => (int) round($q_budget * 100),
+        'budget_erreicht'   => $budget_erreicht,
+        'kartons'           => $kartons,
         // Gesamtstand ist der schwaechere der beiden Werte: Der Startschuss
-        // faellt erst, wenn beide Seiten stehen. Rechnet mit den echten
-        // Werten, nicht der Mindestanzeige.
-        'gesamt_prozent'   => (int) round(min($q_betriebe, $q_budget) * 100),
-        'ausgeloest'       => $ausgeloest,
-        'ersparnis_cent'   => $ersparnis_cent,
+        // faellt erst, wenn beide Seiten stehen.
+        'gesamt_prozent'    => (int) round(min($q_betriebe, $q_budget) * 100),
+        'ausgeloest'        => $ausgeloest,
+        'ersparnis_cent'    => $ersparnis_cent,
     ];
+}
+
+/**
+ * Oeffentliche Fassung von fortschritt(): die konkreten Zaehlerstaende
+ * (Betriebe/Kartons auf der Gastro-Seite, Unternehmen/Budget auf der
+ * Werbepartner-Seite) bleiben verborgen, bis das jeweilige Ziel wirklich
+ * erreicht ist - vorher sind nur die Prozent-Balken zu sehen, die weiter
+ * live mitlaufen. Gilt fuer alles, was das Frontend zu sehen bekommt,
+ * einschliesslich der oeffentlichen JSON-Endpunkte - eine Zahl, die auf
+ * der Seite versteckt ist, aber ueber die API abrufbar bleibt, waere keine
+ * echte Geheimhaltung.
+ */
+function fortschritt_oeffentlich(): array
+{
+    $f = fortschritt();
+
+    if (!$f['betriebe_erreicht']) {
+        $f['betriebe'] = null;
+        $f['kartons']  = null;
+    }
+    if (!$f['budget_erreicht']) {
+        $f['unternehmen']  = null;
+        $f['budget_cent']  = null;
+    }
+
+    return $f;
 }
 
 /** Freigegebene Kartenpunkte. Adressen nur so genau wie eingewilligt. */

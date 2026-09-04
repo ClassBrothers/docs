@@ -2,11 +2,19 @@
 /**
  * Klick auf den Bestaetigungslink aus der Werbebuchungs-Mail.
  *
- * Vergibt bei erstem Klick jede gewuenschte Flaechen-Kennung fest an diese
+ * Vergibt bei erstem Klick jede gebuchte Flaechen-Kennung fest an diese
  * Buchung - "fest" heisst: ein Zeileneintrag in flaechen_vergabe, dessen
  * UNIQUE-Vorgabe auf kennung verhindert, dass zwei Buchungen dieselbe
  * Flaeche bekommen. Wer zuerst bestaetigt, bekommt sie; alle anderen
- * behalten ihren Wunsch nur als Wunsch (siehe AGB).
+ * bekommen Bescheid und werden nicht belastet (siehe AGB).
+ *
+ * Liest sowohl 'formate' (aktuelles Buchungsformular: die direkt gewaehlten
+ * Flaechen-Kennungen) als auch das aeltere 'wunschflaechen' (aus Buchungen,
+ * die noch unter dem frueheren Paket-Modell abgeschickt wurden, aber deren
+ * Bestaetigungslink erst jetzt geklickt wird) und vereinigt beide - so geht
+ * kein bereits verschickter Link ins Leere. flaechenkatalog_eintrag()
+ * filtert dabei automatisch alles heraus, was keine echte Kennung ist
+ * (z.B. ein alter Paket-Code wie "deckel-klein").
  */
 
 declare(strict_types=1);
@@ -22,7 +30,7 @@ if (preg_match('/^[a-f0-9]{64}$/', $token)) {
     // kurzen Zeit zwischen FTP-Upload und Migrationsklick auftreten.
     try {
         $zeile = db_one(
-            'SELECT id, wunschflaechen FROM werbebuchungen WHERE bestaetigung_token = ? AND bestaetigt_am IS NULL',
+            'SELECT id, formate, wunschflaechen FROM werbebuchungen WHERE bestaetigung_token = ? AND bestaetigt_am IS NULL',
             [$token]
         );
     } catch (PDOException $e) {
@@ -35,8 +43,14 @@ if (preg_match('/^[a-f0-9]{64}$/', $token)) {
             [$jetzt, bin2hex(random_bytes(32)), $zeile['id']]
         );
 
+        $formate        = json_decode((string) $zeile['formate'], true) ?: [];
         $wunschflaechen = json_decode((string) $zeile['wunschflaechen'], true) ?: [];
-        foreach ($wunschflaechen as $kennung) {
+        $kennungen      = array_unique(array_merge($formate, $wunschflaechen));
+
+        foreach ($kennungen as $kennung) {
+            if (flaechenkatalog_eintrag((string) $kennung) === null) {
+                continue;
+            }
             try {
                 db_run(
                     'INSERT INTO flaechen_vergabe (kennung, werbebuchung_id, vergeben_am) VALUES (?,?,?)',

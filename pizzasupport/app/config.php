@@ -30,6 +30,13 @@ return [
     ],
     'partner_gastro' => 'Badische Entertainment GmbH',
 
+    // Auflagenhoehe der aktuellen Kampagne. Zentral, damit eine spaetere,
+    // groessere Auflage keine Textaenderung an vielen Stellen braucht -
+    // Reichweitenrechnungen und Erwaehnungen im Fliesstext lesen immer
+    // von hier. Stand: 21.000 Kartons (5 Paletten a 4.200 Stueck), vom
+    // Kunden bestaetigt - die frueher genannten 42.000 sind ungueltig.
+    'auflage' => 21000,
+
     // Wird im Header/Footer und in den OG-Tags verwendet.
     // Liegt hier, damit ein Austausch der Logodatei ein Einzeiler bleibt.
     'logo' => [
@@ -111,70 +118,6 @@ return [
         ],
     ],
 
-    // -----------------------------------------------------------------
-    // Werbeformate. Preise in Cent, damit nichts durch Rundung verrutscht.
-    // -----------------------------------------------------------------
-    'werbeformate' => [
-        [
-            'id'      => 'deckel-klein',
-            'gruppe'  => 'Deckel',
-            'label'   => 'Deckel klein',
-            'masse'   => '88 × 40 mm',
-            'preis'   => 172480,   // 1.724,80 EUR netto
-            'brutto'  => false,
-            'text'    => 'Der Einstieg. Logo, Claim, QR-Code – mehr braucht es oft nicht.',
-        ],
-        [
-            'id'      => 'deckel-mittel',
-            'gruppe'  => 'Deckel',
-            'label'   => 'Deckel mittel',
-            'masse'   => '88 × 88 mm',
-            'preis'   => 340736,   // 3.407,36 EUR netto
-            'brutto'  => false,
-            'text'    => 'Quadratisch, gut sichtbar, genug Platz für ein Angebot mit Bild.',
-        ],
-        [
-            'id'      => 'deckel-gross',
-            'gruppe'  => 'Deckel',
-            'label'   => 'Deckel groß',
-            'masse'   => '88 × 136 mm',
-            'preis'   => 490688,   // 4.906,88 EUR netto
-            'brutto'  => false,
-            'text'    => 'Die Fläche, die man aus zwei Metern Entfernung noch liest.',
-        ],
-        [
-            'id'      => 'seite',
-            'gruppe'  => 'Seite',
-            'label'   => 'Seitenfläche außen',
-            'masse'   => '93 × 25 mm',
-            'preis'   => 69900,    // 699,00 EUR netto
-            'brutto'  => false,
-            'text'    => 'Schmaler Streifen an der Kartonseite. Immer zu sehen, auch im Stapel.',
-        ],
-        [
-            'id'      => 'seite-innen',
-            'gruppe'  => 'Seite',
-            'label'   => 'Seitenfläche innen',
-            'masse'   => '93 × 23 mm',
-            // Vorlaeufiger Preis auf ausdruecklichen Wunsch des Kunden - wird noch
-            // korrigiert, sobald der endgueltige Wert feststeht (siehe Chat).
-            'preis'   => 55500,    // 555,00 EUR netto, VORLAEUFIG
-            'brutto'  => false,
-            'text'    => 'Nur bei geöffnetem Deckel sichtbar (DIN1/2, DSL1/2, DSR1/2). Günstiger als die außen sichtbare Seitenfläche.',
-        ],
-        [
-            'id'      => 'fun-area',
-            'gruppe'  => 'Fun Area',
-            'label'   => 'Fun Area (Boden)',
-            'masse'   => 'Sammelfläche auf der Kartonunterseite, frei wählbare Größe ab 12 cm²',
-            // Vorlaeufig der Mindestpreis (12 cm² × 7,99 EUR/cm², inkl. 19 % MwSt.), bis die
-            // flaechenbasierte Buchung im Formular steht - siehe Nachtrag 5, Punkt 1.
-            'preis'   => 9588,     // ab 95,88 EUR inkl. 19 % MwSt., je nach gewählter Fläche
-            'brutto'  => true,
-            'text'    => 'Kleine Fläche, große Wirkung: für kleine Betriebe, Start-ups, Vereine und Suchanzeigen. Wird beim Aufmachen entdeckt.',
-        ],
-    ],
-
     // Nachlass auf den Listen-Mediapreis, wenn das Motiv ein Gutschein ist.
     'coupon_rabatt_prozent' => 10,
     'mwst_prozent'          => 19,
@@ -190,89 +133,102 @@ return [
     ],
 
     // -----------------------------------------------------------------
-    // Fun Area: Preis nach tatsaechlicher Flaeche statt Festpreis
-    // (Nachtrag 2+5). Flaeche wird auf eine Nachkommastelle gerundet,
-    // danach mit dem Preis je cm² multipliziert.
-    // -----------------------------------------------------------------
-    'fun_area' => [
-        'preis_je_cm2_cent'  => 799,   // 7,99 EUR je cm², inkl. MwSt.
-        'mindestflaeche_cm2' => 12,
-        'schnellauswahl' => [
-            ['label' => 'Feld S', 'breite_cm' => 6.4, 'hoehe_cm' => 2.7],
-            ['label' => 'Feld M', 'breite_cm' => 13.2, 'hoehe_cm' => 2.7],
-        ],
-    ],
-
-    // -----------------------------------------------------------------
-    // Flaechenkatalog: die Kennungen aus dem Flaechenplan (Nachtrag 2).
-    // Einzige Wahrheit ueber einzelne, benannte Flaechen auf dem Karton -
-    // die Wunschflaeche-Auswahl im Formular und die Bestaetigungsmails
-    // greifen darauf zu. Bezugsmass ist das Kartonformat 32 × 32 cm, siehe
-    // AGB "Bezugsmaß und Skalierung".
+    // Flaechenkatalog: einzige Wahrheit ueber die 42 einzeln buchbaren
+    // Werbeflaechen auf dem Karton. Jede Flaeche hat einen eigenen,
+    // festen Preis - keine Pakete mehr, ein Unternehmen kann aber beliebig
+    // viele einzelne Flaechen in einer Buchung waehlen (Mehrfachauswahl).
+    // Bezugsmass ist das Kartonformat 32 × 32 cm, siehe AGB
+    // "Bezugsmaß und Skalierung". Preise netto in Cent.
     //
-    // 'paket' verweist auf eine 'id' aus 'werbeformate' oben - die
-    // Preisbindung laeuft weiterhin ueber die dortigen Paket-Checkboxen,
-    // hier geht es nur um die gewuenschte Position innerhalb des gebuchten
-    // Pakets. 'buchbar' => false heisst: taucht in der Wunschflaeche-Auswahl
-    // im Formular nicht auf (siehe Nachtrag 2, Punkt 2: "Nicht buchbare
-    // Flaechen erscheinen nicht").
+    // 'buchbar' => false heisst: taucht in der Flaechenauswahl im
+    // Buchungsformular nicht auf (Markenfeld, Boden-Marke, Deckelblende -
+    // Flaechen, die dem Projekt selbst gehoeren, nicht verkauft werden).
     //
-    // Nach Erhalt der Original-Grafik (FINAL_Pizzakarton_Layout_Flaechenplan_020926.jpg)
-    // mit lesbarer Legende korrigiert:
-    // - Seitenflaeche BH/BL/BR: 9,3 × 2,5 cm laut Legende (vorher versehentlich
-    //   an die alte Website-Angabe "93 × 23 mm" angeglichen). Das bestehende
-    //   werbeformate-Paket "seite" oben ist entsprechend mitgezogen (93 × 25 mm).
-    // - DF (Deckelblende): Legende nennt 32 × 4 cm, das Feld selbst im Layout
-    //   ist mit "32 x 3 cm" beschriftet - ein Widerspruch im Kundendokument,
-    //   der sich aber nicht auswirkt (nicht buchbar).
-    //
-    // Vom Kunden bestaetigt (nicht die Legende der Planzeichnung, die hier
-    // in die Irre fuehrt): die innen liegenden Seitenflaechen heissen
-    // DIN1, DIN2, DSL1, DSL2, DSR1, DSR2 und sind je 93 × 23 mm - alle
-    // sechs buchbar als "Seitenfläche innen".
-    //
-    // Weiterhin offen aus Nachtrag 2, Punkt 0 - der Kunde muss noch bestaetigen:
-    // - BF1-3: im Plan ohne Preis, deshalb vorerst nicht buchbar.
+    // Preise und Codes stammen aus der vom Kunden bestaetigten finalen
+    // Preisliste. Eine Abweichung dort: Die Preisliste nennt fuer die
+    // aussen liegenden Seitenflaechen (BF/BH/BL/BR) 93 × 23 mm - die
+    // Originalgrafik (flaechenplan-gross.jpg) beschriftet dieselben
+    // Flaechen jedoch durchgaengig mit 9,3 × 2,5 cm (93 × 25 mm), und das
+    // wurde in einem frueheren Durchgang bereits vom Kunden anhand der
+    // Grafik bestaetigt. Hier daher bewusst 93 × 25 mm uebernommen - bitte
+    // beim Kunden gegenpruefen, falls 93 × 23 mm doch beabsichtigt war.
+    // Bei den innen liegenden Flaechen (DIN/DSL/DSR) gilt weiterhin die
+    // separat vom Kunden bestaetigte Angabe 93 × 23 mm, keine Abweichung.
     // -----------------------------------------------------------------
     'flaechenkatalog' => [
         'gruppen' => [
-            'deckel' => 'Deckel',
-            'boden'  => 'Boden',
-            'seiten' => 'Seiten',
+            'deckel'       => 'Deckel',
+            'seiten-aussen'=> 'Seiten außen',
+            'seiten-innen' => 'Seiten innen (bei geöffnetem Deckel sichtbar)',
+            'boden'        => 'Boden – StartUps & Selbständige',
         ],
         'flaechen' => [
-            ['id' => 'D1',  'bezeichnung' => 'Markenfeld + Claim',            'masse' => '8,8 × 8,8 cm',  'gruppe' => 'deckel', 'paket' => null,           'buchbar' => false],
-            ['id' => 'D2',  'bezeichnung' => 'Motiv A',                      'masse' => '8,8 × 13,6 cm', 'gruppe' => 'deckel', 'paket' => 'deckel-gross', 'buchbar' => true],
-            ['id' => 'D3',  'bezeichnung' => 'Slot',                         'masse' => '8,8 × 4,0 cm',  'gruppe' => 'deckel', 'paket' => 'deckel-klein', 'buchbar' => true],
-            ['id' => 'D4',  'bezeichnung' => 'Motiv B',                      'masse' => '8,8 × 13,6 cm', 'gruppe' => 'deckel', 'paket' => 'deckel-gross', 'buchbar' => true],
-            ['id' => 'D5',  'bezeichnung' => 'Zeile',                        'masse' => '8,8 × 4,0 cm',  'gruppe' => 'deckel', 'paket' => 'deckel-klein', 'buchbar' => true],
-            ['id' => 'D6',  'bezeichnung' => 'Square',                       'masse' => '8,8 × 8,8 cm',  'gruppe' => 'deckel', 'paket' => 'deckel-mittel','buchbar' => true],
-            ['id' => 'D7',  'bezeichnung' => 'Absender',                     'masse' => '8,8 × 4,0 cm',  'gruppe' => 'deckel', 'paket' => 'deckel-klein', 'buchbar' => true],
-            ['id' => 'D8',  'bezeichnung' => 'Square',                       'masse' => '8,8 × 8,8 cm',  'gruppe' => 'deckel', 'paket' => 'deckel-mittel','buchbar' => true],
-            ['id' => 'D9',  'bezeichnung' => 'Motiv C',                      'masse' => '8,8 × 13,6 cm', 'gruppe' => 'deckel', 'paket' => 'deckel-gross', 'buchbar' => true],
+            // Nicht buchbar: gehoeren dem Projekt selbst.
+            ['id' => 'D1', 'bezeichnung' => 'Markenfeld + Claim', 'masse' => '8,8 × 8,8 cm', 'gruppe' => 'deckel', 'preis' => null, 'buchbar' => false],
+            ['id' => 'B0', 'bezeichnung' => 'Boden außen · Marke', 'masse' => '32 × 32 cm', 'gruppe' => 'boden', 'preis' => null, 'buchbar' => false],
+            ['id' => 'FA', 'bezeichnung' => 'Fun Area, 16 Felder, schwarzweiß', 'masse' => '28 × 19,3 cm', 'gruppe' => 'boden', 'preis' => null, 'buchbar' => false],
+            ['id' => 'DF', 'bezeichnung' => 'Deckelblende', 'masse' => '32 × 4 cm, unbedruckt', 'gruppe' => 'boden', 'preis' => null, 'buchbar' => false],
 
-            ['id' => 'BF1', 'bezeichnung' => 'Bodenfront · Partnerslot',     'masse' => '7,6 × 2,6 cm',  'gruppe' => 'boden',  'paket' => null,           'buchbar' => false],
-            ['id' => 'BF2', 'bezeichnung' => 'Bodenfront · Partnerslot',     'masse' => '7,6 × 2,6 cm',  'gruppe' => 'boden',  'paket' => null,           'buchbar' => false],
-            ['id' => 'BF3', 'bezeichnung' => 'Bodenfront · Partnerslot',     'masse' => '7,6 × 2,6 cm',  'gruppe' => 'boden',  'paket' => null,           'buchbar' => false],
-            ['id' => 'B0',  'bezeichnung' => 'Boden außen · Marke',          'masse' => '32 × 32 cm',    'gruppe' => 'boden',  'paket' => null,           'buchbar' => false],
-            ['id' => 'FA',  'bezeichnung' => 'Fun Area, 16 Felder, schwarzweiß', 'masse' => '28 × 19,3 cm', 'gruppe' => 'boden', 'paket' => 'fun-area',  'buchbar' => false],
-            ['id' => 'DF',  'bezeichnung' => 'Deckelblende',                 'masse' => '32 × 4 cm, unbedruckt',    'gruppe' => 'boden',  'paket' => null,           'buchbar' => false],
+            // Deckel Klein: 88 × 40 mm, 880,00 € netto.
+            ['id' => 'D3', 'bezeichnung' => 'Deckel Klein', 'masse' => '88 × 40 mm', 'gruppe' => 'deckel', 'preis' => 88000, 'buchbar' => true],
+            ['id' => 'D5', 'bezeichnung' => 'Deckel Klein', 'masse' => '88 × 40 mm', 'gruppe' => 'deckel', 'preis' => 88000, 'buchbar' => true],
+            ['id' => 'D7', 'bezeichnung' => 'Deckel Klein', 'masse' => '88 × 40 mm', 'gruppe' => 'deckel', 'preis' => 88000, 'buchbar' => true],
 
-            ['id' => 'BH1', 'bezeichnung' => 'Boden Rückwand',               'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BH2', 'bezeichnung' => 'Boden Rückwand',               'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BH3', 'bezeichnung' => 'Boden Rückwand',               'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BL1', 'bezeichnung' => 'Boden Seite links',            'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BL2', 'bezeichnung' => 'Boden Seite links',            'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BL3', 'bezeichnung' => 'Boden Seite links',            'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BR1', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BR2', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'BR3', 'bezeichnung' => 'Boden Seite rechts',           'masse' => '9,3 × 2,5 cm',  'gruppe' => 'seiten', 'paket' => 'seite',        'buchbar' => true],
-            ['id' => 'DIN1', 'bezeichnung' => 'Seitenfläche innen',         'masse' => '93 × 23 mm',    'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
-            ['id' => 'DIN2', 'bezeichnung' => 'Seitenfläche innen',         'masse' => '93 × 23 mm',    'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
-            ['id' => 'DSL1', 'bezeichnung' => 'Seitenfläche innen',         'masse' => '93 × 23 mm',    'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
-            ['id' => 'DSL2', 'bezeichnung' => 'Seitenfläche innen',         'masse' => '93 × 23 mm',    'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
-            ['id' => 'DSR1', 'bezeichnung' => 'Seitenfläche innen',         'masse' => '93 × 23 mm',    'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
-            ['id' => 'DSR2', 'bezeichnung' => 'Seitenfläche innen',         'masse' => '93 × 23 mm',    'gruppe' => 'seiten', 'paket' => 'seite-innen',  'buchbar' => true],
+            // Deckel Square: 88 × 88 mm, 1.703,68 € netto.
+            ['id' => 'D6', 'bezeichnung' => 'Deckel Square', 'masse' => '88 × 88 mm', 'gruppe' => 'deckel', 'preis' => 170368, 'buchbar' => true],
+            ['id' => 'D8', 'bezeichnung' => 'Deckel Square', 'masse' => '88 × 88 mm', 'gruppe' => 'deckel', 'preis' => 170368, 'buchbar' => true],
+
+            // Deckel Groß: 88 × 136 mm, 2.273,92 € netto.
+            ['id' => 'D2', 'bezeichnung' => 'Deckel Groß', 'masse' => '88 × 136 mm', 'gruppe' => 'deckel', 'preis' => 227392, 'buchbar' => true],
+            ['id' => 'D4', 'bezeichnung' => 'Deckel Groß', 'masse' => '88 × 136 mm', 'gruppe' => 'deckel', 'preis' => 227392, 'buchbar' => true],
+            ['id' => 'D9', 'bezeichnung' => 'Deckel Groß', 'masse' => '88 × 136 mm', 'gruppe' => 'deckel', 'preis' => 227392, 'buchbar' => true],
+
+            // Front außen: 93 × 25 mm, 256,68 € netto (siehe Hinweis oben zum Mass).
+            ['id' => 'BF1', 'bezeichnung' => 'Front außen', 'masse' => '93 × 25 mm', 'gruppe' => 'seiten-aussen', 'preis' => 25668, 'buchbar' => true],
+            ['id' => 'BF2', 'bezeichnung' => 'Front außen', 'masse' => '93 × 25 mm', 'gruppe' => 'seiten-aussen', 'preis' => 25668, 'buchbar' => true],
+            ['id' => 'BF3', 'bezeichnung' => 'Front außen', 'masse' => '93 × 25 mm', 'gruppe' => 'seiten-aussen', 'preis' => 25668, 'buchbar' => true],
+
+            // Seiten L/R außen: 93 × 25 mm, 213,90 € netto.
+            ['id' => 'BL1', 'bezeichnung' => 'Seite links außen', 'masse' => '93 × 25 mm', 'gruppe' => 'seiten-aussen', 'preis' => 21390, 'buchbar' => true],
+            ['id' => 'BL2', 'bezeichnung' => 'Seite links außen', 'masse' => '93 × 25 mm', 'gruppe' => 'seiten-aussen', 'preis' => 21390, 'buchbar' => true],
+            ['id' => 'BL3', 'bezeichnung' => 'Seite links außen', 'masse' => '93 × 25 mm', 'gruppe' => 'seiten-aussen', 'preis' => 21390, 'buchbar' => true],
+            ['id' => 'BR1', 'bezeichnung' => 'Seite rechts außen', 'masse' => '93 × 25 mm', 'gruppe' => 'seiten-aussen', 'preis' => 21390, 'buchbar' => true],
+            ['id' => 'BR2', 'bezeichnung' => 'Seite rechts außen', 'masse' => '93 × 25 mm', 'gruppe' => 'seiten-aussen', 'preis' => 21390, 'buchbar' => true],
+            ['id' => 'BR3', 'bezeichnung' => 'Seite rechts außen', 'masse' => '93 × 25 mm', 'gruppe' => 'seiten-aussen', 'preis' => 21390, 'buchbar' => true],
+
+            // Hinten außen: 93 × 25 mm, 192,51 € netto.
+            ['id' => 'BH1', 'bezeichnung' => 'Hinten außen', 'masse' => '93 × 25 mm', 'gruppe' => 'seiten-aussen', 'preis' => 19251, 'buchbar' => true],
+            ['id' => 'BH2', 'bezeichnung' => 'Hinten außen', 'masse' => '93 × 25 mm', 'gruppe' => 'seiten-aussen', 'preis' => 19251, 'buchbar' => true],
+            ['id' => 'BH3', 'bezeichnung' => 'Hinten außen', 'masse' => '93 × 25 mm', 'gruppe' => 'seiten-aussen', 'preis' => 19251, 'buchbar' => true],
+
+            // Front innen: 93 × 23 mm, 235,29 € netto.
+            ['id' => 'DIN1', 'bezeichnung' => 'Front innen', 'masse' => '93 × 23 mm', 'gruppe' => 'seiten-innen', 'preis' => 23529, 'buchbar' => true],
+            ['id' => 'DIN2', 'bezeichnung' => 'Front innen', 'masse' => '93 × 23 mm', 'gruppe' => 'seiten-innen', 'preis' => 23529, 'buchbar' => true],
+
+            // Seiten L/R innen: 93 × 23 mm, 149,73 € netto.
+            ['id' => 'DSL1', 'bezeichnung' => 'Seite links innen', 'masse' => '93 × 23 mm', 'gruppe' => 'seiten-innen', 'preis' => 14973, 'buchbar' => true],
+            ['id' => 'DSL2', 'bezeichnung' => 'Seite links innen', 'masse' => '93 × 23 mm', 'gruppe' => 'seiten-innen', 'preis' => 14973, 'buchbar' => true],
+            ['id' => 'DSR1', 'bezeichnung' => 'Seite rechts innen', 'masse' => '93 × 23 mm', 'gruppe' => 'seiten-innen', 'preis' => 14973, 'buchbar' => true],
+            ['id' => 'DSR2', 'bezeichnung' => 'Seite rechts innen', 'masse' => '93 × 23 mm', 'gruppe' => 'seiten-innen', 'preis' => 14973, 'buchbar' => true],
+
+            // StartUp-Feld S: 6,4 × 2,7 cm, 89,00 € netto.
+            ['id' => 'SU-S1', 'bezeichnung' => 'StartUp-Feld S', 'masse' => '6,4 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 8900, 'buchbar' => true],
+            ['id' => 'SU-S2', 'bezeichnung' => 'StartUp-Feld S', 'masse' => '6,4 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 8900, 'buchbar' => true],
+            ['id' => 'SU-S3', 'bezeichnung' => 'StartUp-Feld S', 'masse' => '6,4 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 8900, 'buchbar' => true],
+            ['id' => 'SU-S4', 'bezeichnung' => 'StartUp-Feld S', 'masse' => '6,4 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 8900, 'buchbar' => true],
+            ['id' => 'SU-S5', 'bezeichnung' => 'StartUp-Feld S', 'masse' => '6,4 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 8900, 'buchbar' => true],
+            ['id' => 'SU-S6', 'bezeichnung' => 'StartUp-Feld S', 'masse' => '6,4 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 8900, 'buchbar' => true],
+            ['id' => 'SU-S7', 'bezeichnung' => 'StartUp-Feld S', 'masse' => '6,4 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 8900, 'buchbar' => true],
+            ['id' => 'SU-S8', 'bezeichnung' => 'StartUp-Feld S', 'masse' => '6,4 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 8900, 'buchbar' => true],
+            ['id' => 'SU-S9', 'bezeichnung' => 'StartUp-Feld S', 'masse' => '6,4 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 8900, 'buchbar' => true],
+            ['id' => 'SU-S10', 'bezeichnung' => 'StartUp-Feld S', 'masse' => '6,4 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 8900, 'buchbar' => true],
+
+            // StartUp-Feld M: 13,2 × 2,7 cm, 149,00 € netto.
+            ['id' => 'SU-M1', 'bezeichnung' => 'StartUp-Feld M', 'masse' => '13,2 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 14900, 'buchbar' => true],
+            ['id' => 'SU-M2', 'bezeichnung' => 'StartUp-Feld M', 'masse' => '13,2 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 14900, 'buchbar' => true],
+            ['id' => 'SU-M3', 'bezeichnung' => 'StartUp-Feld M', 'masse' => '13,2 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 14900, 'buchbar' => true],
+            ['id' => 'SU-M4', 'bezeichnung' => 'StartUp-Feld M', 'masse' => '13,2 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 14900, 'buchbar' => true],
+            ['id' => 'SU-M5', 'bezeichnung' => 'StartUp-Feld M', 'masse' => '13,2 × 2,7 cm', 'gruppe' => 'boden', 'preis' => 14900, 'buchbar' => true],
         ],
     ],
 
@@ -282,7 +238,7 @@ return [
     // -----------------------------------------------------------------
     'startschuss' => [
         'betriebe'     => 50,
-        'budget_cent'  => 6000000,   // 60.000 EUR netto gebuchtes Werbevolumen
+        'budget_cent'  => 4000000,   // 40.000 EUR netto gebuchtes Werbevolumen
         'anzahlung'    => 50,        // Prozent
         'lieferwochen' => '10–12',
     ],
@@ -328,23 +284,13 @@ return [
     'sitemap_prioritaeten' => [
         '/'                                => ['prio' => '1.0', 'freq' => 'weekly'],
         '/werbepartner.html'               => ['prio' => '0.9', 'freq' => 'weekly'],
+        '/flaeche-buchen.html'             => ['prio' => '0.9', 'freq' => 'weekly'],
         '/werbeideen.html'                 => ['prio' => '0.7', 'freq' => 'monthly'],
         '/teilnehmer.html'                 => ['prio' => '0.8', 'freq' => 'daily'],
         '/fuer-gaeste.html'                => ['prio' => '0.6', 'freq' => 'weekly'],
         '/verpackungssteuer-freiburg.html' => ['prio' => '0.8', 'freq' => 'monthly'],
         '/ueber-uns.html'                  => ['prio' => '0.6', 'freq' => 'monthly'],
         '/kontakt.html'                    => ['prio' => '0.5', 'freq' => 'monthly'],
-    ],
-
-    // Mindestanzeige fuer die Fortschrittszahlen auf der Startseite, damit
-    // die Seite zum Start nicht mit Nullen dasteht. Sobald die echten
-    // Zahlen darueber liegen, zeigen wir ausschliesslich die echten Zahlen -
-    // die Schwellen fuer den Startschuss selbst (oben unter 'startschuss')
-    // rechnen immer mit den echten Werten, unabhaengig von dieser Anzeige.
-    'fortschritt_mindestanzeige' => [
-        'betriebe'    => 16,
-        'unternehmen' => 5,
-        'kartons'     => 5500,
     ],
 
     // Gaeste-Abstimmung auf /fuer-gaeste.html: wie viele Motive je Frage

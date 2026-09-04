@@ -7,8 +7,6 @@ $meta['stoerer']      = false;
 $st = config('startschuss');
 $porto = config('porto');
 $lf = config('lieferung');
-$mailAnzeige = (string) config('firma.email');
-$mailLink    = firma_email_link();
 ?>
 <section class="band band-recht">
   <div class="wrap schmal">
@@ -93,9 +91,11 @@ $mailLink    = firma_email_link();
     <h2>§ 4 Werbebuchungen, Preise und Zahlung</h2>
     <p>
       Es gelten die zum Zeitpunkt der Buchung auf pizzasupport.de veröffentlichten Preise.
-      Preise für Unternehmen verstehen sich netto zuzüglich der gesetzlichen Umsatzsteuer.
-      Die Fun Area hingegen richtet sich an Endverbraucher, weshalb sich ihr Preis inklusive
-      Umsatzsteuer versteht.
+      Jede Werbefläche hat einen eigenen, festen Einzelpreis; ein Werbepartner kann mehrere
+      Flächen in einer Buchung wählen. Alle Preise verstehen sich netto zuzüglich der
+      gesetzlichen Umsatzsteuer. Buchende sind ausschließlich Unternehmen, Selbstständige und
+      andere Gewerbetreibende im Sinne des § 14 BGB; Buchungen von Verbrauchern nehmen wir
+      nicht an.
     </p>
     <p>
       Nach Erreichen der Schwellen stellen wir <?= (int) $st['anzahlung'] ?> % des
@@ -112,9 +112,11 @@ $mailLink    = firma_email_link();
 
     <h2>§ 4a Begrenzte Fläche, Reihenfolge der Buchungen</h2>
     <p>
-      Die Werbefläche auf den Kartons ist begrenzt. Wir nehmen Buchungen in der Reihenfolge
-      ihres Eingangs an. Ein Anspruch auf eine bestimmte Fläche, eine bestimmte Position oder
-      überhaupt auf Berücksichtigung besteht nicht.
+      Jede Werbefläche gibt es nur einmal. Eine Buchung wird erst mit dem Klick auf den
+      Bestätigungslink verbindlich reserviert, den wir nach dem Absenden des Formulars per
+      E-Mail zusenden (Double-Opt-in). Wählen zwei Werbepartner dieselbe Fläche, bekommt sie,
+      wer zuerst bestätigt; ein Anspruch auf eine bestimmte Fläche, eine bestimmte Position
+      oder überhaupt auf Berücksichtigung besteht nicht.
     </p>
     <p>
       Können wir eine Buchung nicht berücksichtigen, teilen wir das unverzüglich mit. Ein
@@ -218,60 +220,14 @@ $mailLink    = firma_email_link();
       keine Haftung.
     </p>
 
-    <h2 id="widerruf">§ 10 Widerrufsrecht für Verbraucher</h2>
+    <h2>§ 10 Kein Widerrufsrecht für Verbraucher</h2>
     <p>
-      Die folgende Belehrung gilt ausschließlich für Verbraucherinnen und Verbraucher,
-      also für natürliche Personen, die eine Fläche zu Zwecken buchen, die überwiegend
-      weder ihrer gewerblichen noch ihrer selbständigen beruflichen Tätigkeit zugerechnet
-      werden können (§ 13 BGB). In der Praxis betrifft das die Fun Area auf der
-      Kartonunterseite. Buchungen von Unternehmen auf Deckel- und Seitenflächen sind
-      Geschäfte unter Unternehmern; für sie besteht kein gesetzliches Widerrufsrecht.
-    </p>
-
-    <h3>Widerrufsbelehrung</h3>
-
-    <?php /* Text steht einmal in app/lib/widerruf.php und wird identisch in
-             der Buchungsbestätigung privater Fun-Area-Buchungen verwendet -
-             hier nicht mehr von Hand pflegen. */ ?>
-    <?= widerrufsbelehrung_html() ?>
-
-    <h3>Muster-Widerrufsformular</h3>
-    <p>
-      Wenn Sie den Vertrag widerrufen wollen, können Sie dieses Formular ausfüllen und an
-      uns zurücksenden. Sie müssen es nicht verwenden.
-    </p>
-    <div class="muster-widerruf">
-      <p>
-        An<br>
-        <?= e(config('firma.name')) ?><br>
-        <?= e(config('firma.strasse')) ?><br>
-        <?= e(config('firma.plz_ort')) ?><br>
-        E-Mail: <?= e($mailAnzeige) ?>
-      </p>
-      <p>
-        Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über
-        die Erbringung der folgenden Dienstleistung:
-      </p>
-      <p>
-        ______________________________________________
-      </p>
-      <p>
-        Bestellt am (*)/erhalten am (*): ____________________<br>
-        Name des/der Verbraucher(s): ____________________<br>
-        Anschrift des/der Verbraucher(s): ____________________<br><br>
-        Unterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier):<br><br>
-        ____________________<br><br>
-        Datum: ____________________
-      </p>
-      <p class="klein">(*) Unzutreffendes streichen.</p>
-    </div>
-
-    <h3>Keine Anwendung auf Buchungen von Unternehmen</h3>
-    <p>
-      Buchungen von Deckel- und Seitenflächen richten sich an Unternehmen im Sinne des
-      § 14 BGB. Für diese Verträge besteht kein gesetzliches Widerrufsrecht. Es gelten
-      ausschließlich die Regelungen dieser AGB, insbesondere zur Freigabe der Motive, zur
-      Anzahlung nach Erreichen des Startschusses und zum Rücktritt vor Produktionsfreigabe.
+      Werbeflächen buchen ausschließlich Unternehmen, Selbstständige und andere
+      Gewerbetreibende im Sinne des § 14 BGB zu Zwecken ihrer gewerblichen oder selbständigen
+      beruflichen Tätigkeit. Für diese Verträge besteht kein gesetzliches Widerrufsrecht nach
+      § 13, § 355 BGB. Es gelten ausschließlich die Regelungen dieser AGB, insbesondere zur
+      Freigabe der Motive, zur Anzahlung nach Erreichen des Startschusses und zum Rücktritt vor
+      Produktionsfreigabe.
     </p>
 
     <h2>§ 11 Schlussbestimmungen</h2>

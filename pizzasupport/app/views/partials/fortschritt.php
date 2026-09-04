@@ -1,10 +1,13 @@
 <?php
 /**
  * Fortschrittsanzeige zum Startschuss.
- * Erwartet $f aus fortschritt(); holt sich die Zahlen sonst selbst.
+ * Erwartet $f aus fortschritt_oeffentlich(); holt es sich sonst selbst.
+ * Die Balken laufen immer mit dem echten Prozentwert, die konkreten
+ * Zahlen (Betriebe/Kartons/Unternehmen/Budget) bleiben verborgen, bis das
+ * jeweilige Ziel erreicht ist - siehe fortschritt_oeffentlich() in stats.php.
  */
 declare(strict_types=1);
-$f = $f ?? fortschritt();
+$f = $f ?? fortschritt_oeffentlich();
 
 // Die Balkenbreiten kommen aus der Datenbank und muessen deshalb pro Seite
 // erzeugt werden. Als style-Attribut waeren sie unter unserer Content-
@@ -25,17 +28,25 @@ $nonce = $GLOBALS['csp_nonce'] ?? '';
       <?php endif; ?>
     </h2>
 
-    <div class="fortschritt-zahlen">
-      <p><strong data-zaehler="betriebe"><?= zahl($f['betriebe']) ?></strong> <span>Gastronomien dabei</span></p>
-      <p><strong data-zaehler="unternehmen"><?= zahl($f['unternehmen']) ?></strong> <span>Unternehmen dabei</span></p>
-      <p><strong data-zaehler="kartons"><?= zahl($f['kartons']) ?></strong> <span>Kartons vorgemerkt</span></p>
-    </div>
+    <?php if ($f['betriebe_erreicht'] || $f['budget_erreicht']): ?>
+      <div class="fortschritt-zahlen">
+        <?php if ($f['betriebe_erreicht']): ?>
+          <p><strong data-zaehler="betriebe"><?= zahl($f['betriebe']) ?></strong> <span>Gastronomien dabei</span></p>
+          <p><strong data-zaehler="kartons"><?= zahl($f['kartons']) ?></strong> <span>Kartons vorgemerkt</span></p>
+        <?php endif; ?>
+        <?php if ($f['budget_erreicht']): ?>
+          <p><strong data-zaehler="unternehmen"><?= zahl($f['unternehmen']) ?></strong> <span>Unternehmen dabei</span></p>
+        <?php endif; ?>
+      </div>
+    <?php endif; ?>
 
     <div class="balken-gruppe">
       <div class="balken-zeile">
         <div class="balken-kopf">
           <span>Gastronomie</span>
-          <span><?= zahl($f['betriebe']) ?> von <?= zahl($f['betriebe_ziel']) ?></span>
+          <?php if ($f['betriebe_erreicht']): ?>
+            <span><?= zahl($f['betriebe']) ?> von <?= zahl($f['betriebe_ziel']) ?></span>
+          <?php endif; ?>
         </div>
         <div class="balken" role="progressbar" aria-valuenow="<?= $f['betriebe_prozent'] ?>" aria-valuemin="0" aria-valuemax="100" aria-label="Fortschritt teilnehmende Gastronomien">
           <span class="balken-fuellung" id="balken-betriebe"></span>
@@ -44,7 +55,9 @@ $nonce = $GLOBALS['csp_nonce'] ?? '';
       <div class="balken-zeile">
         <div class="balken-kopf">
           <span>Werbeflächen</span>
-          <span><?= $f['budget_prozent'] ?> %</span>
+          <?php if ($f['budget_erreicht']): ?>
+            <span><?= e(preis($f['budget_cent'])) ?> von <?= e(preis($f['budget_ziel_cent'])) ?></span>
+          <?php endif; ?>
         </div>
         <div class="balken" role="progressbar" aria-valuenow="<?= $f['budget_prozent'] ?>" aria-valuemin="0" aria-valuemax="100" aria-label="Fortschritt gebuchte Werbeflächen">
           <span class="balken-fuellung balken-fuellung-zwei" id="balken-budget"></span>

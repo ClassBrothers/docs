@@ -7,9 +7,9 @@
  *
  * Kontaktdaten sind, wo nicht öffentlich bekannt, ausdrücklich als
  * Platzhalter markiert - der Kunde korrigiert sie nach eigener Aussage
- * selbst. Buchungsformat und Aufteilung sind eine gleichmäßige Näherung an
- * die angepeilten ~7.200 EUR netto (12 % von 60.000 EUR), nicht real
- * verhandelte Einzelpreise.
+ * selbst. Jede Firma bekommt eine eigene, real existierende Fläche aus dem
+ * Katalog (nicht mehr dieselbe wie frueher) - das ist eine sinnvolle
+ * Näherung an einen Startwert, keine real verhandelte Einzelvergabe.
  */
 
 declare(strict_types=1);
@@ -22,44 +22,48 @@ function gruendungspartner_anlegen(): array
         return ['angelegt' => false, 'hinweis' => 'Gründungspartner sind bereits angelegt, nichts geändert.'];
     }
 
-    $wf = werbeformat('deckel-klein');
-    if ($wf === null) {
-        return ['angelegt' => false, 'hinweis' => 'Format „deckel-klein“ nicht gefunden, nichts angelegt.'];
-    }
-
     $firmen = [
         [
             'firma'    => 'Badische Entertainment GmbH',
             'rechnung' => 'Platzhalter – bitte in der Verwaltung korrigieren.',
             'plz'      => '79098',
             'ort'      => 'Freiburg im Breisgau',
+            'kennung'  => 'D3',
         ],
         [
             'firma'    => 'Class Brothers GmbH',
             'rechnung' => config('firma.strasse') . "\n" . config('firma.plz_ort'),
             'plz'      => '79112',
             'ort'      => 'Freiburg im Breisgau',
+            'kennung'  => 'D5',
         ],
         [
             'firma'    => 'KI-Assistenz',
             'rechnung' => 'Platzhalter – bitte in der Verwaltung korrigieren.',
             'plz'      => '79098',
             'ort'      => 'Freiburg im Breisgau',
+            'kennung'  => 'D7',
         ],
         [
             'firma'    => 'SnackWorks',
             'rechnung' => 'Platzhalter – bitte in der Verwaltung korrigieren.',
             'plz'      => '79098',
             'ort'      => 'Freiburg im Breisgau',
+            'kennung'  => 'D6',
         ],
     ];
 
     $jetzt  = gmdate('Y-m-d H:i:s');
     $zwecke = 'Anbahnung und Abwicklung der Werbebuchung; Nennung auf der öffentlichen Teilnehmerkarte';
 
+    $gesamt = 0;
     db()->beginTransaction();
     try {
         foreach ($firmen as $f) {
+            $flaeche = flaechenkatalog_eintrag($f['kennung']);
+            if ($flaeche === null || $flaeche['preis'] === null) {
+                throw new RuntimeException('Fläche „' . $f['kennung'] . '“ nicht im Katalog gefunden.');
+            }
             db_run(
                 'INSERT INTO werbebuchungen
                     (art, firma, ansprechpartner, email, telefon_enc, website,
@@ -75,7 +79,7 @@ function gruendungspartner_anlegen(): array
                     'unternehmen', $f['firma'], 'Platzhalter – bitte ergänzen',
                     'platzhalter@pizzasupport.de', null, null,
                     encrypt_field($f['rechnung']), null, $f['plz'], $f['ort'],
-                    json_encode([$wf['id']], JSON_UNESCAPED_UNICODE), 0, (int) $wf['preis'],
+                    json_encode([$f['kennung']], JSON_UNESCAPED_UNICODE), 0, (int) $flaeche['preis'],
                     null, null, null, 1, null,
                     'Gründungspartner-Eintrag, von Hand angelegt: Den Anfang haben wir selbst gemacht.',
                     1, 1, 1, 1,
@@ -83,6 +87,12 @@ function gruendungspartner_anlegen(): array
                     'freigegeben', $jetzt, $jetzt, 'gruendungspartner',
                 ]
             );
+            $buchungId = (int) db()->lastInsertId();
+            db_run(
+                'INSERT INTO flaechen_vergabe (kennung, werbebuchung_id, vergeben_am) VALUES (?,?,?)',
+                [$f['kennung'], $buchungId, $jetzt]
+            );
+            $gesamt += (int) $flaeche['preis'];
         }
         db()->commit();
     } catch (Throwable $e) {
@@ -90,13 +100,12 @@ function gruendungspartner_anlegen(): array
         return ['angelegt' => false, 'hinweis' => 'Fehler beim Anlegen: ' . $e->getMessage()];
     }
 
-    $gesamt   = (int) $wf['preis'] * count($firmen);
-    $ziel     = (int) config('startschuss.budget_cent');
-    $prozent  = $ziel > 0 ? round($gesamt / $ziel * 100, 1) : 0;
+    $ziel    = (int) config('startschuss.budget_cent');
+    $prozent = $ziel > 0 ? round($gesamt / $ziel * 100, 1) : 0;
 
     return [
         'angelegt' => true,
-        'hinweis'  => 'Vier Gründungspartner-Buchungen angelegt (je 1× Deckel klein), zusammen '
+        'hinweis'  => 'Vier Gründungspartner-Buchungen angelegt (je eine eigene Fläche), zusammen '
                     . preis($gesamt) . " netto, das sind rund {$prozent} % des Werbeflächen-Ziels.",
     ];
 }

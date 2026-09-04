@@ -28,7 +28,6 @@ require APP_ROOT . '/app/lib/mail.php';
 require APP_ROOT . '/app/lib/stats.php';
 require APP_ROOT . '/app/lib/analytics.php';
 require APP_ROOT . '/app/lib/upload.php';
-require APP_ROOT . '/app/lib/widerruf.php';
 require APP_ROOT . '/app/lib/migrate.php';
 require APP_ROOT . '/app/lib/gruendungspartner.php';
 require APP_ROOT . '/app/lib/geocode.php';
@@ -91,17 +90,6 @@ function firma_email_link(): string
     return str_replace(' ', '', (string) config('firma.email'));
 }
 
-/** Ein Werbeformat aus der Konfiguration holen. */
-function werbeformat(string $id): ?array
-{
-    foreach (config('werbeformate', []) as $f) {
-        if ($f['id'] === $id) {
-            return $f;
-        }
-    }
-    return null;
-}
-
 /** Eine Flaeche aus dem Flaechenkatalog holen (Kennung wie im Flaechenplan). */
 function flaechenkatalog_eintrag(string $id): ?array
 {
@@ -111,6 +99,37 @@ function flaechenkatalog_eintrag(string $id): ?array
         }
     }
     return null;
+}
+
+/**
+ * Buchbare Flaechen zu Preisstufen zusammenfassen (z.B. D3/D5/D7 sind alle
+ * "Deckel Klein" zum selben Preis) - fuer die informative Preistabelle auf
+ * werbepartner.html und die Preiskacheln der Startseite, die nicht 41
+ * Einzelzeilen zeigen sollen, sondern eine Zeile je Preisstufe mit der
+ * Anzahl verfuegbarer Codes.
+ *
+ * @return array<int, array{bezeichnung: string, masse: string, gruppe: string, preis: int, codes: string[]}>
+ */
+function flaechenkatalog_preisstufen(): array
+{
+    $stufen = [];
+    foreach (config('flaechenkatalog.flaechen', []) as $f) {
+        if (!$f['buchbar'] || $f['preis'] === null) {
+            continue;
+        }
+        $schluessel = $f['gruppe'] . '|' . $f['bezeichnung'] . '|' . $f['masse'] . '|' . $f['preis'];
+        if (!isset($stufen[$schluessel])) {
+            $stufen[$schluessel] = [
+                'bezeichnung' => $f['bezeichnung'],
+                'masse'       => $f['masse'],
+                'gruppe'      => $f['gruppe'],
+                'preis'       => $f['preis'],
+                'codes'       => [],
+            ];
+        }
+        $stufen[$schluessel]['codes'][] = $f['id'];
+    }
+    return array_values($stufen);
 }
 
 /** Ein Kartonformat aus der Konfiguration holen. */
