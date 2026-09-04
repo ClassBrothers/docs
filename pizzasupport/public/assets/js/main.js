@@ -32,57 +32,58 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* Ersparnisrechner: liest die Menge live aus dem Bestellformular       */
-  /* mit (Felder "menge[...]"), rechnet ausschliesslich im Browser -      */
-  /* nichts davon wird gesendet, solange niemand tatsaechlich bestellt.   */
+  /* Ersparnisrechner: Preis je Karton x Kartons pro Monat, erst nach     */
+  /* Klick auf "Berechnen" - nicht mehr live bei jeder Eingabe. Preis und */
+  /* Menge haengen per form="formular-bestellen" (siehe                  */
+  /* ersparnisrechner.php) am echten Bestellformular und werden mit der   */
+  /* Bestellung mitgeschickt; das Rechnen hier ist reine Anzeige im       */
+  /* Browser und beeinflusst die Bestellung selbst nicht.                 */
+  /*                                                                      */
+  /* Beide Felder liegen bewusst NICHT in einem eigenen <form> - ein      */
+  /* Enter im Feld wuerde sonst, weil form="formular-bestellen" sie an    */
+  /* das entfernte Bestellformular bindet, dessen Absenden ausloesen      */
+  /* statt zu rechnen. Stattdessen faengt ein eigener keydown-Handler      */
+  /* Enter ab und rechnet damit, ohne irgendetwas abzuschicken.            */
   /* ------------------------------------------------------------------ */
   var rechnerBox = document.querySelector('[data-rechner]');
   if (rechnerBox) {
     var rPreis      = rechnerBox.querySelector('[data-rechner-preis]');
     var rMonat      = rechnerBox.querySelector('[data-rechner-monat]');
-    var rMengeWert  = rechnerBox.querySelector('[data-rechner-menge-wert]');
+    var rKnopf      = rechnerBox.querySelector('[data-rechner-berechnen]');
+    var rEingabeHinweis = rechnerBox.querySelector('[data-rechner-eingabe-hinweis]');
     var rErgebnis   = rechnerBox.querySelector('[data-rechner-ergebnis]');
-    var rZahl       = rechnerBox.querySelector('[data-rechner-zahl]');
-    var rHinweis    = rechnerBox.querySelector('[data-rechner-hinweis]');
+    var rMonatssumme = rechnerBox.querySelector('[data-rechner-monatssumme]');
+    var rJahressumme = rechnerBox.querySelector('[data-rechner-jahressumme]');
     var euroFormat  = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' });
 
-    function rechnerMenge() {
-      var summe = 0;
-      Array.prototype.forEach.call(document.querySelectorAll('input[name^="menge["]'), function (f) {
-        var n = parseInt(f.value, 10);
-        if (!isNaN(n) && n > 0) { summe += n; }
-      });
-      return summe;
-    }
-
-    function rechnerAktualisieren() {
-      var menge = rechnerMenge();
-      if (rMengeWert) { rMengeWert.textContent = menge > 0 ? menge.toLocaleString('de-DE') : '–'; }
-
+    function rechnerBerechnen() {
       var preis = parseFloat((rPreis.value || '').replace(',', '.'));
-      if (!menge || isNaN(preis) || preis <= 0) {
+      var monat = parseInt(rMonat.value, 10);
+
+      if (isNaN(preis) || preis <= 0 || isNaN(monat) || monat <= 0) {
         rErgebnis.hidden = true;
+        if (rEingabeHinweis) { rEingabeHinweis.hidden = false; }
         return;
       }
+      if (rEingabeHinweis) { rEingabeHinweis.hidden = true; }
 
-      rZahl.textContent = euroFormat.format(preis * menge);
-
-      var monat = parseInt(rMonat.value, 10);
-      if (!isNaN(monat) && monat > 0) {
-        var monate = Math.round((menge / monat) * 10) / 10;
-        rHinweis.textContent = 'Das deckt etwa ' + monate.toLocaleString('de-DE') + ' Monate Deines Bedarfs.';
-      } else {
-        rHinweis.textContent = '';
-      }
+      var summe1 = preis * monat;
+      var summe2 = summe1 * 12;
+      rMonatssumme.textContent = euroFormat.format(summe1);
+      rJahressumme.textContent = euroFormat.format(summe2);
       rErgebnis.hidden = false;
+      rErgebnis.scrollIntoView({ behavior: wenigerBewegung ? 'auto' : 'smooth', block: 'nearest' });
     }
 
-    rPreis.addEventListener('input', rechnerAktualisieren);
-    rMonat.addEventListener('input', rechnerAktualisieren);
-    document.addEventListener('input', function (e) {
-      if (e.target.matches('input[name^="menge["]')) { rechnerAktualisieren(); }
+    rKnopf.addEventListener('click', rechnerBerechnen);
+    [rPreis, rMonat].forEach(function (feld) {
+      feld.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          rechnerBerechnen();
+        }
+      });
     });
-    rechnerAktualisieren();
   }
 
   /* ------------------------------------------------------------------ */
@@ -373,6 +374,8 @@
       if (abholungHinweis) { abholungHinweis.hidden = wert !== 'abholung'; }
     }
 
+    var abrufMindest = abrufMengeFeld ? (parseInt(abrufMengeFeld.getAttribute('min'), 10) || 0) : 0;
+
     function abrufMengeAnzeigen() {
       if (!abrufMengeFeld || !abrufHinweis) { return; }
       var abrufMenge = parseInt(abrufMengeFeld.value, 10);
@@ -381,6 +384,17 @@
         var n = parseInt(f.value, 10);
         if (!isNaN(n) && n > 0) { gesamt += n; }
       });
+
+      // Unter der Mindestmenge ist eine Monatsverteilung Unsinn - stattdessen
+      // klar sagen, dass die Menge zu klein ist.
+      if (abrufMengeFeld.value !== '' && abrufMenge > 0 && abrufMenge < abrufMindest) {
+        var fehlertext = 'Mindestliefermenge sind ' + abrufMindest.toLocaleString('de-DE') + ' Stück.';
+        abrufHinweis.textContent = fehlertext;
+        abrufMengeFeld.setCustomValidity(fehlertext);
+        return;
+      }
+      abrufMengeFeld.setCustomValidity('');
+
       if (abrufMenge > 0 && gesamt > 0) {
         var monate = Math.ceil(gesamt / abrufMenge);
         abrufHinweis.textContent = abrufHinweisText + ' Bei dieser Menge verteilt sich Deine Bestellung auf etwa '

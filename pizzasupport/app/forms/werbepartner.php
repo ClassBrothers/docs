@@ -3,7 +3,11 @@
 
 declare(strict_types=1);
 
-$zurueck = '/flaeche-buchen.html';
+$zurueck       = '/flaeche-buchen.html';
+// Anker direkt auf der Fehlermeldung (siehe flaeche-buchen.html), damit ein
+// Ruecksprung nach einem Fehler nicht ueber das Formular hinweg ganz nach
+// oben auf die Seite springt.
+$zurueckFehler = '/flaeche-buchen.html#buchen-fehler';
 
 if (!honeypot_ok($_POST)) {
     flash_set('werbung_ok', 'Vielen Dank, Ihre Buchung ist bei uns eingegangen.');
@@ -13,7 +17,7 @@ if (!honeypot_ok($_POST)) {
 if (!rate_limit_ok('werbung', 5, 3600)) {
     flash_set('werbung_fehler', ['firma' => 'Von hier kamen gerade sehr viele Anfragen. Bitte versuchen Sie es später noch einmal oder schreiben Sie uns direkt.']);
     flash_set('werbung_alt', $_POST);
-    redirect($zurueck);
+    redirect($zurueckFehler);
 }
 
 $erlaubteFlaechen = array_column(
@@ -68,7 +72,7 @@ if (!$v->ok()) {
     $altw = $_POST;
     unset($altw['_token'], $altw['_ts']);
     flash_set('werbung_alt', $altw);
-    redirect($zurueck);
+    redirect($zurueckFehler);
 }
 
 $d = $v->daten();
@@ -141,7 +145,7 @@ try {
     }
     flash_set('werbung_fehler', ['firma' => 'Da ist bei uns etwas schiefgegangen. Bitte versuchen Sie es noch einmal oder schreiben Sie uns direkt.']);
     flash_set('werbung_alt', $_POST);
-    redirect($zurueck);
+    redirect($zurueckFehler);
 }
 
 // QR-Weiterleitung anlegen, damit der Code auf dem Karton uns gehoert.

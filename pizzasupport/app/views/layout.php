@@ -19,6 +19,7 @@ $graph  = ['@context' => 'https://schema.org', '@graph' => $jsonld];
 $navigation = [
     '/'                                => 'Für die Gastro',
     '/werbepartner.html'               => 'Für Unternehmen',
+    '/flaeche-buchen.html'             => 'Fläche buchen',
     '/werbeideen.html'                 => 'Werbeideen',
     '/teilnehmer.html'                 => 'Wer ist dabei',
     '/fuer-gaeste.html'                => 'Für Gäste',

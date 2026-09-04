@@ -164,7 +164,6 @@ return [
         ],
         'flaechen' => [
             // Nicht buchbar: gehoeren dem Projekt selbst.
-            ['id' => 'D1', 'bezeichnung' => 'Markenfeld + Claim', 'masse' => '8,8 × 8,8 cm', 'gruppe' => 'deckel', 'preis' => null, 'buchbar' => false],
             ['id' => 'B0', 'bezeichnung' => 'Boden außen · Marke', 'masse' => '32 × 32 cm', 'gruppe' => 'boden', 'preis' => null, 'buchbar' => false],
             ['id' => 'FA', 'bezeichnung' => 'Fun Area, 16 Felder, schwarzweiß', 'masse' => '28 × 19,3 cm', 'gruppe' => 'boden', 'preis' => null, 'buchbar' => false],
             ['id' => 'DF', 'bezeichnung' => 'Deckelblende', 'masse' => '32 × 4 cm, unbedruckt', 'gruppe' => 'boden', 'preis' => null, 'buchbar' => false],
@@ -174,7 +173,11 @@ return [
             ['id' => 'D5', 'bezeichnung' => 'Deckel Klein', 'masse' => '88 × 40 mm', 'gruppe' => 'deckel', 'preis' => 88000, 'buchbar' => true],
             ['id' => 'D7', 'bezeichnung' => 'Deckel Klein', 'masse' => '88 × 40 mm', 'gruppe' => 'deckel', 'preis' => 88000, 'buchbar' => true],
 
-            // Deckel Square: 88 × 88 mm, 1.703,68 € netto.
+            // Deckel Square: 88 × 88 mm, 1.703,68 € netto. D1 ist das
+            // PizzaSupport-Markenfeld und wird normalerweise manuell vom
+            // Betreiber vergeben - eine zahlende Kundenbuchung hat aber
+            // Vorrang, deshalb ganz normal buchbar wie D6/D8.
+            ['id' => 'D1', 'bezeichnung' => 'Deckel Square', 'masse' => '88 × 88 mm', 'gruppe' => 'deckel', 'preis' => 170368, 'buchbar' => true],
             ['id' => 'D6', 'bezeichnung' => 'Deckel Square', 'masse' => '88 × 88 mm', 'gruppe' => 'deckel', 'preis' => 170368, 'buchbar' => true],
             ['id' => 'D8', 'bezeichnung' => 'Deckel Square', 'masse' => '88 × 88 mm', 'gruppe' => 'deckel', 'preis' => 170368, 'buchbar' => true],
 

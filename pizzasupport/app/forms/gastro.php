@@ -9,7 +9,12 @@
 
 declare(strict_types=1);
 
-$zurueck = '/#bestellen';
+$zurueck       = '/#bestellen';
+// Eigener Anker direkt auf der Fehlermeldung (siehe formular-gastro.php):
+// ohne ihn landet ein Ruecksprung nach einem Fehler ganz oben im
+// "bestellen"-Abschnitt, spuerbar oberhalb der eigentlichen Meldung und der
+// markierten Felder - das wirkte wie ein Sprung "ueber" das Formular hinweg.
+$zurueckFehler = '/#gastro-fehler';
 
 if (!honeypot_ok($_POST)) {
     // Bots bekommen dieselbe freundliche Antwort wie Menschen. Wer nicht
@@ -21,7 +26,7 @@ if (!honeypot_ok($_POST)) {
 if (!rate_limit_ok('gastro', 5, 3600)) {
     flash_set('gastro_fehler', ['betrieb' => 'Da kamen gerade sehr viele Anfragen von hier. Bitte versuch es in einer Stunde noch einmal oder schreib uns direkt.']);
     flash_set('gastro_alt', $_POST);
-    redirect($zurueck);
+    redirect($zurueckFehler);
 }
 
 $formate   = config('karton_formate');
@@ -153,7 +158,7 @@ if ($lieferart === 'abruf') {
     } else {
         $abrufMenge = (int) $abrufRoh;
         if ($abrufMenge < (int) $lieferung['abruf_min']) {
-            $v->fehlerSetzen('abruf_menge', 'Ein Abruf braucht mindestens ' . zahl((int) $lieferung['abruf_min']) . ' Kartons.');
+            $v->fehlerSetzen('abruf_menge', 'Mindestliefermenge sind ' . zahl((int) $lieferung['abruf_min']) . ' Stück.');
         } elseif ($mengeFehler === null && $abrufMenge > $gesamtmenge) {
             $v->fehlerSetzen('abruf_menge', 'Die Abrufmenge kann nicht größer sein als Deine Gesamtbestellung.');
         }
@@ -163,7 +168,7 @@ if ($lieferart === 'abruf') {
 if (!$v->ok()) {
     flash_set('gastro_fehler', $v->fehler());
     flash_set('gastro_alt', $_POST);
-    redirect($zurueck);
+    redirect($zurueckFehler);
 }
 
 $d     = $v->daten();
@@ -210,12 +215,12 @@ try {
     if (str_contains($eDb->getMessage(), 'UNIQUE')) {
         flash_set('gastro_fehler', ['email' => 'Diesen Betrieb haben wir mit dieser Adresse schon in der Liste. Wenn Du die Menge ändern willst, schreib uns kurz.']);
         flash_set('gastro_alt', $_POST);
-        redirect($zurueck);
+        redirect($zurueckFehler);
     }
     error_log('gastro-insert: ' . $eDb->getMessage());
     flash_set('gastro_fehler', ['betrieb' => 'Da ist bei uns etwas schiefgegangen. Bitte versuch es gleich noch einmal oder schreib uns direkt.']);
     flash_set('gastro_alt', $_POST);
-    redirect($zurueck);
+    redirect($zurueckFehler);
 }
 
 $positionsZeilen = [];

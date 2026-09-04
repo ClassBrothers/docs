@@ -15,9 +15,9 @@ $faq = [
     ],
     [
         'frage'   => 'Ich möchte über das Projekt berichten. An wen wende ich mich?',
-        'antwort' => '<p>Schreiben Sie uns über dieses Formular mit dem Betreff „Presse“. Wir schicken
-                      Bildmaterial, Hintergründe und stellen den Kontakt zu teilnehmenden Gastronomien her,
-                      soweit diese einverstanden sind.</p>',
+        'antwort' => '<p>Super, von uns bekommst Du jede Info, die Du brauchst. Schreib uns über dieses
+                      Formular mit dem Betreff „Presse“ und Deiner Telefonnummer und wir melden uns
+                      innerhalb 24 Stunden.</p>',
     ],
 ];
 
@@ -57,6 +57,10 @@ shuffle($captchaOptionen);
   </div>
 </section>
 
+<div class="wrap">
+  <?= faq_block($faq, 'Bevor Sie schreiben') ?>
+</div>
+
 <section class="band">
   <div class="wrap kontakt-raster">
 
@@ -65,7 +69,7 @@ shuffle($captchaOptionen);
         <p class="hinweis hinweis-ok hinweis-gross" role="status"><?= e((string) $erfolg) ?></p>
       <?php endif; ?>
       <?php if ($fehler): ?>
-        <p class="hinweis hinweis-fehler" role="alert">Bitte prüfen Sie die markierten Felder.</p>
+        <p class="hinweis hinweis-fehler" id="kontakt-fehler" role="alert">Bitte prüfen Sie die markierten Felder.</p>
       <?php endif; ?>
 
       <h2>Schreiben Sie uns</h2>
@@ -154,7 +158,3 @@ shuffle($captchaOptionen);
     </aside>
   </div>
 </section>
-
-<div class="wrap">
-  <?= faq_block($faq, 'Bevor Sie schreiben') ?>
-</div>

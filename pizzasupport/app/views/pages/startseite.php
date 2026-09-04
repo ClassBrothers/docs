@@ -245,8 +245,6 @@ $f       = fortschritt();
 
 <?php include APP_ROOT . '/app/views/partials/ersparnisrechner.php'; ?>
 
-<?php include APP_ROOT . '/app/views/partials/formular-gastro.php'; ?>
-
 <section class="band band-hell" id="vorteile" aria-labelledby="vorteile-titel">
   <div class="wrap">
     <h2 id="vorteile-titel">Was hast Du davon?</h2>
@@ -282,6 +280,8 @@ $f       = fortschritt();
     </div>
   </div>
 </section>
+
+<?php include APP_ROOT . '/app/views/partials/formular-gastro.php'; ?>
 
 <section class="band band-dunkel" id="mission" aria-labelledby="mission-titel">
   <div class="wrap schmal">

@@ -41,6 +41,8 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
   </div>
 </section>
 
+<?php $kauftMitCta = false; include APP_ROOT . '/app/views/partials/kauft.php'; ?>
+
 <section class="band band-bestellen" id="buchen" aria-labelledby="buchen-titel">
   <div class="wrap">
 
@@ -59,13 +61,16 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
     <div class="bestellen-kopf">
       <h2 id="buchen-titel">Ihre Fläche(n)</h2>
       <p class="band-lead">
-        Bis zum Startschuss ist alles unverbindlich. Erst danach gehen Auftragsbestätigung
-        und Teilrechnung über <?= (int) config('startschuss.anzahlung') ?> % an Sie heraus.
+        Die Buchung ist verbindlich. Erst wenn die benötigte Anzahl Flächen verkauft ist,
+        erhalten Sie eine Info-Mail mit Anzahlungs-Rechnung über <?= (int) config('startschuss.anzahlung') ?> %
+        des Buchungspreises. Sobald die Pizzakartons am Lager eintreffen und in die Auslieferung
+        gehen, erhalten Sie die Abschluss-Rechnung über die restlichen <?= 100 - (int) config('startschuss.anzahlung') ?> %.
+        Es gelten unsere <a href="/agb.html" target="_blank" rel="noopener">AGB</a>.
       </p>
     </div>
 
     <?php if ($fehler): ?>
-      <p class="hinweis hinweis-fehler" role="alert">
+      <p class="hinweis hinweis-fehler" id="buchen-fehler" role="alert">
         Bitte prüfen Sie die markierten Felder – dann schicken wir das Formular gleich ab.
       </p>
     <?php endif; ?>
@@ -322,9 +327,8 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
           Ihnen umgehend Bescheid und berechnen nichts.
         </p>
 
-        <button class="btn btn-primaer btn-gross btn-block" type="submit">Fläche verbindlich reservieren</button>
+        <button class="btn btn-primaer btn-gross btn-block" type="submit">Fläche verbindlich buchen</button>
         <p class="formular-fuss">
-          Die Reservierung ist bis zum Startschuss kostenfrei und jederzeit widerrufbar.
           Pflichtfelder sind mit <span class="pflicht" aria-hidden="true">*</span> markiert.
         </p>
       </fieldset>
@@ -339,6 +343,7 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
         // Felder SU-S/SU-M, die im Plan noch nicht einzeln eingezeichnet
         // sind), bleibt sie einfach ohne Hervorhebung buchbar - kein Fehler.
         $flaechenplanKennungKoordinaten = [
+            'D1'   => ['left' => 18.2, 'top' => 8.0,  'width' => 20.0, 'height' => 8.8],
             'D2'   => ['left' => 18.2, 'top' => 17.7, 'width' => 20.0, 'height' => 13.6],
             'D3'   => ['left' => 18.2, 'top' => 31.7, 'width' => 20.0, 'height' => 4.4],
             'D4'   => ['left' => 40.0, 'top' => 8.0,  'width' => 20.0, 'height' => 13.6],

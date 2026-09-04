@@ -104,39 +104,7 @@ $f = fortschritt_oeffentlich();
   </div>
 </section>
 
-<?php
-  // Ein wiederverwendetes Icon (Haeckchen im Kreis) statt acht verschiedener
-  // Piktogramme - haelt den Abschnitt schlicht, ohne eine ganze Icon-
-  // Bibliothek einzubinden.
-  $kauftHaeckchen = '<svg class="kauft-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">'
-    . '<circle cx="12" cy="12" r="11" fill="var(--akzent-waerme)"/>'
-    . '<path d="M7 12.5l3 3 7-7" stroke="#241C18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
-    . '</svg>';
-  $pnKauft = config('partnernachlass');
-  $kauftPunkte = [
-    'Gemeinschaft unterstützen – Ihr Budget hilft direkt der Freiburger Gastronomie.',
-    'Coole, sympathische Werbung statt gewöhnlicher Anzeige.',
-    'Viralität und Aufmerksamkeit: ein Pizzakarton wird gesehen, nicht weggeklickt.',
-    'SEO-Backlink von pizzasupport.de für Ihre eigene Website.',
-    'Ihr Name, Logo und Profiltext dauerhaft auf pizzasupport.de – so lange die Website existiert.',
-    'Stammkunden-Rabatt bei zukünftigen Auflagen.',
-    'Als Stammkunde künftig vor anderen Ihre Fläche wählen.',
-    'Bis zu ' . (int) $pnKauft['prozent'] . ' % Rabatt auf Aufträge bei unseren Aktionspartnern (Class Brothers, KI-Assistenz, Badische Entertainment und weitere).',
-  ];
-?>
-<section class="band band-hell" aria-labelledby="kauft-titel">
-  <div class="wrap">
-    <h2 id="kauft-titel">Was ein Unternehmen wirklich kauft</h2>
-    <ul class="kauft-liste">
-      <?php foreach ($kauftPunkte as $punkt): ?>
-        <li><?= $kauftHaeckchen ?><span><?= e($punkt) ?></span></li>
-      <?php endforeach; ?>
-    </ul>
-    <p class="band-cta">
-      <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche jetzt buchen</a>
-    </p>
-  </div>
-</section>
+<?php $kauftMitCta = true; include APP_ROOT . '/app/views/partials/kauft.php'; ?>
 
 <section class="band" id="preise" aria-labelledby="preise-titel">
   <div class="wrap">
@@ -186,7 +154,7 @@ $f = fortschritt_oeffentlich();
       </p>
     </div>
 
-    <p class="band-cta">
+    <p class="zwischen-cta">
       <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche jetzt buchen</a>
     </p>
   </div>
@@ -256,7 +224,7 @@ $f = fortschritt_oeffentlich();
       <a href="/teilnehmer.html">Teilnehmerseite</a>. Warum es dieses Projekt überhaupt gibt,
       steht auf der Seite zur <a href="/verpackungssteuer-freiburg.html">Freiburger Verpackungssteuer</a>.
     </p>
-    <p class="band-cta">
+    <p class="zwischen-cta">
       <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche jetzt buchen</a>
     </p>
   </div>

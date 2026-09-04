@@ -1,5 +1,15 @@
 /* Alles unterhalb der Falz. Laedt asynchron nach dem Critical CSS. */
 
+/* Der Kopf ist sticky (position:sticky;top:0, siehe critical.css) - ohne
+   das hier wuerde ein Sprungziel (z.B. #gruppe-deckel von den Preiskacheln
+   der Startseite) genau unter dem Header landen und der Anfang des
+   Abschnitts waere verdeckt. Gilt fuer jedes Element mit id, nicht nur
+   fuer einen einzelnen Anker, damit kuenftige Sprungziele automatisch
+   mitgelten. */
+[id]{scroll-margin-top:96px}
+@media (max-width:900px){[id]{scroll-margin-top:84px}}
+@media (max-width:520px){[id]{scroll-margin-top:72px}}
+
 /* --- Baender ---------------------------------------------------------- */
 .band{padding:clamp(2.5rem,1.5rem + 3vw,4.25rem) 0}
 .band-hell{background:var(--flaeche-hell-zwei)}
@@ -21,6 +31,7 @@
 .band-lead{font-size:1.1rem;color:var(--textfarbe-gedaempft);max-width:44em}
 .band-dunkel .band-lead{color:var(--text-auf-dunkel)}
 .band-nachsatz{margin-top:1.75rem;color:var(--textfarbe-gedaempft);max-width:48em}
+.zwischen-cta{margin-top:1.75rem}
 .klein{font-size:.9rem;color:var(--textfarbe-gedaempft)}
 
 /* --- Kartonskizze im Hero --------------------------------------------
@@ -111,13 +122,25 @@
 
 /* --- Ersparnisrechner --------------------------------------------------- */
 .rechner{margin-top:1.5rem}
-.rechner-menge-anzeige{margin:.3rem 0 0;font-size:1.05rem}
-.rechner-menge-anzeige strong{font-family:var(--schrift-kopf);font-size:1.4rem;color:var(--akzent)}
-.rechner-ergebnis{margin-top:1.5rem;padding:1.5rem;background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);text-align:center}
-.rechner-label{display:block;font-size:.9rem;color:var(--textfarbe-gedaempft)}
-.rechner-zahl{display:block;font-family:var(--schrift-kopf);font-size:2.4rem;color:var(--akzent-sekundaer-dunkel);margin:.25rem 0}
-.rechner-hinweis{margin:.25rem 0 0;font-size:.92rem;color:var(--textfarbe-gedaempft)}
-.rechner-steuer{margin:.75rem 0 0;font-size:.88rem;font-style:italic;color:var(--textfarbe-gedaempft)}
+.rechner [data-rechner-berechnen]{margin-top:.5rem}
+
+/* Ergebnis im Look einer alten Registrierkasse: dunkles Display, die
+   beiden Summen als leuchtende "Kacheln" mitten im Satz statt als
+   trockene Tabelle. */
+.rechner-kasse{
+  margin-top:1.5rem;padding:1.75rem;border-radius:var(--radius-karte);
+  background:linear-gradient(155deg,var(--flaeche-dunkel) 0%,var(--flaeche-dunkel-weich) 100%);
+  color:var(--text-auf-dunkel);text-align:center;
+}
+.rechner-fliesstext{margin:0;font-size:1.15rem;line-height:1.7}
+.rechner-kachel{
+  display:inline-block;margin:.15rem .1rem;padding:.2rem .6rem;
+  font-family:var(--schrift-kopf);font-size:1.15rem;font-weight:700;letter-spacing:.02em;
+  background:var(--akzent-waerme);color:#241C18;border-radius:6px;
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.15);
+}
+.rechner-kachel-akzent{background:var(--akzent)}
+.rechner-steuer{margin:.9rem 0 0;font-size:.88rem;font-style:italic;color:var(--text-auf-dunkel-hell)}
 
 /* --- Fläche buchen: Formular links, Flächenplan mit Lupe rechts -------- */
 .bestellen-grid{display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start}
@@ -296,6 +319,11 @@
 .feld-coupon{background:#fff8e8;border:1px solid var(--akzent-waerme-hell);border-radius:var(--radius-knopf);padding:.9rem 1rem}
 
 .feld-fehler input,.feld-fehler select,.feld-fehler textarea{border-color:var(--akzent);background:#fdf5f4}
+/* .feld-fehler faerbt sonst nur input/select/textarea um - die Captcha-
+   Antworten sind aber <button>-Elemente (Icon-Kacheln) und blieben ohne
+   diese Zeile optisch unmarkiert, obwohl die Fehlermeldung darunter schon
+   erschien. */
+.feld-fehler .captcha-optionen{padding:.5rem;border:2px solid var(--akzent);border-radius:var(--radius-karte);background:#fdf5f4}
 .feld-meldung{margin:.4rem 0 0;font-size:.88rem;font-weight:600;color:var(--akzent)}
 
 .hinweis{padding:.9rem 1.1rem;border-radius:var(--radius-knopf);margin:0 0 1.5rem;font-size:.97rem}
@@ -616,6 +644,9 @@
 
 /* --- Fuss ------------------------------------------------------------- */
 .fuss{background:linear-gradient(155deg,var(--flaeche-dunkel) 0%,var(--flaeche-dunkel-weich) 100%);color:var(--text-auf-dunkel);padding:3rem 0 1.5rem;margin-top:0}
+/* Nur der Streifen am Kopf der Fusszeile, nicht der am Seitenanfang (siehe
+   critical.css - .tricolore-bar kommt an beiden Stellen vor). */
+.fuss .tricolore-bar{position:relative;top:-50px}
 .fuss-innen{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:2rem}
 .fuss h2{font-size:.95rem;color:var(--akzent-waerme-hell);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem}
 .fuss ul{list-style:none;margin:0;padding:0}

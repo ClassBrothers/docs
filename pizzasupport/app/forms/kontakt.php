@@ -3,7 +3,11 @@
 
 declare(strict_types=1);
 
-$zurueck = '/kontakt.html';
+$zurueck       = '/kontakt.html';
+// Anker direkt auf der Fehlermeldung (siehe kontakt.php), damit ein
+// Ruecksprung nach einem Fehler nicht ueber das Formular hinweg ganz nach
+// oben auf die Seite springt.
+$zurueckFehler = '/kontakt.html#kontakt-fehler';
 
 if (!honeypot_ok($_POST)) {
     flash_set('kontakt_ok', 'Danke, Ihre Nachricht ist bei uns. Wir melden uns binnen 24 Stunden.');
@@ -13,7 +17,7 @@ if (!honeypot_ok($_POST)) {
 if (!rate_limit_ok('kontakt', 5, 3600)) {
     flash_set('kontakt_fehler', ['nachricht' => 'Von hier kamen gerade viele Nachrichten. Bitte versuchen Sie es später noch einmal.']);
     flash_set('kontakt_alt', $_POST);
-    redirect($zurueck);
+    redirect($zurueckFehler);
 }
 
 $v = new Validator($_POST);
@@ -29,16 +33,23 @@ if (mb_strlen((string) $v->get('nachricht')) < 10) {
 
 // Einfache Sicherheitsabfrage: entweder der Klick auf die Pizza oder die
 // Textalternative fuer Tastatur- und Screenreader-Nutzung muss stimmen.
+// Zwei unterschiedliche Meldungen: gar nichts ausgewaehlt (freundlicher
+// Hinweis, was zu tun ist) vs. eine falsche Option angeklickt oder
+// eingetippt (pointierter Hinweis, dass die Antwort konkret falsch war).
 $captchaKlick = (string) ($_POST['captcha_klick'] ?? '');
 $captchaText  = mb_strtolower(trim((string) ($_POST['captcha_text'] ?? '')));
 if ($captchaKlick !== 'pizza' && $captchaText !== 'pizza') {
-    $v->fehlerSetzen('captcha', 'Bitte beantworten Sie die Sicherheitsfrage: Klicken Sie auf die Pizza, oder nennen Sie sie im Textfeld.');
+    if ($captchaKlick === '' && $captchaText === '') {
+        $v->fehlerSetzen('captcha', 'Bitte beantworten Sie die Sicherheitsfrage: Klicken Sie auf die Pizza, oder nennen Sie sie im Textfeld.');
+    } else {
+        $v->fehlerSetzen('captcha', 'Echt jetzt? Hier geht’s um welches Superfood?');
+    }
 }
 
 if (!$v->ok()) {
     flash_set('kontakt_fehler', $v->fehler());
     flash_set('kontakt_alt', $_POST);
-    redirect($zurueck);
+    redirect($zurueckFehler);
 }
 
 $d = $v->daten();

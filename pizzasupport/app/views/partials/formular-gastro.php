@@ -56,7 +56,7 @@ $altMengen = $altw['menge'] ?? [];
     </div>
 
     <?php if ($fehler): ?>
-      <p class="hinweis hinweis-fehler" role="alert">
+      <p class="hinweis hinweis-fehler" id="gastro-fehler" role="alert">
         Ein paar Angaben fehlen oder passen noch nicht. Die betroffenen Felder sind markiert.
       </p>
     <?php endif; ?>
@@ -66,7 +66,7 @@ $altMengen = $altw['menge'] ?? [];
       <?= honeypot_field() ?>
 
       <fieldset>
-        <legend>Dein Betrieb</legend>
+        <legend>Deine Pizzeria, Restaurant oder Take Away</legend>
 
         <div class="feld<?= isset($fehler['betrieb']) ? ' feld-fehler' : '' ?>">
           <label for="g-betrieb">Name der Gastronomie <span class="pflicht" aria-hidden="true">*</span></label>
@@ -113,8 +113,15 @@ $altMengen = $altw['menge'] ?? [];
           </div>
         </div>
 
+        <div class="feld<?= isset($fehler['website']) ? ' feld-fehler' : '' ?>">
+          <label for="g-website">Website <span class="feld-optional">(freiwillig – wird auf der Karte verlinkt)</span></label>
+          <input type="text" id="g-website" name="website" maxlength="300" placeholder="deine-pizzeria.de"
+                 value="<?= e(alt($altw, 'website')) ?>" autocomplete="url">
+          <?php if (isset($fehler['website'])): ?><p class="feld-meldung"><?= e($fehler['website']) ?></p><?php endif; ?>
+        </div>
+
         <div class="feld<?= isset($fehler['betriebsart']) ? ' feld-fehler' : '' ?>">
-          <label for="g-betriebsart">Was für ein Betrieb ist das? <span class="pflicht" aria-hidden="true">*</span></label>
+          <label for="g-betriebsart">Wir sind… <span class="pflicht" aria-hidden="true">*</span></label>
           <select id="g-betriebsart" name="betriebsart" required>
             <option value="">Bitte auswählen</option>
             <?php foreach ($betriebsarten as $ba): ?>
@@ -133,21 +140,16 @@ $altMengen = $altw['menge'] ?? [];
             <label for="g-email">E-Mail <span class="pflicht" aria-hidden="true">*</span></label>
             <input type="email" id="g-email" name="email" required maxlength="254"
                    value="<?= e(alt($altw, 'email')) ?>" autocomplete="email">
+            <p class="feld-hilfe">Wird NICHT veröffentlicht.</p>
             <?php if (isset($fehler['email'])): ?><p class="feld-meldung"><?= e($fehler['email']) ?></p><?php endif; ?>
           </div>
           <div class="feld<?= isset($fehler['telefon']) ? ' feld-fehler' : '' ?>">
             <label for="g-telefon">Telefon <span class="pflicht" aria-hidden="true">*</span></label>
             <input type="tel" id="g-telefon" name="telefon" required maxlength="32"
                    value="<?= e(alt($altw, 'telefon')) ?>" autocomplete="tel">
+            <p class="feld-hilfe">Wird NICHT veröffentlicht.</p>
             <?php if (isset($fehler['telefon'])): ?><p class="feld-meldung"><?= e($fehler['telefon']) ?></p><?php endif; ?>
           </div>
-        </div>
-
-        <div class="feld<?= isset($fehler['website']) ? ' feld-fehler' : '' ?>">
-          <label for="g-website">Website <span class="feld-optional">(freiwillig – wird auf der Karte verlinkt)</span></label>
-          <input type="text" id="g-website" name="website" maxlength="300" placeholder="deine-pizzeria.de"
-                 value="<?= e(alt($altw, 'website')) ?>" autocomplete="url">
-          <?php if (isset($fehler['website'])): ?><p class="feld-meldung"><?= e($fehler['website']) ?></p><?php endif; ?>
         </div>
       </fieldset>
 
@@ -283,10 +285,19 @@ $altMengen = $altw['menge'] ?? [];
 
         <div class="feld feld-check">
           <label>
-            <input type="checkbox" name="karte_ok" value="1" <?= alt($altw, 'karte_ok') ? 'checked' : '' ?>>
+            <?php /* Default: angehakt. Bei einer echten Neuanzeige (frischer
+                     Besuch, $altw leer) ist das schlicht die Voreinstellung;
+                     bei einer Wiederanzeige nach einem Fehler zaehlt dagegen
+                     ausschliesslich, was zuletzt tatsaechlich abgeschickt
+                     wurde - ein bewusst abgewaehltes Haekchen bleibt also
+                     abgewaehlt, statt durch die Voreinstellung ueberschrieben
+                     zu werden (nicht angehakte Checkboxen fehlen im POST
+                     komplett, "nicht vorhanden" ist hier also nicht dasselbe
+                     wie "frischer Besuch"). */ ?>
+            <input type="checkbox" name="karte_ok" value="1" <?= (empty($altw) || alt($altw, 'karte_ok')) ? 'checked' : '' ?>>
             <span>
               Mein Betrieb darf mit Name, Adresse und Website auf der
-              <a href="/teilnehmer.html">Teilnehmerkarte</a> erscheinen. Freiwillig,
+              <a href="/teilnehmer.html">Teilnehmerkarte</a> erscheinen. <strong>Kostenfrei</strong>,
               jederzeit widerrufbar, und wir schalten jeden Eintrag von Hand frei.
             </span>
           </label>
