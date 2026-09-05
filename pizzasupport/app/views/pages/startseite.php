@@ -80,10 +80,11 @@ $f       = fortschritt();
       <p class="kicker">Unterstützung für Gastronomie und Gäste</p>
       <h1>Kostenlose Pizzakartons für Freiburg</h1>
       <p class="hero-lead">
-        Seit die Verpackungssteuer gilt, zahlt man bei jeder Bestellung drauf.
-        Wir ändern was: Unternehmen aus der Region buchen Werbeflächen auf
-        Pizzakartons und die Gastronomie bekommt sie umsonst. Lebensmittelecht,
-        hygienisch zugelassen und eine Aktion, über die man spricht.<br>
+        Ein bedruckter Pizzakarton kostet Dich im Einkauf rund 45 Cent. Bei tausend Kartons im
+        Monat sind das 450 Euro, die niemand sieht und jeder zahlt. Seit die Verpackungssteuer
+        da ist, redet endlich jemand darüber. Wir ändern was: Unternehmen aus der Region buchen
+        Werbeflächen auf den Kartons, Du bekommst sie umsonst. Lebensmittelecht, hygienisch
+        zugelassen und eine Aktion, über die man spricht.<br>
         <a href="#bestellen">Hier bekommst Du Pizzakartons kostenlos.</a>.
       </p>
       <div class="hero-aktionen">
@@ -134,15 +135,14 @@ $f       = fortschritt();
           </svg>
         </div>
         <div class="warum-text">
-          <h3>Die Verpackungssteuer wird spürbar leichter</h3>
+          <h3>Der Einkaufspreis fällt weg</h3>
           <p>
-            Kostenlose Pizzakartons bringen Pizzerien und Restaurants finanzielle Unterstützung.
-            Die 50ct, die man in Freiburg für die Verpackungssteuer abgeben muss, werden durch
-            den Wegfall des Einkaufspreises des Pizzakartons reduziert. Als Kreativagentur lieben
-            wir die Gastro, arbeiten mit Eventagenturen und wissen, wie die finanzielle Belastung
-            in der Gastro aussieht. Und dann kam in Freiburg die Verpackungssteuer dazu. Bei ein
-            paar hundert Kartons in der Woche summiert sich das schnell zu einer Position, die
-            vorher nicht im Plan stand und die für Gast und Gastro erstmal Mehrkosten bedeutet.
+            Die Steuer können wir Dir nicht abnehmen. Sie hängt daran, dass eine Verpackung über
+            die Theke geht, nicht daran, was sie gekostet hat. Der Einkaufspreis dagegen lässt
+            sich auf null bringen, und der fällt bei jedem Karton an – ob der Gast ihn abholt
+            oder ob er gefahren wird. Als Agentur arbeiten wir seit Jahren mit Gastronomie und
+            Eventagenturen und wissen, wie schnell sich ein paar hundert Kartons in der Woche zu
+            einer Position summieren, die vorher nicht im Plan stand.
           </p>
         </div>
       </article>
@@ -322,7 +322,7 @@ $f       = fortschritt();
             <small>netto</small>
           </p>
           <p class="preis-text">
-            <?= count($stufe['codes']) ?> Fläche<?= count($stufe['codes']) === 1 ? '' : 'n' ?> verfügbar
+            <?= count($stufe['verfuegbare_codes']) ?> Fläche<?= count($stufe['verfuegbare_codes']) === 1 ? '' : 'n' ?> verfügbar
             (<?= e(implode(', ', $stufe['codes'])) ?>).
           </p>
           <a class="btn btn-primaer preis-karte-btn" href="/flaeche-buchen.html#gruppe-<?= e($stufe['gruppe']) ?>">Bestellen</a>

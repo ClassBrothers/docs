@@ -62,6 +62,12 @@ $nonce = $GLOBALS['csp_nonce'] ?? '';
         <div class="balken" role="progressbar" aria-valuenow="<?= $f['budget_prozent'] ?>" aria-valuemin="0" aria-valuemax="100" aria-label="Fortschritt gebuchte Werbeflächen">
           <span class="balken-fuellung balken-fuellung-zwei" id="balken-budget"></span>
         </div>
+        <?php if ($f['budget_erreicht'] && $f['platzhalter_anzahl'] > 0): ?>
+          <p class="balken-kleingedruckt">
+            davon <?= e(preis($f['platzhalter_cent'])) ?> (<?= zahl($f['platzhalter_anzahl']) ?>
+            Fläche<?= $f['platzhalter_anzahl'] === 1 ? '' : 'n' ?>) aus dem eigenen Umfeld
+          </p>
+        <?php endif; ?>
       </div>
     </div>
 
@@ -77,8 +83,10 @@ $nonce = $GLOBALS['csp_nonce'] ?? '';
     </p>
 
     <p class="fortschritt-hinweis">
-      Den Anfang haben wir selbst gemacht: Die ersten Flächen gehen an vier Unternehmen aus
-      unserem eigenen Umfeld. Wer andere um Vertrauen bittet, sollte selbst vorangehen.
+      Vier Flächen sind aktuell von uns selbst belegt: Class Brothers, KI-Assistenz, SnackWorks
+      und Badische Entertainment. Wer andere um Vertrauen bittet, sollte selbst vorangehen. Diese
+      Flächen sind Platzhalter. Willst Du eine davon, bekommst Du sie – wir rücken nach hinten,
+      solange am Ende etwas für uns übrig bleibt.
     </p>
 
     <?php if ($f['ersparnis_cent'] > 0): ?>

@@ -11,8 +11,9 @@ $faq = [
         'antwort' => '<p>Eine kommunale Steuer auf Einwegverpackungen, die für Speisen und Getränke zum
                       sofortigen Verzehr ausgegeben werden. Sie wird nicht beim Gast erhoben, sondern
                       bei der Gastronomie, die die Verpackung ausgibt. Das Vorbild ist die Tübinger Satzung,
-                      deren Rechtmäßigkeit das Bundesverfassungsgericht 2025 bestätigt hat. Maßgeblich
-                      ist immer die aktuelle Satzung der Stadt Freiburg.</p>',
+                      deren Rechtmäßigkeit das Bundesverfassungsgericht Ende 2024 entschieden und im
+                      Januar 2025 veröffentlicht hat. Maßgeblich ist immer die aktuelle Satzung der
+                      Stadt Freiburg.</p>',
     ],
     [
         'frage'   => 'Wer muss die Steuer zahlen?',
@@ -35,7 +36,7 @@ $faq = [
     ],
     [
         'frage'   => 'Kann ich die Steuer an meine Gäste weitergeben?',
-        'antwort' => '<p>Rechtlich steht Ihnen die Preisgestaltung frei. Praktisch ist es eine
+        'antwort' => '<p>Rechtlich steht Dir die Preisgestaltung frei. Praktisch ist es eine
                       Abwägung: Ein sichtbarer Aufschlag auf der Rechnung sorgt für Diskussionen an
                       der Theke, ein eingepreister Aufschlag drückt die Marge. Die meisten Gastronomien,
                       mit denen wir sprechen, machen ein bisschen von beidem. Wer den Einkaufspreis
@@ -54,7 +55,14 @@ $faq = [
                       am Ausgeben der Verpackung hängt und nicht am Preis. Aber der Karton selbst
                       kostet den Betrieb nichts mehr, weil Werbeflächen darauf ihn bezahlen. Bei
                       400 Kartons pro Woche ist das eine spürbare Entlastung – ohne Vertrag und
-                      ohne Mindestlaufzeit. <a href="/#bestellen">So tragen Sie sich ein.</a></p>',
+                      ohne Mindestlaufzeit. <a href="/#bestellen">So trägst Du Dich ein.</a></p>',
+    ],
+    [
+        'frage'   => 'Ich liefere überwiegend aus. Bringt mir das etwas?',
+        'antwort' => '<p>Ja, nur anders als der Betrieb an der Theke. Die Verpackungssteuer fällt bei
+                      Lieferung in der Regel nicht an, da bist Du ohnehin außen vor. Der Einkaufspreis
+                      für den Karton fällt bei Dir aber genauso an wie überall sonst, und der ist bei
+                      Lieferdiensten wegen der Mengen oft die größere Zahl. Genau den nehmen wir raus.</p>',
     ],
 ];
 
@@ -75,13 +83,30 @@ $meta['jsonld'] = [
     ],
 ];
 
-/** Kleine Beispielrechnung, damit die Zahl greifbar wird. */
-$beispiele = [
-    ['kartons' => 200,  'label' => 'kleiner Betrieb'],
-    ['kartons' => 400,  'label' => 'mittlere Pizzeria'],
-    ['kartons' => 800,  'label' => 'starker Lieferbetrieb'],
-];
+/**
+ * Beispielrechnung nach Vertriebsweg statt nach Betriebsgroesse: so wird
+ * sichtbar, dass die Steuer nur beim Verzehr an Ort und Theke in voller
+ * Hoehe greift, waehrend der Einkaufspreis des Kartons immer anfaellt -
+ * unabhaengig davon, ob der Gast abholt oder beliefert wird.
+ */
 $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Kartons
+$beispiele = [
+    [
+        'betrieb' => 'Abholung und Theke', 'kartons' => 300, 'steuerpflichtig' => 'alle',
+        'steuer_cent' => 64950, 'einkauf_cent' => 58455, 'zusammen_cent' => 123405,
+        'mitps_cent' => 64950, 'praefix' => '',
+    ],
+    [
+        'betrieb' => 'gemischt', 'kartons' => 400, 'steuerpflichtig' => 'etwa die Hälfte',
+        'steuer_cent' => 43300, 'einkauf_cent' => 77940, 'zusammen_cent' => 121240,
+        'mitps_cent' => 43300, 'praefix' => '',
+    ],
+    [
+        'betrieb' => 'überwiegend Lieferung', 'kartons' => 800, 'steuerpflichtig' => 'wenige',
+        'steuer_cent' => null, 'einkauf_cent' => 155880, 'zusammen_cent' => 155880,
+        'mitps_cent' => 0, 'praefix' => 'ab ',
+    ],
+];
 ?>
 
 <section class="seiten-hero">
@@ -105,8 +130,9 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
     <p>
       Freiburg erhebt eine kommunale Steuer auf Einwegverpackungen für Speisen und Getränke,
       die zum sofortigen Verzehr abgegeben werden. Rechtlich ist das eine örtliche
-      Verbrauchsteuer. Vorbild ist die Tübinger Satzung, die 2025 vom Bundesverfassungsgericht
-      bestätigt wurde – seitdem haben mehrere Städte nachgezogen.
+      Verbrauchsteuer. Vorbild ist die Tübinger Satzung, die das Bundesverfassungsgericht Ende
+      2024 entschieden und im Januar 2025 veröffentlicht hat – seitdem haben mehrere Städte
+      nachgezogen.
     </p>
     <p>
       Das Ziel dahinter ist nachvollziehbar: weniger Einwegmüll in der Innenstadt, weniger
@@ -120,12 +146,11 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
         <li><strong><?= number_format($s['karton_cent'], 0, ',', '.') ?> Cent</strong> je Einwegverpackung – dazu zählt der Pizzakarton</li>
         <li><strong><?= number_format($s['geschirr_cent'], 0, ',', '.') ?> Cent</strong> je Einweggeschirr</li>
         <li><strong><?= number_format($s['besteck_cent'], 0, ',', '.') ?> Cent</strong> je Einwegbesteck-Set</li>
-        <li>eine Obergrenze je Mahlzeit, damit sich die Beträge nicht summieren</li>
       </ul>
       <p class="info-box-fuss">
-        Die genauen Sätze, Ausnahmen und die Obergrenze stehen in der Satzung der Stadt Freiburg.
-        Verbindlich ist immer der dort veröffentlichte Text in seiner aktuellen Fassung –
-        prüfen Sie ihn, bevor Sie kalkulieren.
+        Alle Angaben ohne Gewähr. Verbindlich ist immer die aktuelle Fassung der
+        Verpackungssteuersatzung – bitte lies sie auf den offiziellen Seiten der Stadt
+        Freiburg nach.
       </p>
     </div>
   </div>
@@ -135,18 +160,21 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
   <div class="wrap">
     <h2 id="rechnung-titel">Was kostet das im Monat?</h2>
     <p class="band-lead">
-      Gerechnet mit <?= number_format($s['karton_cent'], 0, ',', '.') ?> Cent Steuer je Karton und
-      einem Einkaufspreis von <?= e(preis($einkaufCent)) ?> für einen bedruckten 32er-Karton.
-      Ein Monat entspricht 4,33 Wochen.
+      Gerechnet mit <?= number_format($s['karton_cent'], 0, ',', '.') ?> Cent Steuer je
+      steuerpflichtiger Verpackung und einem Einkaufspreis von <?= e(preis($einkaufCent)) ?> für
+      einen bedruckten 32er-Karton. Ein Monat entspricht 4,33 Wochen. Wie viel davon tatsächlich
+      steuerpflichtig ist, hängt vom Vertriebsweg ab – Abholung und Theke immer, Lieferung nach
+      Hause in der Regel nicht.
     </p>
 
     <div class="tabelle-wrap">
       <table class="preistabelle">
-        <caption class="sr-only">Beispielrechnung Verpackungssteuer und Kartoneinkauf je Monat</caption>
+        <caption class="sr-only">Beispielrechnung Verpackungssteuer und Kartoneinkauf je Monat nach Vertriebsweg</caption>
         <thead>
           <tr>
+            <th scope="col">Betriebstyp</th>
             <th scope="col">Kartons pro Woche</th>
-            <th scope="col">Kartons pro Monat</th>
+            <th scope="col">davon steuerpflichtig</th>
             <th scope="col">Steuer im Monat</th>
             <th scope="col">Kartoneinkauf im Monat</th>
             <th scope="col">Zusammen</th>
@@ -154,18 +182,15 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
           </tr>
         </thead>
         <tbody>
-          <?php foreach ($beispiele as $b):
-              $proMonat = (int) round($b['kartons'] * 4.33);
-              $steuer   = $proMonat * $s['karton_cent'];
-              $einkauf  = $proMonat * $einkaufCent;
-          ?>
+          <?php foreach ($beispiele as $b): ?>
             <tr>
-              <th scope="row"><?= zahl($b['kartons']) ?><span class="tabelle-sub"><?= e($b['label']) ?></span></th>
-              <td><?= zahl($proMonat) ?></td>
-              <td><?= e(preis($steuer)) ?></td>
-              <td><?= e(preis($einkauf)) ?></td>
-              <td><strong><?= e(preis($steuer + $einkauf)) ?></strong></td>
-              <td class="tabelle-gut"><?= e(preis($steuer)) ?><span class="tabelle-sub">Einkauf entfällt</span></td>
+              <th scope="row"><?= e($b['betrieb']) ?></th>
+              <td><?= zahl($b['kartons']) ?></td>
+              <td><?= e($b['steuerpflichtig']) ?></td>
+              <td><?= $b['steuer_cent'] === null ? 'gering' : e(preis($b['steuer_cent'])) ?></td>
+              <td><?= e(preis($b['einkauf_cent'])) ?></td>
+              <td><strong><?= e($b['praefix']) ?><?= e(preis($b['zusammen_cent'])) ?></strong></td>
+              <td class="tabelle-gut"><?= e($b['praefix']) ?><?= e(preis($b['mitps_cent'])) ?><span class="tabelle-sub">Einkauf entfällt</span></td>
             </tr>
           <?php endforeach; ?>
         </tbody>
@@ -173,10 +198,9 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
     </div>
 
     <p class="band-nachsatz">
-      Die Steuer selbst können wir niemandem abnehmen – sie hängt daran, dass eine Verpackung
-      ausgegeben wird, nicht daran, was sie gekostet hat. Die zweite Spalte dagegen lässt sich
-      auf null bringen. Bei 400 Kartons pro Woche sind das rund
-      <?= e(preis((int) round(400 * 4.33 * $einkaufCent))) ?> im Monat, die im Betrieb bleiben.
+      Bei Lieferung nach Hause fällt die Verpackungssteuer nach den Auslegungshinweisen der
+      Stadt in der Regel nicht an. Der Einkaufspreis fällt trotzdem an – und genau den nehmen
+      wir raus. Was für Deinen Betrieb gilt, klärst Du am besten mit Deiner Steuerberatung.
     </p>
   </div>
 </section>
@@ -187,7 +211,7 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
     <div class="karten">
       <article class="karte">
         <h3>Sauber erfassen</h3>
-        <p>Zählen Sie mit, wie viele Einwegverpackungen wirklich rausgehen. Ohne belastbare Zahl ist jede Anmeldung und jede Kalkulation Schätzung.</p>
+        <p>Zähl mit, wie viele Einwegverpackungen wirklich rausgehen. Ohne belastbare Zahl ist jede Anmeldung und jede Kalkulation Schätzung.</p>
       </article>
       <article class="karte">
         <h3>Mehrweg prüfen, wo es passt</h3>
@@ -199,7 +223,11 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
       </article>
       <article class="karte">
         <h3>Nicht still schlucken</h3>
-        <p>Reden Sie mit Kollegen, mit dem Verband, mit der Stadt. Wer die Zahlen kennt, kann bei Ausnahmen und Übergangsregeln mitreden.</p>
+        <p>Rede mit Kollegen, mit dem Verband, mit der Stadt. Wer die Zahlen kennt, kann bei Ausnahmen und Übergangsregeln mitreden.</p>
+      </article>
+      <article class="karte">
+        <h3>Frist im Kalender eintragen</h3>
+        <p>Die Steueranmeldung muss bis zum 30. Januar für das abgelaufene Jahr bei der Stadt sein, auf amtlichem Vordruck. Eine Erinnerung kommt nicht. Belege über Warenbezug und Verkauf musst Du vier Jahre aufbewahren.</p>
       </article>
     </div>
   </div>
@@ -220,7 +248,20 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
     </ul>
     <p class="klein">
       Bei steuerlichen Fragen zur eigenen Gastronomie hilft die Steuerberatung weiter.
-      Wir können sagen, was ein Karton kostet – nicht, wie Ihre Anmeldung auszusehen hat.
+      Wir können sagen, was ein Karton kostet – nicht, wie Deine Anmeldung auszusehen hat.
+    </p>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="ausnahmen-titel">
+  <div class="wrap schmal">
+    <h2 id="ausnahmen-titel">Worauf fällt die Steuer nicht an?</h2>
+    <p>
+      Auf Mehrweg, auf Lieferung nach Hause, auf mitgebrachte Gefäße, auf eingepackte Reste aus
+      dem Restaurant, auf Servietten, auf essbare Waffeln und Becher, auf Kleinstverpackungen bis
+      25 Gramm und auf besonders kleine Besteckteile bis 10 Zentimeter. Wer im Jahr an höchstens
+      zehn Tagen auf Festen und Märkten verkauft, ist ebenfalls befreit. Verbindlich ist die
+      Satzung der Stadt – bitte lies dort nach.
     </p>
   </div>
 </section>
@@ -233,7 +274,7 @@ $einkaufCent = 45;   // realistischer Einkaufspreis eines bedruckten 32er-Karton
   <div class="wrap schmal zentriert">
     <h2 id="steuer-cta">Den Einkaufspreis auf null bringen</h2>
     <p>
-      Die Steuer bleibt. Der Karton muss trotzdem nicht Ihr Geld kosten.
+      Die Steuer bleibt. Der Karton muss trotzdem nicht Dein Geld kosten.
       Bestelle jetzt und sei dabei, wenn wir versenden.
     </p>
     <a class="btn btn-primaer btn-gross" href="/#bestellen">Jetzt bestellen</a>

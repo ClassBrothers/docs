@@ -23,7 +23,7 @@ $meta['stoerer']      = false;
     <h2>Kontakt</h2>
     <p>
       Telefon: <?= e(config('firma.telefon')) ?><br>
-      E-Mail: <a href="mailto:<?= e(firma_email_link()) ?>"><?= e(config('firma.email')) ?></a>
+      E-Mail: <?= email_link_html() ?>
     </p>
 
     <h2>Registereintrag</h2>

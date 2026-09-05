@@ -81,13 +81,31 @@ function zahl(int $n): string
 
 /**
  * E-Mail-Adresse aus der Konfiguration, bereinigt fuer mailto:-Links.
- * In app/config.php steht sie zum Schutz vor Sammelprogrammen mit
- * Leerzeichen (hallo @ pizzasupport . de) - fuer einen Link muessen die raus.
- * Die Anzeige nutzt weiterhin config('firma.email') direkt.
  */
 function firma_email_link(): string
 {
     return str_replace(' ', '', (string) config('firma.email'));
+}
+
+/**
+ * E-Mail-Adresse als spam-geschuetzten Link ausgeben.
+ *
+ * Die Adresse steht umgekehrt in zwei data-Attributen im Quelltext -
+ * main.js dreht beide Teile zurueck und setzt Linkziel und Text. Ohne
+ * JavaScript zeigt <noscript> denselben Link im Klartext, damit die
+ * Adresse immer erreichbar bleibt.
+ */
+function email_link_html(string $klasse = ''): string
+{
+    $adresse = (string) config('firma.email');
+    $teile   = explode('@', $adresse, 2);
+    $nutzer  = $teile[0] ?? '';
+    $domain  = $teile[1] ?? '';
+    $klasseAttr = $klasse !== '' ? ' ' . e($klasse) : '';
+
+    return '<a href="#" class="mail-adresse' . $klasseAttr . '" data-mail-nutzer="' . e(strrev($nutzer)) . '"'
+        . ' data-mail-domain="' . e(strrev($domain)) . '" rel="nofollow noopener">E-Mail-Adresse anzeigen</a>'
+        . '<noscript><a href="mailto:' . e($adresse) . '">' . e($adresse) . '</a></noscript>';
 }
 
 /** Eine Flaeche aus dem Flaechenkatalog holen (Kennung wie im Flaechenplan). */
@@ -110,8 +128,29 @@ function flaechenkatalog_eintrag(string $id): ?array
  *
  * @return array<int, array{bezeichnung: string, masse: string, gruppe: string, preis: int, codes: string[]}>
  */
+/**
+ * Preisstufen aus dem Flaechenkatalog, mit Kennungen UND einer echten
+ * Verfuegbarkeitszahl aus der Datenbank (flaechen_vergabe) - nicht aus der
+ * statischen Konfiguration. Platzhalter-Vergaben (die vier eigenen
+ * Buchungen der Gruendungspartner, siehe app/lib/gruendungspartner.php)
+ * zaehlen dabei weiterhin als verfuegbar, weil sie einer echten Buchung
+ * weichen (siehe werbebuchung-bestaetigen.php) - nur echte Verkaeufe
+ * reduzieren die Zahl.
+ */
 function flaechenkatalog_preisstufen(): array
 {
+    $vergeben = [];
+    try {
+        foreach (db_all('SELECT kennung, ist_platzhalter FROM flaechen_vergabe') as $v) {
+            $vergeben[$v['kennung']] = (bool) $v['ist_platzhalter'];
+        }
+    } catch (PDOException $e) {
+        // Migration noch nicht eingespielt (frischer FTP-Upload) - dann
+        // gilt vorsichtshalber nichts als verkauft, statt die Seite
+        // abzubrechen.
+        $vergeben = [];
+    }
+
     $stufen = [];
     foreach (config('flaechenkatalog.flaechen', []) as $f) {
         if (!$f['buchbar'] || $f['preis'] === null) {
@@ -120,14 +159,20 @@ function flaechenkatalog_preisstufen(): array
         $schluessel = $f['gruppe'] . '|' . $f['bezeichnung'] . '|' . $f['masse'] . '|' . $f['preis'];
         if (!isset($stufen[$schluessel])) {
             $stufen[$schluessel] = [
-                'bezeichnung' => $f['bezeichnung'],
-                'masse'       => $f['masse'],
-                'gruppe'      => $f['gruppe'],
-                'preis'       => $f['preis'],
-                'codes'       => [],
+                'bezeichnung'       => $f['bezeichnung'],
+                'masse'             => $f['masse'],
+                'gruppe'            => $f['gruppe'],
+                'preis'             => $f['preis'],
+                'codes'             => [],
+                'verfuegbare_codes' => [],
             ];
         }
         $stufen[$schluessel]['codes'][] = $f['id'];
+        // Verkauft (nicht Platzhalter) ist das Einzige, was die
+        // Verfuegbarkeit tatsaechlich verringert.
+        if (!isset($vergeben[$f['id']]) || $vergeben[$f['id']] === true) {
+            $stufen[$schluessel]['verfuegbare_codes'][] = $f['id'];
+        }
     }
     return array_values($stufen);
 }

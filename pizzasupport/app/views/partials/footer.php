@@ -44,7 +44,8 @@
     <div class="fuss-spalte">
       <h2>Direkt erreichbar</h2>
       <p>
-        <a href="mailto:<?= e(firma_email_link()) ?>"><?= e(config('firma.email')) ?></a><br>
+        <a href="tel:<?= e(preg_replace('/[^+0-9]/', '', (string) config('firma.telefon'))) ?>"><?= e(config('firma.telefon')) ?></a><br>
+        <?= email_link_html() ?><br>
         <?= e(config('firma.plz_ort')) ?>
       </p>
     </div>
@@ -57,6 +58,7 @@
       <a href="https://class-brothers.com/seo" rel="nofollow noopener">SEO</a> und
       <a href="https://webdesign-freiburg.info" rel="nofollow noopener">Webdesign Freiburg</a>, in Zusammenarbeit mit der
       <a href="https://badische-entertainment.com" rel="nofollow noopener">Badische Entertainment GmbH – Eventagentur und Gastroconsulting</a>.
+      <a href="https://class-brothers.com/was-kostet-diese-website/" data-follow>Was kostet diese Website?</a>
     </p>
     <p class="fuss-recht">
       <a href="/impressum.html">Impressum</a>

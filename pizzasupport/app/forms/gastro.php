@@ -45,6 +45,9 @@ $v->text('betrieb', 'Der Name der Gastronomie', true, 150)
   ->telefon('telefon', 'Die Telefonnummer')
   ->url('website', 'Die Website', false)
   ->text('betriebsart', 'Die Betriebsart', true, 60)
+  ->text('betriebsart_frei', 'Die Angabe, was Ihr macht', false, 150)
+  ->text('aktueller_lieferant', 'Der aktuelle Lieferant', false, 150)
+  ->auswahl('aktuelle_groesse', 'Die aktuelle Größe', ['28', '30', '32', '33', 'andere'])
   ->langtext('anmerkung', 'Deine Anmerkung', false, 1500)
   ->checkbox('bestellung_ok', 'Ohne diese Bestätigung können wir Deine Menge nicht einplanen.')
   ->checkbox('karte_ok', '', false)
@@ -55,6 +58,38 @@ $betriebsarten = ['Pizzeria', 'Restaurant', 'Imbiss', 'Lieferdienst mit eigener 
                   'Foodtruck', 'Bäckerei', 'Café', 'Bar mit Küche', 'Anderes'];
 if ($v->get('betriebsart') !== null && !in_array($v->get('betriebsart'), $betriebsarten, true)) {
     $v->fehlerSetzen('betriebsart', 'Bitte wähle eine Betriebsart aus der Liste.');
+}
+
+// "Was macht Ihr?" ist nur dann Pflicht, wenn "Anderes" gewaehlt wurde -
+// ein bedingtes Pflichtfeld darf nicht greifen, wenn sein Ausloeser gar
+// nicht gesetzt ist (siehe Nachtrag 01, Etappe 5.2).
+if ($v->get('betriebsart') === 'Anderes' && $v->get('betriebsart_frei') === null) {
+    $v->fehlerSetzen('betriebsart_frei', 'Bitte kurz sagen, was Ihr macht.');
+}
+
+// Neue Pflichtfragen zur Bedarfsplanung (Schritt "Dein Bedarf").
+$kartonsWocheRoh = trim(str_replace(['.', ' ', "\u{00A0}"], '', (string) ($_POST['kartons_woche'] ?? '')));
+$kartonsWoche    = null;
+if ($kartonsWocheRoh === '' || !preg_match('/^\d+$/', $kartonsWocheRoh)) {
+    $v->fehlerSetzen('kartons_woche', 'Bitte gib an, wie viele Kartons Du ungefähr pro Woche brauchst.');
+} else {
+    $kartonsWoche = (int) $kartonsWocheRoh;
+    if ($kartonsWoche < 1) {
+        $v->fehlerSetzen('kartons_woche', 'Bitte gib an, wie viele Kartons Du ungefähr pro Woche brauchst.');
+        $kartonsWoche = null;
+    }
+}
+
+$aktuellerEinkaufspreisRoh  = trim(str_replace(',', '.', (string) ($_POST['aktueller_einkaufspreis'] ?? '')));
+$aktuellerEinkaufspreisCent = null;
+if ($aktuellerEinkaufspreisRoh === '' || !is_numeric($aktuellerEinkaufspreisRoh)) {
+    $v->fehlerSetzen('aktueller_einkaufspreis', 'Bitte gib an, was ein Karton Dich aktuell im Einkauf kostet, zum Beispiel 0,45.');
+} else {
+    $aktuellerEinkaufspreisCent = (int) round(((float) $aktuellerEinkaufspreisRoh) * 100);
+    if ($aktuellerEinkaufspreisCent <= 0) {
+        $v->fehlerSetzen('aktueller_einkaufspreis', 'Der Einkaufspreis muss größer als null sein.');
+        $aktuellerEinkaufspreisCent = null;
+    }
 }
 
 // Ausserhalb des kostenfreien Liefergebiets gibt es keinen festen Zuschlag,
@@ -185,17 +220,19 @@ try {
     db_run(
         'INSERT INTO gastro_bestellungen
             (vorname, nachname, betrieb, strasse, plz, ort, email, telefon_enc, website,
-             betriebsart, anmerkung,
+             betriebsart, betriebsart_frei, anmerkung,
              bestellung_ok, karte_ok, datenschutz_ok, versand_zuschlag_ok,
              einkaufspreis_cent, kartons_monat, lieferart, abruf_menge,
+             kartons_woche, aktueller_einkaufspreis_cent, aktuelle_groesse, aktueller_lieferant,
              einwilligung_am, einwilligung_zweck, status, erstellt_am, quelle)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         [
             $d['vorname'], $d['nachname'], $d['betrieb'], $d['strasse'], $d['plz'], $d['ort'],
             $d['email'], encrypt_field($d['telefon']), $d['website'],
-            $d['betriebsart'], $d['anmerkung'],
+            $d['betriebsart'], $d['betriebsart_frei'], $d['anmerkung'],
             $d['bestellung_ok'], $d['karte_ok'], $d['datenschutz_ok'], (int) $ausserhalbFreiburg,
             $einkaufspreisCent, $kartonsMonat, $lieferart, $abrufMenge,
+            $kartonsWoche, $aktuellerEinkaufspreisCent, $d['aktuelle_groesse'], $d['aktueller_lieferant'],
             $jetzt, implode('; ', $zwecke), 'neu', $jetzt, 'website',
         ]
     );
@@ -268,7 +305,7 @@ mail_send(
 mail_ops(
     'Neue Gastro-Bestellung: ' . $d['betrieb'],
     "Neue Bestellung über die Website:\n\n"
-    . "Betrieb:      {$d['betrieb']} ({$d['betriebsart']})\n"
+    . "Betrieb:      {$d['betrieb']} ({$d['betriebsart']}" . ($d['betriebsart_frei'] ? ': ' . $d['betriebsart_frei'] : '') . ")\n"
     . "Ansprechpartner: {$d['vorname']} {$d['nachname']}\n"
     . "Adresse:      {$d['strasse']}, {$d['plz']} {$d['ort']}\n"
     . "E-Mail:       {$d['email']}\n"
@@ -279,6 +316,11 @@ mail_ops(
     . 'Lieferung:    ' . $lieferartText . "\n"
     . 'Versandzuschlag: ' . ($ausserhalbFreiburg ? 'ja – außerhalb ' . $porto['frei_in'] : 'nein') . "\n"
     . 'Karte:        ' . ($d['karte_ok'] ? 'JA – bitte freigeben' : 'nein') . "\n"
+    . "Bedarf laut Angabe:\n"
+    . '  Kartons/Woche: ' . zahl((int) $kartonsWoche) . "\n"
+    . '  Einkaufspreis: ' . preis((int) $aktuellerEinkaufspreisCent) . "\n"
+    . '  Aktuelle Größe: ' . $d['aktuelle_groesse'] . "\n"
+    . '  Aktueller Lieferant: ' . ($d['aktueller_lieferant'] ?: '–') . "\n"
     . 'Anmerkung:    ' . ($d['anmerkung'] ?: '–') . "\n\n"
     . 'Freigabe: ' . url('/admin'),
     $d['email']

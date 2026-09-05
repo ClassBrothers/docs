@@ -61,6 +61,7 @@ function mail_ops(string $betreff, string $text, ?string $antwortAn = null): boo
 function mail_signatur(): string
 {
     return "\n\n--\nPizza Support\nEin Projekt der Class Brothers GmbH, Freiburg\n"
+         . 'Telefon: ' . config('firma.telefon') . "\n"
          . env('APP_URL', 'https://pizzasupport.de') . "\n\n"
          . "Diese Nachricht wurde automatisch erzeugt, weil auf pizzasupport.de\n"
          . "ein Formular mit dieser Adresse abgeschickt wurde. Wenn Du das nicht\n"

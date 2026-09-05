@@ -122,7 +122,6 @@
 
 /* --- Ersparnisrechner --------------------------------------------------- */
 .rechner{margin-top:1.5rem}
-.rechner [data-rechner-berechnen]{margin-top:.5rem}
 
 /* Ergebnis im Look einer alten Registrierkasse: dunkles Display, die
    beiden Summen als leuchtende "Kacheln" mitten im Satz statt als
@@ -907,4 +906,59 @@
    linksbuendig in der vollen Breite von .wrap. */
 .bestellen-kopf{margin-left:auto;margin-right:auto;text-align:center}
 .formular-breit{margin-left:auto;margin-right:auto}
+
+/* Nachtrag 01: Telefonnummer im Header, direkt vor dem Menuknopf bzw. der
+   Buchen-Schaltflaeche. .kopf-nav traegt margin-left:auto im Critical CSS -
+   das wandert hierher, damit Telefonnummer und Navigation gemeinsam rechts
+   stehen und die Nummer auch bei geschlossenem Mobilmenu sichtbar bleibt. */
+.kopf-telefon{
+  margin-left:auto;display:inline-flex;align-items:center;gap:.4rem;
+  font-family:var(--schrift-ui);font-weight:600;font-size:.9rem;
+  color:var(--textfarbe);text-decoration:none;white-space:nowrap;flex:0 0 auto;
+}
+.kopf-telefon:hover{color:var(--akzent)}
+.kopf-telefon-icon{width:18px;height:18px;flex:0 0 auto}
+.kopf-nav{margin-left:0}
+@media (max-width:520px){
+  .kopf-telefon-text{display:none}
+}
+
+/* Nachtrag 01, Etappe 5.2: Bestellassistent in drei Schritten. */
+.assistent-fortschritt{
+  font-family:var(--schrift-ui);font-weight:700;font-size:.85rem;letter-spacing:.03em;
+  text-transform:uppercase;color:var(--akzent);margin:0 0 1.25rem;
+}
+.assistent-nav{display:flex;justify-content:space-between;gap:1rem;margin-top:1.5rem}
+.assistent-nav .assistent-weiter{margin-left:auto}
+.assistent-schritt legend:focus{outline:none}
+
+/* "Ich brauche eine andere Größe": derselbe Checkbox-Trick wie bei
+   .warum-mehr-schalter, hier aber auf allen Bildschirmgroessen aktiv,
+   nicht nur unterhalb einer Breakpoint-Grenze. */
+.andere-groesse-schalter{position:absolute;width:1px;height:1px;opacity:0}
+.andere-groesse-knopf{
+  display:inline-block;cursor:pointer;margin-top:.75rem;
+  font-family:var(--schrift-ui);font-weight:700;font-size:.9rem;color:var(--akzent);
+}
+.andere-groesse-inhalt{display:none;flex-direction:column;gap:1rem;margin-top:1rem}
+.andere-groesse-schalter:checked ~ .andere-groesse-inhalt{display:flex}
+
+/* .summe{display:flex} und [hidden]{display:none} haben dieselbe
+   Spezifitaet - das spaeter geladene .summe gewinnt sonst gegen das
+   hidden-Attribut, das main.js zum Ein-/Ausblenden setzt (Mengenregeln
+   und Gesamtsumme im Bestellassistenten, Auftragswert auf der
+   Buchungsseite). Eine gezielt hoehere Spezifitaet stellt das gerade. */
+.summe[hidden]{display:none}
+
+/* Nachtrag 01, Etappe 3.3: Platzhalter-Flaechen (eigene Buchungen der
+   Gruendungspartner) sind weiterhin buchbar, darum eine eigene, waermere
+   Farbe statt des roten "verkauft" - sie sollen nicht wie vergriffen
+   wirken. */
+.wahl-platzhalter .wahl-inhalt{opacity:.85}
+.wahl-platzhalter-marke{
+  font-style:normal;font-size:.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.04em;color:var(--akzent-waerme-hell);margin-top:.3rem;display:block;
+}
+.flaechenplan-platzhalter{background:rgba(43,35,31,.72);border-color:var(--akzent-waerme)}
+.balken-kleingedruckt{font-size:.82rem;color:var(--textfarbe-gedaempft);margin:.35rem 0 0}
 

@@ -26,6 +26,16 @@ function fortschritt(): array
           WHERE g.status = 'freigegeben'", [], 0
     );
 
+    // Anteil der Gruendungspartner-Platzhalter am Werbeflaechen-Fortschritt
+    // (siehe app/lib/gruendungspartner.php) - fuer das Kleingedruckte
+    // "davon X aus dem eigenen Umfeld" unter dem Balken.
+    $platzhalterAnzahl = (int) db_value(
+        "SELECT COUNT(*) FROM werbebuchungen WHERE quelle = 'gruendungspartner' AND status = 'freigegeben'", [], 0
+    );
+    $platzhalterCent = (int) db_value(
+        "SELECT COALESCE(SUM(summe_cent), 0) FROM werbebuchungen WHERE quelle = 'gruendungspartner' AND status = 'freigegeben'", [], 0
+    );
+
     // Ersparnisrechner, oeffentliche Gesamtsumme: nur aus freigegebenen
     // Bestellungen mit angegebenem Einkaufspreis, nie aus reinen
     // Rechnereingaben. Rechnet live, damit eine geloeschte Bestellung ihren
@@ -73,6 +83,8 @@ function fortschritt(): array
         'gesamt_prozent'    => (int) round(min($q_betriebe, $q_budget) * 100),
         'ausgeloest'        => $ausgeloest,
         'ersparnis_cent'    => $ersparnis_cent,
+        'platzhalter_anzahl' => $platzhalterAnzahl,
+        'platzhalter_cent'   => $platzhalterCent,
     ];
 }
 

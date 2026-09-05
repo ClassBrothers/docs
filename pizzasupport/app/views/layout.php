@@ -17,12 +17,9 @@ $jsonld = array_merge([jsonld_organisation()], $meta['jsonld'] ?? []);
 $graph  = ['@context' => 'https://schema.org', '@graph' => $jsonld];
 
 $navigation = [
-    '/'                                => 'Für die Gastro',
+    '/'                                => 'Für Gastro',
     '/werbepartner.html'               => 'Für Unternehmen',
-    '/flaeche-buchen.html'             => 'Fläche buchen',
-    '/werbeideen.html'                 => 'Werbeideen',
     '/teilnehmer.html'                 => 'Wer ist dabei',
-    '/fuer-gaeste.html'                => 'Für Gäste',
     '/verpackungssteuer-freiburg.html' => 'Verpackungssteuer',
     '/ueber-uns.html'                  => 'Über uns',
     '/kontakt.html'                    => 'Kontakt',
@@ -104,6 +101,13 @@ $aktuell = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
       <?php endif; ?>
     </a>
 
+    <a class="kopf-telefon" href="tel:<?= e(preg_replace('/[^+0-9]/', '', (string) config('firma.telefon'))) ?>" aria-label="Anrufen: <?= e(config('firma.telefon')) ?>">
+      <svg class="kopf-telefon-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L14 13l5 2v4a2 2 0 0 1-2 2C9.5 21 3 14.5 3 6a2 2 0 0 1 2-2z"/>
+      </svg>
+      <span class="kopf-telefon-text"><?= e(config('firma.telefon')) ?></span>
+    </a>
+
     <button class="kopf-toggle" type="button" aria-expanded="false" aria-controls="hauptnav" aria-label="Menü öffnen">
       <span class="burger" aria-hidden="true"></span>
     </button>
@@ -114,7 +118,7 @@ $aktuell = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
           <li><a href="<?= e($ziel) ?>"<?= $ziel === $aktuell ? ' aria-current="page"' : '' ?>><?= e($label) ?></a></li>
         <?php endforeach; ?>
       </ul>
-      <a class="btn btn-primaer kopf-cta" href="/#bestellen">Jetzt bestellen</a>
+      <a class="btn btn-primaer kopf-cta" href="/#bestellen">Kartons sichern</a>
     </nav>
   </div>
 </header>

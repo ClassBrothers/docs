@@ -53,6 +53,15 @@ if (!$angemeldet) {
 }
 
 // -----------------------------------------------------------------------
+// CSV-Export je Tabelle - Alternative zu bin/export.php fuer den Betrieb
+// ohne Kommandozeilenzugang. Nur GET, nur hinter der Anmeldung oben.
+// -----------------------------------------------------------------------
+if (isset($_GET['csv']) && csrf_valid($_GET['_token'] ?? null)) {
+    admin_csv_export((string) $_GET['csv']);
+    exit;
+}
+
+// -----------------------------------------------------------------------
 // Aktionen
 // -----------------------------------------------------------------------
 $meldung = null;
@@ -64,7 +73,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['aktion'])) {
         $tabelle = (string) ($_POST['tabelle'] ?? '');
         $aktion  = (string) ($_POST['aktion'] ?? '');
 
-        $erlaubteTabellen = ['gastro_bestellungen', 'werbebuchungen', 'pizzeria_empfehlungen'];
+        $erlaubteTabellen = ['gastro_bestellungen', 'werbebuchungen', 'pizzeria_empfehlungen', 'newsletter'];
         $erlaubteStatus   = ['freigegeben', 'abgelehnt', 'neu', 'kontaktiert', 'erledigt'];
 
         if (in_array($tabelle, $erlaubteTabellen, true) && in_array($aktion, $erlaubteStatus, true) && $id > 0) {
@@ -238,6 +247,53 @@ function admin_status(string $status): string
     return '<span class="status status-' . e($status) . '">' . e($status) . '</span>';
 }
 
+/** Ein Link zum CSV-Export einer Tabelle, mit demselben CSRF-Token wie die Formulare auf der Seite. */
+function admin_csv_link(string $tabelle): string
+{
+    return '<a class="csv-link" href="/admin?csv=' . e($tabelle) . '&_token=' . e(csrf_token()) . '">CSV exportieren</a>';
+}
+
+/** Streamt eine ganze Tabelle als CSV-Download - Alternative zu bin/export.php ohne Kommandozeile. */
+function admin_csv_export(string $tabelle): void
+{
+    $erlaubt = ['gastro_bestellungen', 'werbebuchungen', 'pizzeria_empfehlungen', 'newsletter'];
+    if (!in_array($tabelle, $erlaubt, true)) {
+        http_response_code(404);
+        exit;
+    }
+    $zeilen = db_all("SELECT * FROM {$tabelle} ORDER BY id DESC");
+
+    header('Content-Type: text/csv; charset=UTF-8');
+    header('Content-Disposition: attachment; filename="' . $tabelle . '-' . gmdate('Y-m-d') . '.csv"');
+    header('X-Robots-Tag: noindex, nofollow');
+
+    $ausgabe = fopen('php://output', 'w');
+    // BOM, damit Excel unter Windows die Umlaute richtig zeigt.
+    fwrite($ausgabe, "\xEF\xBB\xBF");
+
+    if ($zeilen === []) {
+        fclose($ausgabe);
+        return;
+    }
+
+    $spalten = array_keys($zeilen[0]);
+    // Verschluesselte Telefonnummern nuetzen in einer Tabellenkalkulation
+    // niemandem - hier stattdessen entschluesselt ausgeben, alles andere
+    // 1:1 wie in der Datenbank.
+    fputcsv($ausgabe, array_map(
+        static fn (string $s): string => $s === 'telefon_enc' ? 'telefon' : $s,
+        $spalten
+    ), ';', '"', '\\');
+    foreach ($zeilen as $z) {
+        $zeile = [];
+        foreach ($spalten as $spalte) {
+            $zeile[] = $spalte === 'telefon_enc' ? (string) decrypt_field($z[$spalte]) : (string) $z[$spalte];
+        }
+        fputcsv($ausgabe, $zeile, ';', '"', '\\');
+    }
+    fclose($ausgabe);
+}
+
 function admin_seite(?string $meldung): void
 {
     admin_kopf('Verwaltung');
@@ -268,10 +324,13 @@ function admin_seite(?string $meldung): void
 
     // Gastro
     $lieferartLabels = ['gesamt' => 'Alles auf einmal', 'abruf' => 'Monatlicher Abruf', 'abholung' => 'Abholung'];
-    echo '<h2>Gastro-Bestellungen</h2>'
+    echo '<h2>Gastro-Bestellungen</h2>' . admin_csv_link('gastro_bestellungen')
        . '<p class="hinweis-klein">„Koordinaten ermitteln" sucht die Adresse kostenlos bei OpenStreetMap '
        . '(Nominatim) und setzt den Punkt auf der Teilnehmerkarte. Ohne Koordinaten erscheint ein Eintrag '
        . 'weiterhin in der Liste, nur nicht auf der Karte.</p>'
+       . '<p class="hinweis-klein">Zeilen mit <span class="warnung">⚠ PLZ prüfen</span> liegen mit ihrer '
+       . 'Postleitzahl außerhalb des üblichen Bereichs für Baden-Württemberg - kein Beweis für einen '
+       . 'Testeintrag, aber ein Grund für einen zweiten Blick.</p>'
        . '<div class="tabelle-wrap"><table><thead><tr>'
        . '<th>Betrieb</th><th>Kontakt</th><th>Menge</th><th>Lieferung</th><th>Karte</th><th>Status</th><th>Aktion</th></tr></thead><tbody>';
     foreach (db_all('SELECT * FROM gastro_bestellungen ORDER BY id DESC LIMIT 200') as $z) {
@@ -287,8 +346,13 @@ function admin_seite(?string $meldung): void
         if ($z['lieferart'] === 'abruf' && $z['abruf_menge']) {
             $lieferText .= '<br><small>' . zahl((int) $z['abruf_menge']) . ' je Abruf</small>';
         }
+        // Grobe Faustregel, keine amtliche Pruefung: Baden-Wuerttemberg
+        // liegt ueberwiegend in den PLZ-Bereichen 68-79 und 88 - alles
+        // andere ist nicht falsch, aber einen zweiten Blick wert.
+        $plzUnueblich = !preg_match('/^(6[89]|7[0-9]|88)/', (string) $z['plz']);
         echo '<tr>'
-           . '<td><strong>' . e($z['betrieb']) . '</strong><br><small>' . e($z['strasse']) . ', ' . e($z['plz']) . ' ' . e($z['ort']) . '<br>' . e($z['betriebsart']) . '</small>'
+           . '<td><strong>' . e($z['betrieb']) . '</strong>' . ($plzUnueblich ? ' <span class="warnung">⚠ PLZ prüfen</span>' : '')
+           . '<br><small>' . e($z['strasse']) . ', ' . e($z['plz']) . ' ' . e($z['ort']) . '<br>' . e($z['betriebsart']) . '</small>'
            . admin_adresse_bearbeiten('gastro_bestellungen', (int) $z['id'], (string) $z['strasse'], (string) $z['plz'], (string) $z['ort']) . '</td>'
            . '<td><small>' . e($z['vorname']) . ' ' . e($z['nachname']) . '<br>' . e($z['email']) . '<br>' . e((string) decrypt_field($z['telefon_enc'])) . '</small></td>'
            . '<td><strong>' . zahl($gesamt) . '</strong><br><small>' . e(implode(', ', $zeilen)) . '</small>'
@@ -317,13 +381,13 @@ function admin_seite(?string $meldung): void
     // unten) - ohne Abfangen wuerde das den ganzen Adminbereich lahmlegen.
     $vergebenNachBuchung = [];
     try {
-        foreach (db_all('SELECT werbebuchung_id, kennung FROM flaechen_vergabe') as $v) {
-            $vergebenNachBuchung[(int) $v['werbebuchung_id']][] = $v['kennung'];
+        foreach (db_all('SELECT werbebuchung_id, kennung, ist_platzhalter FROM flaechen_vergabe') as $v) {
+            $vergebenNachBuchung[(int) $v['werbebuchung_id']][] = $v['kennung'] . ((int) $v['ist_platzhalter'] === 1 ? ' (Platzhalter)' : '');
         }
     } catch (PDOException $e) {
         $vergebenNachBuchung = [];
     }
-    echo '<h2>Werbebuchungen</h2><div class="tabelle-wrap"><table><thead><tr>'
+    echo '<h2>Werbebuchungen</h2>' . admin_csv_link('werbebuchungen') . '<div class="tabelle-wrap"><table><thead><tr>'
        . '<th>Firma</th><th>Kontakt</th><th>Flächen</th><th>Wert</th><th>Motiv</th><th>Status</th><th>Aktion</th></tr></thead><tbody>';
     foreach (db_all('SELECT * FROM werbebuchungen ORDER BY id DESC LIMIT 200') as $z) {
         $formate = json_decode((string) $z['formate'], true) ?: [];
@@ -358,7 +422,7 @@ function admin_seite(?string $meldung): void
     echo '</tbody></table></div>';
 
     // Empfehlungen
-    echo '<h2>Pizzeria-Vorschläge</h2><div class="tabelle-wrap"><table><thead><tr>'
+    echo '<h2>Pizzeria-Vorschläge</h2>' . admin_csv_link('pizzeria_empfehlungen') . '<div class="tabelle-wrap"><table><thead><tr>'
        . '<th>Pizzeria</th><th>Hinweis</th><th>Melder</th><th>Status</th><th>Aktion</th></tr></thead><tbody>';
     foreach (db_all('SELECT * FROM pizzeria_empfehlungen ORDER BY id DESC LIMIT 200') as $z) {
         echo '<tr>'
@@ -370,6 +434,21 @@ function admin_seite(?string $meldung): void
            . admin_knopf('pizzeria_empfehlungen', $z, 'kontaktiert', 'Kontaktiert')
            . admin_knopf('pizzeria_empfehlungen', $z, 'erledigt', 'Erledigt', 'gut')
            . admin_knopf_loeschen('pizzeria_empfehlungen', (int) $z['id'], 'Vorschlag „' . $z['name'] . '" endgültig löschen? Das lässt sich nicht rückgängig machen.')
+           . '</td></tr>';
+    }
+    echo '</tbody></table></div>';
+
+    // Newsletter
+    echo '<h2>Newsletter-Anmeldungen</h2>' . admin_csv_link('newsletter') . '<div class="tabelle-wrap"><table><thead><tr>'
+       . '<th>E-Mail</th><th>Bestätigt</th><th>Angemeldet am</th><th>Abgemeldet am</th><th>Aktion</th></tr></thead><tbody>';
+    foreach (db_all('SELECT * FROM newsletter ORDER BY id DESC LIMIT 200') as $z) {
+        echo '<tr>'
+           . '<td>' . e($z['email']) . '</td>'
+           . '<td>' . ((int) $z['bestaetigt'] ? 'ja' : 'nein') . '</td>'
+           . '<td><small>' . e((string) $z['erstellt_am']) . '</small></td>'
+           . '<td><small>' . e((string) ($z['abgemeldet_am'] ?: '–')) . '</small></td>'
+           . '<td class="aktionen">'
+           . admin_knopf_loeschen('newsletter', (int) $z['id'], 'Newsletter-Anmeldung „' . $z['email'] . '" endgültig löschen? Das lässt sich nicht rückgängig machen.')
            . '</td></tr>';
     }
     echo '</tbody></table></div>';
@@ -408,9 +487,9 @@ function admin_seite(?string $meldung): void
        . '<input type="hidden" name="aktion" value="gruendungspartner-anlegen">'
        . '<button type="submit">Gründungspartner anlegen</button></form>';
 
-    echo '<p class="fuss-hinweis">Auskunft und Löschung einzelner Personen laufen über die Kommandozeile: '
-       . '<code>php bin/export.php auskunft adresse@example.com</code> und '
-       . '<code>php bin/export.php loeschen adresse@example.com</code>.</p>';
+    echo '<p class="fuss-hinweis">Auskunft zu einer Person: die E-Mail-Adresse in den Tabellen oben suchen '
+       . '(Browser-Suche reicht) oder die passende CSV-Datei exportieren und dort filtern. Löschung: die '
+       . 'Zeile der Person in ihrer Tabelle über den Knopf „Löschen" endgültig entfernen.</p>';
 
     echo '</body></html>';
 }

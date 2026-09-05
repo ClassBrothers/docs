@@ -52,8 +52,16 @@ if (preg_match('/^[a-f0-9]{64}$/', $token)) {
                 continue;
             }
             try {
+                // Platzhalter (Gruendungspartner-Flaechen, siehe
+                // app/lib/gruendungspartner.php) weichen automatisch einer
+                // echten Buchung: die DELETE-Zeile trifft nur eine
+                // Platzhalter-Zeile fuer genau diese Kennung, eine echte
+                // Vergabe bleibt unberuehrt und laesst den INSERT danach an
+                // der UNIQUE-Vorgabe scheitern - "wer zuerst bestaetigt,
+                // bekommt sie" gilt fuer echte Buchungen unveraendert.
+                db_run('DELETE FROM flaechen_vergabe WHERE kennung = ? AND ist_platzhalter = 1', [$kennung]);
                 db_run(
-                    'INSERT INTO flaechen_vergabe (kennung, werbebuchung_id, vergeben_am) VALUES (?,?,?)',
+                    'INSERT INTO flaechen_vergabe (kennung, werbebuchung_id, vergeben_am, ist_platzhalter) VALUES (?,?,?,0)',
                     [$kennung, $zeile['id'], $jetzt]
                 );
                 $vergeben[] = $kennung;

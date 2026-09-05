@@ -89,7 +89,7 @@ function gruendungspartner_anlegen(): array
             );
             $buchungId = (int) db()->lastInsertId();
             db_run(
-                'INSERT INTO flaechen_vergabe (kennung, werbebuchung_id, vergeben_am) VALUES (?,?,?)',
+                'INSERT INTO flaechen_vergabe (kennung, werbebuchung_id, vergeben_am, ist_platzhalter) VALUES (?,?,?,1)',
                 [$f['kennung'], $buchungId, $jetzt]
             );
             $gesamt += (int) $flaeche['preis'];

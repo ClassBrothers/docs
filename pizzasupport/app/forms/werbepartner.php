@@ -1,5 +1,5 @@
 <?php
-/** Werbebuchung entgegennehmen. Ansprache in allen Texten: Sie. */
+/** Werbebuchung entgegennehmen. Ansprache in allen Texten: Du. */
 
 declare(strict_types=1);
 
@@ -10,12 +10,12 @@ $zurueck       = '/flaeche-buchen.html';
 $zurueckFehler = '/flaeche-buchen.html#buchen-fehler';
 
 if (!honeypot_ok($_POST)) {
-    flash_set('werbung_ok', 'Vielen Dank, Ihre Buchung ist bei uns eingegangen.');
+    flash_set('werbung_ok', 'Vielen Dank, Deine Buchung ist bei uns eingegangen.');
     redirect($zurueck);
 }
 
 if (!rate_limit_ok('werbung', 5, 3600)) {
-    flash_set('werbung_fehler', ['firma' => 'Von hier kamen gerade sehr viele Anfragen. Bitte versuchen Sie es später noch einmal oder schreiben Sie uns direkt.']);
+    flash_set('werbung_fehler', ['firma' => 'Von hier kamen gerade sehr viele Anfragen. Bitte versuch es später noch einmal oder schreib uns direkt.']);
     flash_set('werbung_alt', $_POST);
     redirect($zurueckFehler);
 }
@@ -38,15 +38,15 @@ $v->mehrfach('flaechen', 'Mindestens eine Werbefläche', $erlaubteFlaechen)
   ->text('ustid', 'Die USt-IdNr.', false, 20)
   ->url('website', 'Die Website', false)
   ->url('zielurl', 'Das QR-Ziel', false)
-  ->langtext('nachricht', 'Ihre Anmerkung', false, 1500)
+  ->langtext('nachricht', 'Deine Anmerkung', false, 1500)
   ->checkbox('coupon', '', false)
   ->checkbox('motiv_spaeter', '', false)
   ->checkbox('karte_ok', '', false)
   ->checkbox('naechste_auflage_bevorzugt', '', false)
   ->checkbox('agb_ok', 'Ohne Zustimmung zu den AGB können wir die Buchung nicht annehmen.')
-  ->checkbox('motivvorbehalt_ok', 'Bitte bestätigen Sie, dass Sie den Motiv-Vorbehalt kennen.')
-  ->checkbox('verbindlich_ok', 'Bitte bestätigen Sie die verbindliche Buchung für den Fall, dass das Projekt zustande kommt.')
-  ->checkbox('datenschutz_ok', 'Ohne Zustimmung zu den Datenschutzhinweisen dürfen wir Ihre Angaben nicht verarbeiten.');
+  ->checkbox('motivvorbehalt_ok', 'Bitte bestätige, dass Du den Motiv-Vorbehalt kennst.')
+  ->checkbox('verbindlich_ok', 'Bitte bestätige die Reservierung.')
+  ->checkbox('datenschutz_ok', 'Ohne Zustimmung zu den Datenschutzhinweisen dürfen wir Deine Angaben nicht verarbeiten.');
 
 // USt-IdNr. nur grob auf Form pruefen – die inhaltliche Pruefung macht
 // ohnehin die Buchhaltung.
@@ -63,7 +63,7 @@ if (!$upload['ok']) {
 if (!$v->ok()) {
     // Eine hochgeladene Datei ist nach dem Redirect weg – das sagen wir dazu.
     if (!empty($_FILES['motiv']['name']) && !isset($v->fehler()['motiv'])) {
-        $v->fehlerSetzen('motiv', 'Bitte wählen Sie die Datei noch einmal aus, sie ging beim Zurückspringen verloren.');
+        $v->fehlerSetzen('motiv', 'Bitte wähle die Datei noch einmal aus, sie ging beim Zurückspringen verloren.');
     }
     if (!empty($upload['pfad'])) {
         @unlink(APP_ROOT . '/storage/uploads/' . $upload['pfad']);
@@ -143,7 +143,7 @@ try {
     if (!empty($upload['pfad'])) {
         @unlink(APP_ROOT . '/storage/uploads/' . $upload['pfad']);
     }
-    flash_set('werbung_fehler', ['firma' => 'Da ist bei uns etwas schiefgegangen. Bitte versuchen Sie es noch einmal oder schreiben Sie uns direkt.']);
+    flash_set('werbung_fehler', ['firma' => 'Da ist bei uns etwas schiefgegangen. Bitte versuch es noch einmal oder schreib uns direkt.']);
     flash_set('werbung_alt', $_POST);
     redirect($zurueckFehler);
 }
@@ -164,33 +164,33 @@ $formatText = '  - ' . implode("\n  - ", $gewaehlteLabels);
 
 mail_send(
     $d['email'],
-    'Bitte bestätigen Sie Ihre Reservierung bei Pizza Support',
-    "Guten Tag {$d['ansprechpartner']},\n\n"
-    . "vielen Dank für Ihre Buchung. Bitte bestätigen Sie sie noch mit einem Klick auf\n"
-    . "diesen Link, erst danach sind Ihre Flächen für Sie reserviert:\n\n"
+    'Bitte bestätige Deine Reservierung bei Pizza Support',
+    "Hallo {$d['ansprechpartner']},\n\n"
+    . "vielen Dank für Deine Buchung. Bitte bestätige sie noch mit einem Klick auf\n"
+    . "diesen Link, erst danach sind Deine Flächen für Dich reserviert:\n\n"
     . url('/werbebuchung-bestaetigen?token=' . $bestaetigungToken) . "\n\n"
     . "Die Fläche ist begrenzt, wir vergeben in der Reihenfolge der Bestätigungen -\n"
-    . "je früher der Klick, desto sicherer Ihre gewählte Fläche.\n\n"
+    . "je früher der Klick, desto sicherer Deine gewählte Fläche.\n\n"
     . "Wir haben Folgendes notiert:\n\n"
     . "Buchende Firma: {$d['firma']}\n"
     . "Flächen:\n{$formatText}\n"
     . ($d['notiz'] ? "\nAnmerkung zur Platzierung: {$d['notiz']}\n" : '')
     . ($d['coupon'] ? 'Gutscheinmotiv: ja, ' . (int) config('coupon_rabatt_prozent') . " % Nachlass berücksichtigt\n" : '')
     . 'Auftragswert:   ' . preis($netto) . ' netto, ' . preis($brutto) . " brutto\n\n"
-    . "So geht es weiter: Ihre Reservierung ist bis zum Startschuss kostenfrei und\n"
-    . "unverbindlich. Sobald genug Betriebe und genug Werbevolumen zusammengekommen sind,\n"
-    . 'erhalten Sie eine Auftragsbestätigung und eine Teilrechnung über '
-    . (int) config('startschuss.anzahlung') . " % des Auftragswerts\n"
-    . '(derzeit ' . preis($anzahlung) . " brutto). Erst ab diesem Zeitpunkt wird die Buchung\n"
-    . "verbindlich. Der Restbetrag wird mit Auslieferung fällig.\n\n"
+    . "So geht es weiter: Deine Reservierung ist kostenfrei. Verbindlich wird sie erst,\n"
+    . "wenn genug Betriebe und genug Werbevolumen zusammengekommen sind und Du von uns\n"
+    . 'eine Auftragsbestätigung und eine Teilrechnung über '
+    . (int) config('startschuss.anzahlung') . " % des Auftragswerts bekommst\n"
+    . '(derzeit ' . preis($anzahlung) . " brutto). Der Restbetrag wird mit Auslieferung fällig.\n"
+    . "Bis zur Auftragsbestätigung kannst Du jederzeit formlos absagen.\n\n"
     . ($d['motiv_spaeter'] || empty($upload['pfad'])
-        ? "Ihr Motiv reichen Sie später ein – wir melden uns rechtzeitig vor der Druckfreigabe.\n\n"
-        : 'Ihr Motiv (' . ($upload['name'] ?? '') . ") ist bei uns eingegangen und wird geprüft.\n\n")
-    . 'Und weil Sie uns unterstützen, unterstützen wir Sie zurück: Auf alle Leistungen unserer '
-    . 'eigenen Häuser bekommen Sie als Werbepartner ' . (int) config('partnernachlass.prozent')
+        ? "Dein Motiv reichst Du später ein – wir melden uns rechtzeitig vor der Druckfreigabe.\n\n"
+        : 'Dein Motiv (' . ($upload['name'] ?? '') . ") ist bei uns eingegangen und wird geprüft.\n\n")
+    . 'Und weil Du uns unterstützt, unterstützen wir Dich zurück: Auf alle Leistungen unserer '
+    . 'eigenen Häuser bekommst Du als Werbepartner ' . (int) config('partnernachlass.prozent')
     . ' % Nachlass, ' . (int) config('partnernachlass.monate') . ' Monate ab dieser Buchung. '
-    . "Melden Sie sich einfach, wenn Sie etwas brauchen: " . url('/ueber-uns.html#sonst-titel') . "\n\n"
-    . 'Den aktuellen Projektstand sehen Sie hier: ' . url('/teilnehmer.html') . "\n"
+    . "Melde Dich einfach, wenn Du etwas brauchst: " . url('/ueber-uns.html#sonst-titel') . "\n\n"
+    . 'Den aktuellen Projektstand siehst Du hier: ' . url('/teilnehmer.html') . "\n"
     . mail_signatur(),
     (string) env('MAIL_TO_OPS')
 );
@@ -222,13 +222,13 @@ mail_ops(
 
 flash_set(
     'werbung_ok',
-    'Fast geschafft: Bitte bestätigen Sie den Link, den wir Ihnen gerade geschickt haben – '
-    . 'erst danach sind Ihre Flächen für Sie reserviert. Wir haben eine Reservierung über '
-    . preis($netto) . ' netto notiert. Bis zum Startschuss ist sie kostenfrei und unverbindlich – '
-    . 'sobald er fällt, erhalten Sie eine Auftragsbestätigung und eine Teilrechnung über '
-    . (int) config('startschuss.anzahlung') . ' % des Auftragswerts. '
-    . 'Und weil Sie uns unterstützen, unterstützen wir Sie zurück: Auf alle Leistungen unserer '
-    . 'eigenen Häuser bekommen Sie als Werbepartner ' . (int) config('partnernachlass.prozent')
+    'Fast geschafft: Bitte bestätige den Link, den wir Dir gerade geschickt haben – '
+    . 'erst danach sind Deine Flächen für Dich reserviert. Wir haben eine Reservierung über '
+    . preis($netto) . ' netto notiert, kostenfrei und unverbindlich. Verbindlich wird sie erst '
+    . 'mit der Auftragsbestätigung – die kommt, sobald genug zusammengekommen ist, zusammen mit '
+    . 'einer Teilrechnung über ' . (int) config('startschuss.anzahlung') . ' % des Auftragswerts. '
+    . 'Und weil Du uns unterstützt, unterstützen wir Dich zurück: Auf alle Leistungen unserer '
+    . 'eigenen Häuser bekommst Du als Werbepartner ' . (int) config('partnernachlass.prozent')
     . ' % Nachlass, ' . (int) config('partnernachlass.monate') . ' Monate ab dieser Buchung – '
     . 'mehr dazu im Abschnitt „Was wir sonst so können" auf unserer Über-uns-Seite.'
 );

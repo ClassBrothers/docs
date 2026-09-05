@@ -92,13 +92,13 @@ if ($d['newsletter_ok'] && $d['email']) {
         }
         mail_send(
             $email,
-            'Bitte bestätigen Sie Ihre Anmeldung',
-            "Guten Tag,\n\n"
-            . "Sie möchten erfahren, wie es mit Pizza Support weitergeht. Damit sicher ist, dass\n"
-            . "die Anmeldung wirklich von Ihnen kommt, klicken Sie bitte einmal auf diesen Link:\n\n"
+            'Bitte bestätige Deine Anmeldung',
+            "Hallo,\n\n"
+            . "Du möchtest erfahren, wie es mit Pizza Support weitergeht. Damit sicher ist, dass\n"
+            . "die Anmeldung wirklich von Dir kommt, klick bitte einmal auf diesen Link:\n\n"
             . url('/newsletter-bestaetigen?token=' . $token) . "\n\n"
-            . "Erst danach sind Sie eingetragen. Wenn Sie sich nicht angemeldet haben, ignorieren\n"
-            . "Sie diese Nachricht einfach – wir löschen die Adresse dann automatisch wieder."
+            . "Erst danach bist Du eingetragen. Wenn Du Dich nicht angemeldet hast, ignoriere\n"
+            . "diese Nachricht einfach – wir löschen die Adresse dann automatisch wieder."
             . mail_signatur()
         );
     }

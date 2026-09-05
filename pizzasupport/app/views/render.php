@@ -47,7 +47,7 @@ function render_seite(string $seite, string $pfad): void
         <section class="band">
           <div class="wrap schmal">
             <h1>Kurzzeitig nicht verfügbar</h1>
-            <p>Diese Seite hat gerade ein technisches Problem. Bitte versuchen Sie es in
+            <p>Diese Seite hat gerade ein technisches Problem. Bitte versuch es in
                ein paar Minuten noch einmal.</p>
           </div>
         </section>

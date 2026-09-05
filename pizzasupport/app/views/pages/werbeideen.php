@@ -12,7 +12,7 @@ $meta['jsonld'] = [
   <div class="wrap hero-innen">
     <div class="hero-text">
       <p class="kicker">Für Unternehmen und Selbstständige</p>
-      <h1>Was drucken Sie drauf?</h1>
+      <h1>Was druckst Du drauf?</h1>
       <p class="hero-lead">
         Ein Pizzakarton liegt zwanzig Minuten lang direkt vor jemandem, der nichts anderes
         vorhat als essen. Kein Wegklicken, kein Weiterscrollen, kein Werbeblocker. Die Frage
@@ -89,8 +89,8 @@ $meta['jsonld'] = [
       Ein Gutschein auf dem Karton wird ausgeschnitten und landet an der Pinnwand oder im
       Portemonnaie. Das ist der Unterschied zwischen gesehen und behalten. Für
       Gutschein-Motive geben wir <?= (int) config('coupon_rabatt_prozent') ?> Prozent auf
-      den Listenpreis – weil sie messbar funktionieren und wir wollen, dass Sie
-      wiederkommen.
+      den Listenpreis – weil sie messbar funktionieren und wir wollen, dass Du
+      wiederkommst.
     </p>
 
     <div class="ideen-raster">
@@ -146,12 +146,12 @@ $meta['jsonld'] = [
     <div class="ideen-raster">
 
       <article class="idee">
-        <p class="idee-claim">„Neu bei Ihnen um die Ecke.“</p>
+        <p class="idee-claim">„Neu bei Dir um die Ecke.“</p>
         <p>
           Eine Neueröffnung braucht in den ersten Wochen vor allem eines: dass die Leute im
-          Umkreis überhaupt wissen, dass es Sie gibt. Die Kartons landen bei den Gastronomien
+          Umkreis überhaupt wissen, dass es Dich gibt. Die Kartons landen bei den Gastronomien
           im jeweiligen Stadtteil und damit auf dem Wohnzimmertisch, noch bevor die erste
-          Scheibe gegessen ist – genau dort, wo Ihre ersten Kundinnen wohnen.
+          Scheibe gegessen ist – genau dort, wo Deine ersten Kundinnen wohnen.
         </p>
         <p class="idee-meta">Empfohlen: Deckel groß</p>
       </article>
@@ -184,12 +184,11 @@ $meta['jsonld'] = [
   <div class="wrap">
     <h2>Die StartUp-Felder – die unkonventionelle Fläche</h2>
     <p>
-      Auf der Unterseite jedes Kartons sammeln wir kleine Flächen für StartUps und
-      Selbstständige – Feld S ab <?= e(preis((int) flaechenkatalog_eintrag('SU-S1')['preis'])) ?>,
+      Auf der Unterseite jedes Kartons sammeln wir kleine Flächen für StartUps, Selbstständige
+      und kleine Betriebe – Feld S ab <?= e(preis((int) flaechenkatalog_eintrag('SU-S1')['preis'])) ?>,
       Feld M ab <?= e(preis((int) flaechenkatalog_eintrag('SU-M1')['preis'])) ?>, jeweils netto.
-      Gedacht für junge Unternehmen und kleine lokale Anbieter, die mit wenig Fläche viel sagen
-      wollen. Entdeckt wird sie, wenn jemand den leeren Karton hochhebt – was dort steht, muss
-      keinen Zweck erfüllen.
+      Entdeckt wird sie, wenn jemand den leeren Karton hochhebt – was dort steht, muss keinen
+      Zweck erfüllen.
     </p>
 
     <ul class="liste-check">
@@ -220,8 +219,8 @@ $meta['jsonld'] = [
       <li>Keine Meinung ohne Ahnung.</li>
     </ul>
     <p>
-      Alles andere besprechen wir. Wenn Sie unsicher sind, ob Ihre Idee durchgeht: fragen
-      Sie einfach vorher. Wir sagen Ihnen ehrlich, was wir denken – auch wenn es bedeutet,
+      Alles andere besprechen wir. Wenn Du unsicher bist, ob Deine Idee durchgeht: frag
+      einfach vorher. Wir sagen Dir ehrlich, was wir denken – auch wenn es bedeutet,
       dass wir eine Buchung nicht machen. Die vollständige Liste steht in den
       <a href="/agb.html">AGB</a>.
     </p>
@@ -230,10 +229,10 @@ $meta['jsonld'] = [
 
 <section class="band band-cta">
   <div class="wrap schmal zentriert">
-    <h2>Ihre Idee steht nicht dabei?</h2>
+    <h2>Deine Idee steht nicht dabei?</h2>
     <p>
-      Umso besser. Die besten Motive sind die, an die vorher niemand gedacht hat. Erzählen
-      Sie uns, was Sie vorhaben – wir sagen Ihnen, welches Format dafür passt und was es
+      Umso besser. Die besten Motive sind die, an die vorher niemand gedacht hat. Erzähl
+      uns, was Du vorhast – wir sagen Dir, welches Format dafür passt und was es
       kostet.
     </p>
     <div class="hero-aktionen zentriert">

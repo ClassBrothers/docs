@@ -1,9 +1,9 @@
 <?php
-/** Reine Buchungsseite fuer Werbeflaechen. Ansprache: Sie. */
+/** Reine Buchungsseite fuer Werbeflaechen. Ansprache: Du. */
 declare(strict_types=1);
 
 $meta['titel']        = 'Werbefläche auf Pizzakartons buchen | Pizza Support';
-$meta['beschreibung'] = 'Wählen Sie eine oder mehrere Werbeflächen auf dem Pizzakarton und buchen Sie unverbindlich bis zum Startschuss.';
+$meta['beschreibung'] = 'Wähle eine oder mehrere Werbeflächen auf dem Pizzakarton. Du reservierst, verbindlich wird die Buchung erst mit der Auftragsbestätigung.';
 $meta['jsonld'] = [
     jsonld_breadcrumb(['Start' => '/', 'Für Unternehmen' => '/werbepartner.html', 'Fläche buchen' => '/flaeche-buchen.html']),
 ];
@@ -21,9 +21,17 @@ $flaechenplanVorhanden  = is_file($flaechenplanDatei);
 // ohne Abfangen wuerde das die ganze Seite mitten im Rendern abbrechen,
 // noch bevor das Layout (Kopf, CSS, Navigation) ueberhaupt zum Zug kommt.
 try {
-    $vergebeneKennungen = array_column(db_all('SELECT kennung FROM flaechen_vergabe'), 'kennung');
+    $vergebeneKennungen = [];
+    $platzhalterKennungen = [];
+    foreach (db_all('SELECT kennung, ist_platzhalter FROM flaechen_vergabe') as $v) {
+        $vergebeneKennungen[] = $v['kennung'];
+        if ((int) $v['ist_platzhalter'] === 1) {
+            $platzhalterKennungen[] = $v['kennung'];
+        }
+    }
 } catch (PDOException $e) {
     $vergebeneKennungen = [];
+    $platzhalterKennungen = [];
 }
 
 $gewaehlteFlaechen = $altw['flaechen'] ?? [];
@@ -36,42 +44,46 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
     <h1>Fläche buchen</h1>
     <p class="hero-lead">
       Noch unentschlossen? Auf der Seite <a href="/werbepartner.html">Für Unternehmen</a> stehen
-      Preise, Beispiele und alles, was Sie vorher wissen sollten. Hier geht es direkt zur Buchung.
+      Preise, Beispiele und alles, was Du vorher wissen solltest. Hier geht es direkt zur Buchung.
     </p>
   </div>
 </section>
-
-<?php $kauftMitCta = false; include APP_ROOT . '/app/views/partials/kauft.php'; ?>
 
 <section class="band band-bestellen" id="buchen" aria-labelledby="buchen-titel">
   <div class="wrap">
 
     <?php if ($erfolg): ?>
       <div class="danke danke-ruhig" id="danke" tabindex="-1" role="status">
-        <h2>Ihre Buchung ist bei uns eingegangen</h2>
+        <h2>Deine Buchung ist bei uns eingegangen</h2>
         <p><?= e((string) $erfolg) ?></p>
         <p class="danke-weiter">
-          Eine Bestätigung liegt in Ihrem Postfach. Kommt sie nicht an, schauen Sie bitte
-          kurz im Spam-Ordner nach oder schreiben Sie uns an
-          <a href="mailto:<?= e(firma_email_link()) ?>"><?= e(config('firma.email')) ?></a>.
+          Eine Bestätigung liegt in Deinem Postfach. Kommt sie nicht an, schau bitte
+          kurz im Spam-Ordner nach oder schreib uns an
+          <?= email_link_html() ?>.
         </p>
       </div>
     <?php endif; ?>
 
     <div class="bestellen-kopf">
-      <h2 id="buchen-titel">Ihre Fläche(n)</h2>
+      <h2 id="buchen-titel">Deine Fläche(n)</h2>
       <p class="band-lead">
-        Die Buchung ist verbindlich. Erst wenn die benötigte Anzahl Flächen verkauft ist,
-        erhalten Sie eine Info-Mail mit Anzahlungs-Rechnung über <?= (int) config('startschuss.anzahlung') ?> %
-        des Buchungspreises. Sobald die Pizzakartons am Lager eintreffen und in die Auslieferung
-        gehen, erhalten Sie die Abschluss-Rechnung über die restlichen <?= 100 - (int) config('startschuss.anzahlung') ?> %.
-        Es gelten unsere <a href="/agb.html" target="_blank" rel="noopener">AGB</a>.
+        Du reservierst hier eine Fläche. Kosten entstehen dabei nicht. Verbindlich wird die
+        Buchung erst, wenn genug Gastronomien und genug Flächen zusammengekommen sind und wir
+        Dir eine Auftragsbestätigung schicken. Erst danach kommt die Teilrechnung über
+        <?= (int) config('startschuss.anzahlung') ?> % des Buchungspreises. Die restlichen
+        <?= 100 - (int) config('startschuss.anzahlung') ?> % werden fällig, wenn die Kartons
+        ins Lager kommen und in die Auslieferung gehen. Bis zur Auftragsbestätigung kannst Du
+        jederzeit formlos absagen, per Mail oder Anruf. Es gelten unsere
+        <a href="/agb.html" target="_blank" rel="noopener">AGB</a>.
+      </p>
+      <p class="band-nachsatz">
+        Wir vermarkten die Flächen ausschließlich an Unternehmen, Selbstständige und Freiberufler.
       </p>
     </div>
 
     <?php if ($fehler): ?>
       <p class="hinweis hinweis-fehler" id="buchen-fehler" role="alert">
-        Bitte prüfen Sie die markierten Felder – dann schicken wir das Formular gleich ab.
+        Bitte prüfe die markierten Felder – dann schicken wir das Formular gleich ab.
       </p>
     <?php endif; ?>
 
@@ -82,15 +94,15 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
       <?= honeypot_field() ?>
 
       <fieldset>
-        <legend>Ihre Fläche</legend>
+        <legend>Deine Fläche</legend>
 
         <div class="feld<?= isset($fehler['flaechen']) ? ' feld-fehler' : '' ?>" data-preisrechner>
-          <span class="feld-label">Welche Flächen möchten Sie buchen? <span class="pflicht" aria-hidden="true">*</span></span>
+          <span class="feld-label">Welche Flächen möchtest Du buchen? <span class="pflicht" aria-hidden="true">*</span></span>
           <p class="feld-hilfe">
-            Jede Fläche ist ein fest benannter, einzeln bepreister Platz. Sie können beliebig
+            Jede Fläche ist ein fest benannter, einzeln bepreister Platz. Du kannst beliebig
             viele auswählen – wer zuerst bestätigt, bekommt die Fläche.
             <?php if ($flaechenplanVorhanden): ?>
-              Den Flächenplan mit allen Kennungen sehen Sie rechts daneben.
+              Den Flächenplan mit allen Kennungen siehst Du rechts daneben.
             <?php endif; ?>
           </p>
 
@@ -109,9 +121,10 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
               <legend><?= e($gruppeLabel) ?></legend>
               <div class="wahl-gitter wahl-gitter-preis">
                 <?php foreach ($flaechenInGruppe as $flaeche):
-                  $istVergeben = in_array($flaeche['id'], $vergebeneKennungen, true);
+                  $istPlatzhalter = in_array($flaeche['id'], $platzhalterKennungen, true);
+                  $istVergeben    = in_array($flaeche['id'], $vergebeneKennungen, true) && !$istPlatzhalter;
                 ?>
-                  <label class="wahl wahl-schmal<?= $istVergeben ? ' wahl-vergeben' : '' ?>">
+                  <label class="wahl wahl-schmal<?= $istVergeben ? ' wahl-vergeben' : '' ?><?= $istPlatzhalter ? ' wahl-platzhalter' : '' ?>">
                     <input type="checkbox" name="flaechen[]" value="<?= e($flaeche['id']) ?>"
                            data-preis="<?= (int) $flaeche['preis'] ?>"
                            <?= $istVergeben ? 'disabled' : '' ?>
@@ -121,6 +134,8 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
                       <small><?= e($flaeche['bezeichnung']) ?> · <?= e($flaeche['masse']) ?></small>
                       <?php if ($istVergeben): ?>
                         <em class="wahl-vergeben-marke">bereits verkauft</em>
+                      <?php elseif ($istPlatzhalter): ?>
+                        <em class="wahl-platzhalter-marke">belegt, auf Anfrage frei</em>
                       <?php else: ?>
                         <em class="wahl-preis"><?= e(preis((int) $flaeche['preis'])) ?> netto</em>
                       <?php endif; ?>
@@ -151,14 +166,14 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
         </div>
 
         <div class="summe" data-summe hidden aria-live="polite">
-          <span class="summe-label">Ihr Auftragswert</span>
+          <span class="summe-label">Dein Auftragswert</span>
           <span class="summe-wert" data-summe-wert>–</span>
           <span class="summe-hinweis" data-summe-hinweis></span>
         </div>
       </fieldset>
 
       <fieldset>
-        <legend>Ihr Motiv</legend>
+        <legend>Dein Motiv</legend>
 
         <div class="feld<?= isset($fehler['motiv']) ? ' feld-fehler' : '' ?>">
           <label for="w-motiv">Druckdatei hochladen <span class="feld-optional">(JPG, PNG, WebP oder PDF, max. 12 MB)</span></label>
@@ -175,12 +190,12 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
 
         <div class="feld<?= isset($fehler['zielurl']) ? ' feld-fehler' : '' ?>">
           <label for="w-zielurl">Ziel für einen QR-Code <span class="feld-optional">(freiwillig)</span></label>
-          <input type="text" id="w-zielurl" name="zielurl" maxlength="300" placeholder="ihre-firma.de/aktion"
+          <input type="text" id="w-zielurl" name="zielurl" maxlength="300" placeholder="deine-firma.de/aktion"
                  value="<?= e(alt($altw, 'zielurl')) ?>">
           <p class="feld-hilfe">
-            Der gedruckte Code führt technisch über pizzasupport.de auf Ihre Seite. So können wir
-            Ihnen die Zahl der Scans nennen und die Weiterleitung notfalls abschalten. Nach der
-            Druckfreigabe ist das Ziel fest; für den Inhalt der Zielseite sind Sie verantwortlich.
+            Der gedruckte Code führt technisch über pizzasupport.de auf Deine Seite. So können wir
+            Dir die Zahl der Scans nennen und die Weiterleitung notfalls abschalten. Nach der
+            Druckfreigabe ist das Ziel fest; für den Inhalt der Zielseite bist Du verantwortlich.
           </p>
           <?php if (isset($fehler['zielurl'])): ?><p class="feld-meldung"><?= e($fehler['zielurl']) ?></p><?php endif; ?>
         </div>
@@ -198,7 +213,7 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
       </fieldset>
 
       <fieldset>
-        <legend>Ihr Unternehmen</legend>
+        <legend>Dein Unternehmen</legend>
 
         <div class="feld<?= isset($fehler['firma']) ? ' feld-fehler' : '' ?>">
           <label for="w-firma">Firma <span class="pflicht" aria-hidden="true">*</span></label>
@@ -294,7 +309,10 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
         <div class="feld feld-check<?= isset($fehler['verbindlich_ok']) ? ' feld-fehler' : '' ?>">
           <label>
             <input type="checkbox" name="verbindlich_ok" value="1" required>
-            <span>Ich buche verbindlich für den Fall, dass das Projekt zustande kommt. <span class="pflicht" aria-hidden="true">*</span></span>
+            <span>Ich reserviere die ausgewählten Flächen. Mir ist klar, dass die Buchung mit der
+              Auftragsbestätigung nach dem Startschuss verbindlich wird und dann eine Anzahlung
+              von <?= (int) config('startschuss.anzahlung') ?> % fällig ist.
+              <span class="pflicht" aria-hidden="true">*</span></span>
           </label>
           <?php if (isset($fehler['verbindlich_ok'])): ?><p class="feld-meldung"><?= e($fehler['verbindlich_ok']) ?></p><?php endif; ?>
         </div>
@@ -323,11 +341,11 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
 
         <p class="formular-fuss">
           Die Fläche ist begrenzt. Wir vergeben in der Reihenfolge der Bestätigungen; ein Anspruch
-          auf eine bestimmte Fläche besteht nicht. Kommt Ihre Buchung nicht zum Zug, sagen wir
-          Ihnen umgehend Bescheid und berechnen nichts.
+          auf eine bestimmte Fläche besteht nicht. Kommt Deine Buchung nicht zum Zug, sagen wir
+          Dir umgehend Bescheid und berechnen nichts.
         </p>
 
-        <button class="btn btn-primaer btn-gross btn-block" type="submit">Fläche verbindlich buchen</button>
+        <button class="btn btn-primaer btn-gross btn-block" type="submit">Fläche reservieren</button>
         <p class="formular-fuss">
           Pflichtfelder sind mit <span class="pflicht" aria-hidden="true">*</span> markiert.
         </p>
@@ -404,9 +422,12 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
                 .flaechenplan-verkauft-<?= (int) $i ?>{left:<?= e((string) $k['left']) ?>%;top:<?= e((string) $k['top']) ?>%;width:<?= e((string) $k['width']) ?>%;height:<?= e((string) $k['height']) ?>%}
               <?php endforeach; ?>
             </style>
-            <?php foreach (array_values($verkauftMitKoordinaten) as $i => $kennung): ?>
-              <div class="flaechenplan-verkauft flaechenplan-verkauft-<?= (int) $i ?>" title="<?= e($kennung) ?> bereits verkauft">
-                <span>verkauft</span>
+            <?php foreach (array_values($verkauftMitKoordinaten) as $i => $kennung):
+              $istPlatzhalterMarke = in_array($kennung, $platzhalterKennungen, true);
+            ?>
+              <div class="flaechenplan-verkauft flaechenplan-verkauft-<?= (int) $i ?><?= $istPlatzhalterMarke ? ' flaechenplan-platzhalter' : '' ?>"
+                   title="<?= e($kennung) ?> <?= $istPlatzhalterMarke ? 'belegt, auf Anfrage frei' : 'bereits verkauft' ?>">
+                <span><?= $istPlatzhalterMarke ? 'auf Anfrage' : 'verkauft' ?></span>
               </div>
             <?php endforeach; ?>
           <?php endif; ?>
@@ -414,7 +435,7 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
         </div>
         <p class="flaechenplan-bildunterschrift">
           Lage und Kennung aller Werbeflächen auf dem Karton (Bezugsmaß 32 × 32 cm). Mit der
-          Maus über den Plan fahren zum Vergrößern, anklicken für die volle Größe. Bewegen Sie
+          Maus über den Plan fahren zum Vergrößern, anklicken für die volle Größe. Bewege
           die Maus über eine Fläche oben im Formular, um sie hier orange hervorzuheben.
         </p>
       </aside>

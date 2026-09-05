@@ -32,26 +32,21 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* Ersparnisrechner: Preis je Karton x Kartons pro Monat, erst nach     */
-  /* Klick auf "Berechnen" - nicht mehr live bei jeder Eingabe. Preis und */
-  /* Menge haengen per form="formular-bestellen" (siehe                  */
-  /* ersparnisrechner.php) am echten Bestellformular und werden mit der   */
-  /* Bestellung mitgeschickt; das Rechnen hier ist reine Anzeige im       */
-  /* Browser und beeinflusst die Bestellung selbst nicht.                 */
+  /* Ersparnisrechner: Preis je Karton x Kartons pro Monat, live bei      */
+  /* jeder Eingabe. Preis und Menge haengen per form="formular-bestellen" */
+  /* (siehe ersparnisrechner.php) am echten Bestellformular und werden    */
+  /* mit der Bestellung mitgeschickt; das Rechnen hier ist reine Anzeige  */
+  /* im Browser und beeinflusst die Bestellung selbst nicht.              */
   /*                                                                      */
   /* Beide Felder liegen bewusst NICHT in einem eigenen <form> - ein      */
   /* Enter im Feld wuerde sonst, weil form="formular-bestellen" sie an    */
-  /* das entfernte Bestellformular bindet, dessen Absenden ausloesen      */
-  /* statt zu rechnen. Stattdessen faengt ein eigener keydown-Handler      */
-  /* Enter ab und rechnet damit, ohne irgendetwas abzuschicken.            */
+  /* das entfernte Bestellformular bindet, dessen Absenden ausloesen.     */
+  /* Ein eigener keydown-Handler faengt Enter ab, ohne etwas abzuschicken.*/
   /* ------------------------------------------------------------------ */
   var rechnerBox = document.querySelector('[data-rechner]');
   if (rechnerBox) {
     var rPreis      = rechnerBox.querySelector('[data-rechner-preis]');
     var rMonat      = rechnerBox.querySelector('[data-rechner-monat]');
-    var rKnopf      = rechnerBox.querySelector('[data-rechner-berechnen]');
-    var rEingabeHinweis = rechnerBox.querySelector('[data-rechner-eingabe-hinweis]');
-    var rErgebnis   = rechnerBox.querySelector('[data-rechner-ergebnis]');
     var rMonatssumme = rechnerBox.querySelector('[data-rechner-monatssumme]');
     var rJahressumme = rechnerBox.querySelector('[data-rechner-jahressumme]');
     var euroFormat  = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' });
@@ -61,22 +56,17 @@
       var monat = parseInt(rMonat.value, 10);
 
       if (isNaN(preis) || preis <= 0 || isNaN(monat) || monat <= 0) {
-        rErgebnis.hidden = true;
-        if (rEingabeHinweis) { rEingabeHinweis.hidden = false; }
         return;
       }
-      if (rEingabeHinweis) { rEingabeHinweis.hidden = true; }
 
       var summe1 = preis * monat;
       var summe2 = summe1 * 12;
-      rMonatssumme.textContent = euroFormat.format(summe1);
+      rMonatssumme.textContent = euroFormat.format(summe1) + ' im Monat';
       rJahressumme.textContent = euroFormat.format(summe2);
-      rErgebnis.hidden = false;
-      rErgebnis.scrollIntoView({ behavior: wenigerBewegung ? 'auto' : 'smooth', block: 'nearest' });
     }
 
-    rKnopf.addEventListener('click', rechnerBerechnen);
     [rPreis, rMonat].forEach(function (feld) {
+      feld.addEventListener('input', rechnerBerechnen);
       feld.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
           e.preventDefault();
@@ -285,6 +275,26 @@
   });
 
   /* ------------------------------------------------------------------ */
+  /* Lagerhinweis: "Alles auf einmal" bei mehr als 1000 Kartons.  Steht  */
+  /* hier oben als benannte function-Deklaration (nicht var = function), */
+  /* damit sie schon existiert, bevor die Bloecke weiter unten sie beim  */
+  /* Definieren ihrer eigenen Handler aufrufen - function-Deklarationen  */
+  /* werden im gesamten umschliessenden Funktionskoerper gehoisted.      */
+  /* ------------------------------------------------------------------ */
+  function lagerHinweisAktualisieren() {
+    var hinweis = document.querySelector('[data-lieferart-feld="lager-hinweis"]');
+    if (!hinweis) { return; }
+    var gewaehlt = document.querySelector('[data-lieferart-wahl]:checked');
+    var wert = gewaehlt ? gewaehlt.value : 'gesamt';
+    var gesamt = 0;
+    Array.prototype.forEach.call(document.querySelectorAll('input[name^="menge["]'), function (f) {
+      var n = parseInt(f.value, 10);
+      if (!isNaN(n) && n > 0) { gesamt += n; }
+    });
+    hinweis.hidden = !(wert === 'gesamt' && gesamt > 1000);
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Mengen je Format im Bestellformular                                 */
   /* ------------------------------------------------------------------ */
   var formateListe = document.querySelector('[data-formate-liste]');
@@ -292,9 +302,20 @@
     var formatMin  = parseInt(formateListe.getAttribute('data-format-min'), 10) || 0;
     var gesamtMin  = parseInt(formateListe.getAttribute('data-gesamt-min'), 10) || 0;
     var gesamtMax  = parseInt(formateListe.getAttribute('data-gesamt-max'), 10) || 0;
-    var summeBox   = document.querySelector('[data-mengen-summe]');
-    var summeWertEl     = summeBox ? summeBox.querySelector('[data-mengen-summe-wert]') : null;
-    var summeHinweisEl  = summeBox ? summeBox.querySelector('[data-mengen-summe-hinweis]') : null;
+    // Eigener Name statt "summeBox": weiter unten im selben Skript gibt es
+    // fuer den Auftragswert auf der Buchungsseite eine gleichnamige
+    // var-Deklaration - var ist funktionsweit gueltig, eine zweite
+    // Zuweisung haette die hier gefundene Referenz stillschweigend
+    // ueberschrieben, sobald jener Codeabschnitt beim Laden ausgefuehrt wird.
+    var mengenSummeBox  = document.querySelector('[data-mengen-summe]');
+    var summeWertEl     = mengenSummeBox ? mengenSummeBox.querySelector('[data-mengen-summe-wert]') : null;
+    var summeHinweisEl  = mengenSummeBox ? mengenSummeBox.querySelector('[data-mengen-summe-hinweis]') : null;
+    var mengenregelnEl  = document.querySelector('[data-mengenregeln]');
+
+    // Mengenregeln und Gesamtsumme stehen erst da, wenn eine Menge
+    // eingetragen wurde - ohne JavaScript bleiben beide immer sichtbar.
+    if (mengenregelnEl) { mengenregelnEl.hidden = true; }
+    if (mengenSummeBox) { mengenSummeBox.hidden = true; }
 
     function summeAktualisieren() {
       if (!summeWertEl) { return; }
@@ -303,6 +324,8 @@
         var n = parseInt(f.value, 10);
         if (!isNaN(n) && n > 0) { gesamt += n; }
       });
+      if (mengenregelnEl) { mengenregelnEl.hidden = gesamt === 0; }
+      if (mengenSummeBox) { mengenSummeBox.hidden = gesamt === 0; }
       summeWertEl.textContent = gesamt.toLocaleString('de-DE') + ' Kartons';
       if (gesamt === 0) {
         summeHinweisEl.textContent = 'Trag oben ein, wie viele Kartons Du brauchst.';
@@ -313,6 +336,7 @@
       } else {
         summeHinweisEl.textContent = 'Menge passt.';
       }
+      lagerHinweisAktualisieren();
     }
 
     Array.prototype.forEach.call(formateListe.querySelectorAll('[data-menge-gruppe]'), function (gruppe) {
@@ -372,6 +396,7 @@
       var wert = gewaehlt ? gewaehlt.value : 'gesamt';
       if (abrufFeld) { abrufFeld.hidden = wert !== 'abruf'; }
       if (abholungHinweis) { abholungHinweis.hidden = wert !== 'abholung'; }
+      lagerHinweisAktualisieren();
     }
 
     var abrufMindest = abrufMengeFeld ? (parseInt(abrufMengeFeld.getAttribute('min'), 10) || 0) : 0;
@@ -437,6 +462,127 @@
     plzFeld.addEventListener('input', versandPruefen);
     if (ortFeld) { ortFeld.addEventListener('input', versandPruefen); }
     versandPruefen();
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Betriebsart im Bestellformular: "Anderes" zeigt ein Freitextfeld,   */
+  /* "Lieferdienst mit eigener Küche" einen Hinweis zur Verpackungssteuer.*/
+  /* Beide Elemente stehen im HTML immer da (ohne JavaScript bleiben sie */
+  /* sichtbar) - erst hier werden sie erst versteckt und dann gezielt    */
+  /* wieder eingeblendet.                                                */
+  /* ------------------------------------------------------------------ */
+  var betriebsartFeld = document.querySelector('[data-betriebsart-feld]');
+  if (betriebsartFeld) {
+    var betriebsartWahlen   = betriebsartFeld.querySelectorAll('[data-betriebsart-wahl]');
+    var betriebsartFreiFeld = document.querySelector('[data-betriebsart-frei]');
+    var lieferdienstHinweis = document.querySelector('[data-betriebsart-lieferdienst-hinweis]');
+
+    function betriebsartAnzeigen() {
+      var gewaehlt = betriebsartFeld.querySelector('[data-betriebsart-wahl]:checked');
+      var wert = gewaehlt ? gewaehlt.getAttribute('data-betriebsart-wahl') : '';
+      if (betriebsartFreiFeld) { betriebsartFreiFeld.hidden = wert !== 'anderes'; }
+      if (lieferdienstHinweis) { lieferdienstHinweis.hidden = wert !== 'lieferdienst'; }
+    }
+
+    Array.prototype.forEach.call(betriebsartWahlen, function (f) {
+      f.addEventListener('change', betriebsartAnzeigen);
+    });
+    betriebsartAnzeigen();
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Teilnehmerkarte im Bestellformular: das Website-Feld ist nur dann   */
+  /* sinnvoll, wenn der Betrieb auf der Karte erscheinen soll. Die       */
+  /* Checkbox ist per Voreinstellung angehakt, das Feld bleibt darum     */
+  /* ohne JavaScript sichtbar - konsistent mit der Voreinstellung.       */
+  /* ------------------------------------------------------------------ */
+  var karteOkFeld = document.querySelector('[data-karte-ok]');
+  var websiteFeld = document.querySelector('[data-website-feld]');
+  if (karteOkFeld && websiteFeld) {
+    function websiteAnzeigen() { websiteFeld.hidden = !karteOkFeld.checked; }
+    karteOkFeld.addEventListener('change', websiteAnzeigen);
+    websiteAnzeigen();
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Bestellassistent in drei Schritten. Ohne JavaScript ist das Formular */
+  /* eine einzige durchgehende Seite mit allen drei Schritten - erst hier */
+  /* werden Fortschritt und Weiter/Zurück eingeblendet und die Schritte   */
+  /* nacheinander gezeigt. Beim Wechsel wandert der Fokus auf die         */
+  /* Schrittüberschrift, damit Screenreader den neuen Abschnitt ansagen.  */
+  /* ------------------------------------------------------------------ */
+  var assistent = document.querySelector('[data-assistent]');
+  if (assistent) {
+    var schritte = Array.prototype.slice.call(assistent.querySelectorAll('.assistent-schritt'));
+    var fortschritt = assistent.querySelector('[data-assistent-fortschritt]');
+    var anzahl = schritte.length;
+    var aktuell = 0;
+
+    function schrittZeigen(index) {
+      aktuell = index;
+      schritte.forEach(function (schritt, i) {
+        schritt.hidden = i !== index;
+        schritt.classList.toggle('ist-aktiv', i === index);
+      });
+      if (fortschritt) { fortschritt.textContent = 'Schritt ' + (index + 1) + ' von ' + anzahl; }
+      var ueberschrift = schritte[index].querySelector('legend');
+      if (ueberschrift) {
+        ueberschrift.setAttribute('tabindex', '-1');
+        ueberschrift.focus({ preventScroll: true });
+      }
+      schritte[index].scrollIntoView({ behavior: wenigerBewegung ? 'auto' : 'smooth', block: 'start' });
+    }
+
+    Array.prototype.forEach.call(assistent.querySelectorAll('[data-assistent-weiter]'), function (knopf) {
+      knopf.hidden = false;
+      knopf.addEventListener('click', function () {
+        var inhalt = schritte[aktuell];
+        // Native Browser-Validierung fuer die Felder des aktuellen Schritts:
+        // erst weiter, wenn dort alles ausgefuellt ist.
+        var ungueltig = inhalt.querySelector(':invalid');
+        if (ungueltig) {
+          inhalt.querySelectorAll('input, select, textarea').forEach(function (f) { f.reportValidity && f.checkValidity(); });
+          if (typeof ungueltig.reportValidity === 'function') { ungueltig.reportValidity(); }
+          return;
+        }
+        if (aktuell < anzahl - 1) { schrittZeigen(aktuell + 1); }
+      });
+    });
+    Array.prototype.forEach.call(assistent.querySelectorAll('[data-assistent-zurueck]'), function (knopf) {
+      knopf.hidden = false;
+      knopf.addEventListener('click', function () {
+        if (aktuell > 0) { schrittZeigen(aktuell - 1); }
+      });
+    });
+
+    if (fortschritt) { fortschritt.hidden = false; }
+    schrittZeigen(0);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Schritt "Dein Bedarf" speist automatisch den Ersparnisrechner oben  */
+  /* auf der Seite: Wochenbedarf wird auf einen Monat hochgerechnet.     */
+  /* ------------------------------------------------------------------ */
+  var bedarfKartonsWoche  = document.querySelector('[data-bedarf-kartons-woche]');
+  var bedarfEinkaufspreis = document.querySelector('[data-bedarf-einkaufspreis]');
+  if (bedarfKartonsWoche && bedarfEinkaufspreis) {
+    function bedarfInRechnerUebernehmen() {
+      if (!rPreis || !rMonat) { return; }
+      var woche = parseInt(bedarfKartonsWoche.value, 10);
+      if (!isNaN(woche) && woche > 0) {
+        rMonat.value = String(Math.round(woche * 4.33));
+        // Ereignis statt Direktaufruf: rechnerBerechnen() ist im eigenen
+        // Block deklariert (strict mode = blockscoped) und von hier aus
+        // nicht erreichbar - der bestehende input-Listener uebernimmt das.
+        rMonat.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      if (bedarfEinkaufspreis.value.trim() !== '') {
+        rPreis.value = bedarfEinkaufspreis.value;
+        rPreis.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    }
+    bedarfKartonsWoche.addEventListener('input', bedarfInRechnerUebernehmen);
+    bedarfEinkaufspreis.addEventListener('input', bedarfInRechnerUebernehmen);
   }
 
   /* ------------------------------------------------------------------ */
@@ -884,4 +1030,31 @@
 
   // Falls Inhalte nachgeladen werden, lässt sich das erneut anstoßen:
   window.externeLinksPruefen = linksAufbereiten;
+})();
+
+(function () {
+  'use strict';
+
+  // Baut aus den umgekehrt abgelegten Teilen (siehe email_link_html() in
+  // app/bootstrap.php) die echte Mailadresse zusammen und setzt sie erst
+  // hier ein - im ausgelieferten HTML steht sie nirgends im Klartext.
+  function mailAdressenAufloesen() {
+    var links = document.querySelectorAll('[data-mail-nutzer]');
+    Array.prototype.forEach.call(links, function (a) {
+      var nutzer = (a.getAttribute('data-mail-nutzer') || '').split('').reverse().join('');
+      var domain = (a.getAttribute('data-mail-domain') || '').split('').reverse().join('');
+      if (!nutzer || !domain) return;
+      var adresse = nutzer + '@' + domain;
+      a.setAttribute('href', 'mailto:' + adresse);
+      a.textContent = adresse;
+      a.removeAttribute('data-mail-nutzer');
+      a.removeAttribute('data-mail-domain');
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', mailAdressenAufloesen);
+  } else {
+    mailAdressenAufloesen();
+  }
 })();

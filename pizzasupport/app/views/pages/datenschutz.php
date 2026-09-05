@@ -17,7 +17,7 @@ $fr = config('aufbewahrung');
       <?= e(config('firma.strasse')) ?><br>
       <?= e(config('firma.plz_ort')) ?><br>
       Vertreten durch: <?= e(config('firma.gf')) ?><br>
-      E-Mail: <a href="mailto:<?= e(firma_email_link()) ?>"><?= e(config('firma.email')) ?></a><br>
+      E-Mail: <?= email_link_html() ?><br>
       Telefon: <?= e(config('firma.telefon')) ?>
     </p>
     <p>
@@ -260,7 +260,7 @@ $fr = config('aufbewahrung');
     </ul>
     <p>
       Eine formlose E-Mail an
-      <a href="mailto:<?= e(firma_email_link()) ?>"><?= e(config('firma.email')) ?></a>
+      <?= email_link_html() ?>
       genügt. Zuständige Aufsichtsbehörde ist der Landesbeauftragte für den Datenschutz und
       die Informationsfreiheit Baden-Württemberg, Lautenschlagerstraße 20, 70173 Stuttgart.
     </p>

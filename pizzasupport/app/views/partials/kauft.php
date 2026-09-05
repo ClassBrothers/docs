@@ -16,13 +16,12 @@ $kauftHaeckchen = '<svg class="kauft-icon" width="28" height="28" viewBox="0 0 2
   . '</svg>';
 $pnKauft = config('partnernachlass');
 $kauftPunkte = [
-  'Gemeinschaft unterstützen – Ihr Budget hilft direkt der Freiburger Gastronomie.',
+  'Gemeinschaft unterstützen – Dein Budget hilft direkt der Freiburger Gastronomie.',
   'Coole, sympathische Werbung statt gewöhnlicher Anzeige.',
   'Viralität und Aufmerksamkeit: ein Pizzakarton wird gesehen, nicht weggeklickt.',
-  'SEO-Backlink von pizzasupport.de für Ihre eigene Website.',
-  'Ihr Name, Logo und Profiltext dauerhaft auf pizzasupport.de – so lange die Website existiert.',
+  'Dein Firmenprofil mit Logo und Verlinkung dauerhaft auf pizzasupport.de.',
   'Stammkunden-Rabatt bei zukünftigen Auflagen.',
-  'Als Stammkunde künftig vor anderen Ihre Fläche wählen.',
+  'Als Stammkunde künftig vor anderen Deine Fläche wählen.',
   'Bis zu ' . (int) $pnKauft['prozent'] . ' % Rabatt auf Aufträge bei unseren Aktionspartnern (Class Brothers, KI-Assistenz, Badische Entertainment und weitere).',
 ];
 ?>

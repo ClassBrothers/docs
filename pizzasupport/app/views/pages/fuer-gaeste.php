@@ -1,9 +1,18 @@
 <?php
-/** Landingpage fuer Gaeste: Abstimmung ueber die Werbemotive und die Aktion. Ansprache: Du. */
+/**
+ * Landingpage fuer Gaeste: Abstimmung ueber die Werbemotive und die Aktion.
+ * Ansprache: Du.
+ *
+ * inaktiv bis zur ersten Auslieferung - die Seite geht erst live, wenn die
+ * ersten Kartons verteilt sind. Bleibt ueber die URL erreichbar, steht aber
+ * nicht in Navigation oder Sitemap und ist per robots auf noindex gesetzt
+ * (siehe sitemap_ausschluss in app/config.php).
+ */
 declare(strict_types=1);
 
 $meta['titel']        = 'Für Gäste: Stimm über die Pizzakarton-Motive ab | Pizza Support';
 $meta['beschreibung'] = 'Welches Werbemotiv auf dem Pizzakarton gefällt Dir am besten? Stimm ab und sag uns, was Du von der Aktion hältst.';
+$meta['robots']       = 'noindex,nofollow';
 $meta['jsonld'] = [
     jsonld_breadcrumb(['Start' => '/', 'Für Gäste' => '/fuer-gaeste.html']),
 ];

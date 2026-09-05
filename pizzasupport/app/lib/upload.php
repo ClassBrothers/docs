@@ -36,7 +36,7 @@ function upload_motiv(?array $datei): array
         return ['ok' => false, 'fehler' => 'Ungültiger Upload.'];
     }
     if ($datei['size'] > UPLOAD_MAX_BYTES) {
-        return ['ok' => false, 'fehler' => 'Die Datei ist größer als 12 MB. Schicken Sie uns das Motiv bitte per E-Mail.'];
+        return ['ok' => false, 'fehler' => 'Die Datei ist größer als 12 MB. Schick uns das Motiv bitte per E-Mail.'];
     }
 
     // Auf den tatsaechlichen Inhalt schauen, nicht auf die Endung und nicht
@@ -50,13 +50,13 @@ function upload_motiv(?array $datei): array
 
     $ziel_dir = APP_ROOT . '/storage/uploads/' . gmdate('Y/m');
     if (!is_dir($ziel_dir) && !mkdir($ziel_dir, 0770, true) && !is_dir($ziel_dir)) {
-        return ['ok' => false, 'fehler' => 'Ablage nicht möglich. Bitte melden Sie sich kurz bei uns.'];
+        return ['ok' => false, 'fehler' => 'Ablage nicht möglich. Bitte melde Dich kurz bei uns.'];
     }
 
     $name = bin2hex(random_bytes(16)) . '.' . $typen[$mime];
     $ziel = $ziel_dir . '/' . $name;
     if (!move_uploaded_file($datei['tmp_name'], $ziel)) {
-        return ['ok' => false, 'fehler' => 'Ablage nicht möglich. Bitte melden Sie sich kurz bei uns.'];
+        return ['ok' => false, 'fehler' => 'Ablage nicht möglich. Bitte melde Dich kurz bei uns.'];
     }
     @chmod($ziel, 0640);
 

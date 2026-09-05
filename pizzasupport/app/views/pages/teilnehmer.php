@@ -7,7 +7,7 @@ $faq = [
         'frage'   => 'Wann startet das Projekt wirklich?',
         'antwort' => '<p>Wenn genug zusammenkommt. Wir brauchen ' . zahl((int) config('startschuss.betriebe')) . '
                       teilnehmende Gastronomien und genug gebuchtes Werbevolumen, um eine Auflage sinnvoll
-                      zu drucken. Beides sehen Sie oben in Echtzeit. Erst wenn beide Balken voll sind,
+                      zu drucken. Beides siehst Du oben in Echtzeit. Erst wenn beide Balken voll sind,
                       geben wir die Produktion frei – danach dauert es rund '
                       . e(config('startschuss.lieferwochen')) . ' Wochen bis zur Auslieferung.
                       Feste Kalendertermine nennen wir nicht, solange wir sie nicht halten können.</p>',
@@ -22,14 +22,14 @@ $faq = [
     [
         'frage'   => 'Wie komme ich auf diese Karte?',
         'antwort' => '<p>Über das <a href="/#bestellen">Bestellformular</a> auf der Startseite. Dort gibt es
-                      ein Häkchen für die Anzeige auf der Karte. Sie können es jederzeit widerrufen –
+                      ein Häkchen für die Anzeige auf der Karte. Du kannst es jederzeit widerrufen –
                       eine kurze Mail genügt, dann verschwindet der Eintrag.</p>',
     ],
     [
         'frage'   => 'Woher kommen die Kartendaten?',
         'antwort' => '<p>Von OpenStreetMap, einem offenen Kartenprojekt. Wir binden weder Google Maps noch
                       andere Dienste ein, die Nutzerprofile bilden. Die Kartenkacheln werden erst geladen,
-                      wenn Sie dem zustimmen – bis dahin sehen Sie die Liste, die auch ohne Karte
+                      wenn Du dem zustimmst – bis dahin siehst Du die Liste, die auch ohne Karte
                       vollständig funktioniert.</p>',
     ],
 ];
@@ -53,7 +53,7 @@ $nlErfolg    = flash_get('newsletter_ok');
       <p class="kicker">Der aktuelle Stand</p>
       <h1>Wer ist bei Pizza Support dabei?</h1>
       <p class="hero-lead">
-        Hier sehen Sie, wer bei Pizza Support dabei ist: die Gastronomien, die Kartons abnehmen,
+        Hier siehst Du, wer bei Pizza Support dabei ist: die Gastronomien, die Kartons abnehmen,
         und die Unternehmen, die sie finanzieren. Die Liste wächst mit jeder Eintragung, und
         der Startschuss fällt, sobald beide Seiten stehen. Wer noch fehlt, kann jederzeit
         dazukommen – <a href="/#bestellen">als Gastronomie hier</a> oder
@@ -111,7 +111,7 @@ $nlErfolg    = flash_get('newsletter_ok');
             <h3>Karte von OpenStreetMap laden?</h3>
             <p>
               Die Kartenkacheln kommen von openstreetmap.org. Beim Laden erfährt deren Server
-              Ihre IP-Adresse. Deshalb fragen wir vorher. Alles Weitere steht in den
+              Deine IP-Adresse. Deshalb fragen wir vorher. Alles Weitere steht in den
               <a href="/datenschutz.html">Datenschutzhinweisen</a>.
             </p>
             <button type="button" class="btn btn-primaer" data-karte-laden>Karte laden</button>
@@ -139,7 +139,7 @@ $nlErfolg    = flash_get('newsletter_ok');
             <p class="leer-hinweis">
               Wir zeigen hier ausschließlich Gastronomien, die tatsächlich zugesagt und der
               Veröffentlichung zugestimmt haben. Beispieleinträge, die es in Wirklichkeit
-              nicht gibt, würden weder Ihnen noch uns helfen.
+              nicht gibt, würden weder Dir noch uns helfen.
             </p>
           </div>
         <?php else: ?>
@@ -168,7 +168,13 @@ $nlErfolg    = flash_get('newsletter_ok');
                   </span>
                 </button>
                 <?php if ($t['website']): ?>
-                  <a class="teilnehmer-link" href="<?= e($t['website']) ?>" rel="nofollow noopener" target="_blank">Website</a>
+                  <?php
+                    // Unternehmen zahlen fuer ihre Werbeflaeche, ihr Website-Link hier ist
+                    // Teil der Gegenleistung - rel="sponsored" bildet das korrekt ab.
+                    // Gastronomien stehen kostenlos in der Liste, ihr Link bleibt nofollow.
+                    $websiteRel = $t['typ'] === 'unternehmen' ? 'sponsored noopener' : 'nofollow noopener';
+                  ?>
+                  <a class="teilnehmer-link" href="<?= e($t['website']) ?>" rel="<?= e($websiteRel) ?>" target="_blank">Website</a>
                 <?php endif; ?>
               </li>
             <?php endforeach; ?>
@@ -186,7 +192,7 @@ $nlErfolg    = flash_get('newsletter_ok');
     <p>
       Wir schreiben selten und nur, wenn es etwas zu sagen gibt: wenn die Schwelle fällt,
       wenn die Produktion startet, wenn die Kartons unterwegs sind. Keine Werbung, kein
-      Weiterverkauf Ihrer Adresse, Abmeldung mit einem Klick.
+      Weiterverkauf Deiner Adresse, Abmeldung mit einem Klick.
     </p>
 
     <?php if ($nlErfolg): ?>
@@ -211,8 +217,8 @@ $nlErfolg    = flash_get('newsletter_ok');
       <button class="btn btn-primaer" type="submit">Eintragen</button>
     </form>
     <p class="formular-fuss">
-      Sie bekommen zuerst eine Mail mit einem Bestätigungslink. Erst nach dem Klick
-      sind Sie eingetragen – so landet niemand ungefragt in der Liste.
+      Du bekommst zuerst eine Mail mit einem Bestätigungslink. Erst nach dem Klick
+      bist Du eingetragen – so landet niemand ungefragt in der Liste.
     </p>
   </div>
 </section>

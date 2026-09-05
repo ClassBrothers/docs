@@ -6,9 +6,9 @@ $faq = [
     [
         'frage'   => 'Wer steckt hinter Pizza Support?',
         'antwort' => '<p>Die ' . e(config('firma.name')) . ' aus Freiburg, gastronomisch unterstützt von der
-                      ' . e(config('partner_gastro')) . '. Wir sind keine Agentur, die ein Konzept verkauft,
-                      sondern der Betrieb, der die Kartons bestellt, die Werbung verkauft und am Ende
-                      die Paletten annimmt.</p>',
+                      ' . e(config('partner_gastro')) . '. Wir verkaufen hier kein Konzept, das jemand
+                      anderes umsetzt. Wir bestellen die Kartons, verkaufen die Werbung und nehmen am
+                      Ende die Paletten an.</p>',
     ],
     [
         'frage'   => 'Verdient ihr daran?',
@@ -112,7 +112,7 @@ $meta['jsonld'] = [
       <article class="karte karte-gross">
         <h3><?= e(config('partner_gastro')) ?></h3>
         <p>
-          Unsere gastronomische Rückendeckung. Sie bringen mit, was uns fehlen würde:
+          Unsere gastronomische Rückendeckung. Sie bringt mit, was uns fehlen würde:
           das Gefühl dafür, was in einem Betrieb an einem Freitagabend tatsächlich
           funktioniert und was nur auf dem Papier gut aussieht. Wenn wir uns über
           Mengen, Formate oder Abläufe streiten, gewinnt meistens ihre Erfahrung.
@@ -148,7 +148,7 @@ $meta['jsonld'] = [
     <p>
       Pizza Support ist ein Projekt, kein Unternehmen. Dahinter stehen Leute, die den ganzen
       Tag etwas anderes machen – und genau deshalb wissen, wie man so etwas aufzieht. Falls
-      Sie über die Kartons hinaus etwas brauchen: Hier sind wir zu Hause.
+      Du über die Kartons hinaus etwas brauchst: Hier sind wir zu Hause.
     </p>
     <div class="partner-eintrag">
       <a class="partner-logo-box" href="https://class-brothers.com" target="_blank" rel="noopener" data-follow>
@@ -207,7 +207,7 @@ $meta['jsonld'] = [
     </div>
     <?php $pn = config('partnernachlass'); ?>
     <p>
-      Und weil Sie uns unterstützen, unterstützen wir Sie zurück: Wer als Werbepartner eine
+      Und weil Du uns unterstützt, unterstützen wir Dich zurück: Wer als Werbepartner eine
       Fläche bucht, bekommt <?= (int) $pn['prozent'] ?> % Nachlass auf Leistungen dieser vier
       Häuser, <?= (int) $pn['monate'] ?> Monate ab der Buchung.
     </p>

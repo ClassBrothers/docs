@@ -5,13 +5,13 @@ $faq = [
     [
         'frage'   => 'Wie schnell antwortet ihr?',
         'antwort' => '<p>Werktags in der Regel am selben oder am nächsten Tag. Wenn es dringend ist,
-                      greifen Sie besser zum Telefon – Mails können in einer vollen Woche auch mal
+                      greif besser zum Telefon – Mails können in einer vollen Woche auch mal
                       einen Tag liegen bleiben.</p>',
     ],
     [
         'frage'   => 'Ich habe eine Pizzeria und will einfach loslegen. Muss ich erst schreiben?',
         'antwort' => '<p>Nein. Das <a href="/#bestellen">Bestellformular</a> reicht völlig. Wir melden uns
-                      dann bei Ihnen, wenn wir eine Rückfrage haben oder wenn es losgeht.</p>',
+                      dann bei Dir, wenn wir eine Rückfrage haben oder wenn es losgeht.</p>',
     ],
     [
         'frage'   => 'Ich möchte über das Projekt berichten. An wen wende ich mich?',
@@ -22,7 +22,7 @@ $faq = [
 ];
 
 $meta['titel']        = 'Kontakt zu Pizza Support Freiburg | Pizza Support';
-$meta['beschreibung'] = 'Fragen zu kostenlosen Pizzakartons, zu Werbeflächen oder zum Projekt? Schreiben Sie uns – wir antworten werktags meist am selben Tag.';
+$meta['beschreibung'] = 'Fragen zu kostenlosen Pizzakartons, zu Werbeflächen oder zum Projekt? Schreib uns – wir antworten werktags meist am selben Tag.';
 $meta['jsonld'] = [
     jsonld_faq($faq),
     jsonld_breadcrumb(['Start' => '/', 'Kontakt' => '/kontakt.html']),
@@ -50,15 +50,15 @@ shuffle($captchaOptionen);
     <h1>Kontakt zu Pizza Support</h1>
     <p class="hero-lead">
       Der Kontakt zu Pizza Support läuft ohne Ticketsystem und ohne Warteschleife – hier
-      schreiben Sie direkt an die Leute, die das Projekt machen. Ob Rückfrage zur Bestellung,
+      schreibst Du direkt an die Leute, die das Projekt machen. Ob Rückfrage zur Bestellung,
       Interesse an einer Werbefläche oder ein Vorschlag, an den wir noch nicht gedacht haben:
-      Schreiben Sie uns, wir antworten.
+      Schreib uns, wir antworten.
     </p>
   </div>
 </section>
 
 <div class="wrap">
-  <?= faq_block($faq, 'Bevor Sie schreiben') ?>
+  <?= faq_block($faq, 'Bevor Du schreibst') ?>
 </div>
 
 <section class="band">
@@ -69,10 +69,10 @@ shuffle($captchaOptionen);
         <p class="hinweis hinweis-ok hinweis-gross" role="status"><?= e((string) $erfolg) ?></p>
       <?php endif; ?>
       <?php if ($fehler): ?>
-        <p class="hinweis hinweis-fehler" id="kontakt-fehler" role="alert">Bitte prüfen Sie die markierten Felder.</p>
+        <p class="hinweis hinweis-fehler" id="kontakt-fehler" role="alert">Bitte prüfe die markierten Felder.</p>
       <?php endif; ?>
 
-      <h2>Schreiben Sie uns</h2>
+      <h2>Schreib uns</h2>
       <form method="post" action="/senden/kontakt" class="formular" novalidate>
         <?= csrf_field() ?>
         <?= honeypot_field() ?>
@@ -95,7 +95,7 @@ shuffle($captchaOptionen);
         </div>
 
         <div class="feld<?= isset($fehler['nachricht']) ? ' feld-fehler' : '' ?>">
-          <label for="k-nachricht">Ihre Nachricht <span class="pflicht" aria-hidden="true">*</span></label>
+          <label for="k-nachricht">Deine Nachricht <span class="pflicht" aria-hidden="true">*</span></label>
           <textarea id="k-nachricht" name="nachricht" rows="7" required maxlength="4000"><?= e(alt($altw, 'nachricht')) ?></textarea>
           <?php if (isset($fehler['nachricht'])): ?><p class="feld-meldung"><?= e($fehler['nachricht']) ?></p><?php endif; ?>
         </div>
@@ -109,7 +109,7 @@ shuffle($captchaOptionen);
         </div>
 
         <div class="feld<?= isset($fehler['captcha']) ? ' feld-fehler' : '' ?>">
-          <p class="captcha-frage" id="captcha-frage">Kurze Sicherheitsfrage: Klicken Sie auf die Pizza. <span class="pflicht" aria-hidden="true">*</span></p>
+          <p class="captcha-frage" id="captcha-frage">Kurze Sicherheitsfrage: Klick auf die Pizza. <span class="pflicht" aria-hidden="true">*</span></p>
           <input type="hidden" name="captcha_klick" id="k-captcha-klick" value="">
           <div class="captcha-optionen" role="group" aria-labelledby="captcha-frage">
             <?php foreach ($captchaOptionen as $opt): ?>
@@ -139,7 +139,7 @@ shuffle($captchaOptionen);
         <?= e(config('firma.plz_ort')) ?>
       </p>
       <p>
-        <a href="mailto:<?= e(firma_email_link()) ?>"><?= e(config('firma.email')) ?></a><br>
+        <?= email_link_html() ?><br>
         <a href="tel:<?= e(preg_replace('/[^+0-9]/', '', (string) config('firma.telefon'))) ?>"><?= e(config('firma.telefon')) ?></a>
       </p>
 
@@ -153,7 +153,7 @@ shuffle($captchaOptionen);
 
       <p class="klein">
         Für rechtliche Angaben siehe <a href="/impressum.html">Impressum</a>.
-        Wie wir mit Ihren Daten umgehen, steht im <a href="/datenschutz.html">Datenschutz</a>.
+        Wie wir mit Deinen Daten umgehen, steht im <a href="/datenschutz.html">Datenschutz</a>.
       </p>
     </aside>
   </div>

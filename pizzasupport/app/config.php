@@ -19,11 +19,11 @@ return [
         'strasse'   => 'Im Hubhof 5',
         'plz_ort'   => '79112 Freiburg im Breisgau',
         'telefon'   => '+49 151 616 052 29',
-        // Mit Leerzeichen geschrieben, um Sammelprogramme abzuwehren. Fuer
-        // mailto:-Links immer firma_email_link() aus app/bootstrap.php nutzen,
-        // die die Leerzeichen entfernt - config('firma.email') bleibt fuer
-        // die Anzeige unveraendert.
-        'email'     => 'hallo @ pizzasupport . de',
+        // Unverschluesselt und ohne Leerzeichen - der Schutz vor
+        // Sammelprogrammen laeuft ueber email_link_html() aus
+        // app/bootstrap.php (JavaScript-Obfuskierung), nicht mehr ueber
+        // Leerzeichen im Wert. Leerzeichen wuerden mailto:-Links brechen.
+        'email'     => 'hallo@pizzasupport.de',
         'gf'        => 'Geschäftsführer Sebastian Class',
         'hrb'       => 'HRB 713509, Amtsgericht Freiburg i. Br.',
         'ustid'     => 'DE301531400',
@@ -278,6 +278,8 @@ return [
         '/agb.html',
         '/newsletter-bestaetigt.html',
         '/werbebuchung-bestaetigt.html',
+        // Inaktiv bis zur ersten Auslieferung, siehe fuer-gaeste.php.
+        '/fuer-gaeste.html',
     ],
 
     // Priority/Changefreq je Seite. Was hier fehlt, bekommt die
@@ -290,7 +292,6 @@ return [
         '/flaeche-buchen.html'             => ['prio' => '0.9', 'freq' => 'weekly'],
         '/werbeideen.html'                 => ['prio' => '0.7', 'freq' => 'monthly'],
         '/teilnehmer.html'                 => ['prio' => '0.8', 'freq' => 'daily'],
-        '/fuer-gaeste.html'                => ['prio' => '0.6', 'freq' => 'weekly'],
         '/verpackungssteuer-freiburg.html' => ['prio' => '0.8', 'freq' => 'monthly'],
         '/ueber-uns.html'                  => ['prio' => '0.6', 'freq' => 'monthly'],
         '/kontakt.html'                    => ['prio' => '0.5', 'freq' => 'monthly'],

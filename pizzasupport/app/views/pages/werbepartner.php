@@ -1,26 +1,26 @@
 <?php
-/** Werbepartner-Landingpage: reine Verkaufs-/Infoseite, kein Formular. Ansprache: Sie. */
+/** Werbepartner-Landingpage: reine Verkaufs-/Infoseite, kein Formular. Ansprache: Du. */
 declare(strict_types=1);
 
 $faq = [
     [
         'frage'   => 'Wann wird die Werbefläche in Rechnung gestellt?',
         'antwort' => '<p>Erst nach dem Startschuss. Sobald genug Gastronomien und genug Buchungen zusammengekommen
-                      sind, erhalten Sie eine Auftragsbestätigung und eine Teilrechnung über '
+                      sind, bekommst Du eine Auftragsbestätigung und eine Teilrechnung über '
                       . (int) config('startschuss.anzahlung') . ' % des Auftragswerts. Die Restsumme wird
-                      mit Auslieferung fällig. Vor dem Startschuss entstehen Ihnen keine Kosten, und Sie
-                      können Ihre Buchung bis dahin formlos zurückziehen.</p>',
+                      mit Auslieferung fällig. Vor der Auftragsbestätigung entstehen Dir keine Kosten, und Du
+                      kannst Deine Reservierung bis dahin formlos zurückziehen.</p>',
     ],
     [
         'frage'   => 'Wie viele Menschen sehen mein Motiv?',
         'antwort' => '<p>Ein Pizzakarton steht selten allein herum. Er kommt ins Haus, liegt eine
                       Mahlzeit lang auf dem Tisch und wird von mehreren Personen gesehen – anders als
-                      eine Anzeige, die man wegklickt. Wir versprechen Ihnen keine Reichweitenzahlen,
-                      die wir nicht belegen können. Was wir Ihnen liefern, ist die gedruckte Auflage
-                      und, wenn Sie einen QR-Code nutzen, die Zahl der tatsächlichen Scans.</p>',
+                      eine Anzeige, die man wegklickt. Wir versprechen Dir keine Reichweitenzahlen,
+                      die wir nicht belegen können. Was wir Dir liefern, ist die gedruckte Auflage
+                      und, wenn Du einen QR-Code nutzt, die Zahl der tatsächlichen Scans.</p>',
     ],
     [
-        'frage'   => 'Welche Motive lehnen Sie ab?',
+        'frage'   => 'Welche Motive lehnt ihr ab?',
         'antwort' => '<p>Essens-Lieferdienste, weil sie in direkter Konkurrenz zu den Gastronomien stehen,
                       die die Kartons ausgeben. Außerdem Politisches, Religiöses und alles, was ohne
                       fachliche Grundlage Meinung transportiert. Bei Motiven, die rechtlich heikel sind
@@ -32,13 +32,13 @@ $faq = [
         'antwort' => '<p>Bis zur Druckfreigabe jederzeit. Danach ist die Ziel-Adresse fest. Technisch
                       führt jeder Code über pizzasupport.de, sodass wir die Weiterleitung im Notfall
                       abschalten können – etwa wenn eine Zielseite nicht mehr erreichbar ist.
-                      Für den Inhalt der verlinkten Seite sind Sie als Inserent verantwortlich.</p>',
+                      Für den Inhalt der verlinkten Seite bist Du als Inserent verantwortlich.</p>',
     ],
     [
         'frage'   => 'Lohnt sich ein Gutschein auf dem Karton?',
         'antwort' => '<p>Nach unserer Erfahrung deutlich mehr als ein reines Logo. Ein Gutschein gibt
-                      dem Karton einen Grund, aufgehoben zu werden, und macht Ihren Erfolg messbar –
-                      Sie sehen, wie viele Menschen tatsächlich zu Ihnen kommen. Deshalb geben wir auf
+                      dem Karton einen Grund, aufgehoben zu werden, und macht Deinen Erfolg messbar –
+                      Du siehst, wie viele Menschen tatsächlich zu Dir kommen. Deshalb geben wir auf
                       Gutscheinmotive ' . (int) config('coupon_rabatt_prozent') . ' % Nachlass auf den
                       Listenpreis.</p>',
     ],
@@ -59,7 +59,7 @@ $faq = [
                       nicht um Perfektion, es geht darum, gemeinsam wieder Spaß zu haben und sich nicht zu
                       ernst zu nehmen. Je witziger alle Motive sind, desto viraler wird die Aktion, was
                       wieder mehr Aufmerksamkeit für alle Werbepartner bringt. Unser Kreativ-Team
-                      unterstützt Sie gerne bei der Findung und Umsetzung des perfekten Motivs.</p>',
+                      unterstützt Dich gerne bei der Findung und Umsetzung des perfekten Motivs.</p>',
     ],
 ];
 
@@ -80,11 +80,11 @@ $f = fortschritt_oeffentlich();
       <h1>Werbung auf Pizzakartons in Freiburg buchen</h1>
       <p class="hero-lead">
         Werbung auf Pizzakartons in Freiburg erreicht Menschen beim Essen
-        in sympathischem Kontext. Sie buchen eine feste Fläche auf Deckel oder Seite,
+        in sympathischem Kontext. Du buchst eine feste Fläche auf Deckel oder Seite,
         wir drucken sie in 4c, liefern sie aus und die Freiburger Gastronomie gibt
         die Kartons an tausende Gäste weiter.<br>
-        Ihr Budget bezahlt damit zwei Dinge gleichzeitig: die sympathische Wahrnehmung
-        Ihrer Marke und die Unterstützung von Gastro und Gästen.
+        Dein Budget bezahlt damit zwei Dinge gleichzeitig: die sympathische Wahrnehmung
+        Deiner Marke und die Unterstützung von Gastro und Gästen.
       </p>
       <div class="hero-aktionen">
         <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche jetzt buchen</a>
@@ -112,7 +112,7 @@ $f = fortschritt_oeffentlich();
     <p class="band-lead">
       Die Auflage beträgt <?= zahl((int) config('auflage')) ?> Kartons. Jede Fläche ist ein fest
       benannter Platz auf dem Karton, den nur ein Unternehmen bekommt – wer zuerst bestätigt,
-      sichert sich die Fläche. Sie können mehrere Flächen gleichzeitig buchen.
+      sichert sich die Fläche. Du kannst mehrere Flächen gleichzeitig buchen.
     </p>
 
     <div class="tabelle-wrap">
@@ -133,7 +133,7 @@ $f = fortschritt_oeffentlich();
               <th scope="row"><?= e($stufe['bezeichnung']) ?><span class="tabelle-sub"><?= e(implode(', ', $stufe['codes'])) ?></span></th>
               <td><?= e(config('flaechenkatalog.gruppen')[$stufe['gruppe']] ?? $stufe['gruppe']) ?></td>
               <td><?= e($stufe['masse']) ?></td>
-              <td><?= count($stufe['codes']) ?></td>
+              <td><?= count($stufe['verfuegbare_codes']) ?></td>
               <td class="tabelle-preis">
                 <?= e(preis($stufe['preis'])) ?>
                 <small>zzgl. <?= (int) config('mwst_prozent') ?> % MwSt.</small>
@@ -145,7 +145,7 @@ $f = fortschritt_oeffentlich();
     </div>
 
     <div class="coupon-hinweis">
-      <h3>Gewinnen Sie Kunden mit Coupons</h3>
+      <h3>Gewinne Kunden mit Coupons</h3>
       <p>
         Ein Logo wird gesehen. Ein Gutschein wird eingelöst. Wer auf seiner Fläche
         einen Coupon platziert, bekommt <strong><?= (int) config('coupon_rabatt_prozent') ?> % Nachlass</strong>
@@ -200,7 +200,8 @@ $f = fortschritt_oeffentlich();
       <li>
         <span class="schritt-nr" aria-hidden="true">1</span>
         <h3>Fläche reservieren</h3>
-        <p>Sie wählen eine oder mehrere Flächen. Unverbindlich, ohne Zahlung, ohne Vertragsbindung.</p>
+        <p>Du wählst eine oder mehrere Flächen. Das ist eine Reservierung, ohne Zahlung und ohne
+          Vertragsbindung – verbindlich wird sie erst mit der Auftragsbestätigung.</p>
       </li>
       <li>
         <span class="schritt-nr" aria-hidden="true">2</span>
@@ -220,7 +221,7 @@ $f = fortschritt_oeffentlich();
     </ol>
     <p class="band-nachsatz">
       Feste Kalendertermine nennen wir bewusst nicht. Wir geben die Produktion frei, sobald
-      beide Seiten stehen – den aktuellen Stand sehen Sie auf der
+      beide Seiten stehen – den aktuellen Stand siehst Du auf der
       <a href="/teilnehmer.html">Teilnehmerseite</a>. Warum es dieses Projekt überhaupt gibt,
       steht auf der Seite zur <a href="/verpackungssteuer-freiburg.html">Freiburger Verpackungssteuer</a>.
     </p>
@@ -235,13 +236,13 @@ $f = fortschritt_oeffentlich();
   <div class="wrap schmal">
     <h2 id="vorteile-titel">Auf einen Blick</h2>
     <ul class="liste-check">
-      <li>Sympathischer Kontext: Ihr Motiv liegt beim Essen auf dem Tisch, nicht zwischen Werbeanzeigen.</li>
-      <li>Bis zum Startschuss unverbindlich und ohne Zahlung – Sie reservieren, nicht kaufen.</li>
+      <li>Sympathischer Kontext: Dein Motiv liegt beim Essen auf dem Tisch, nicht zwischen Werbeanzeigen.</li>
+      <li>Reservierung ohne Zahlung – verbindlich wird sie erst mit der Auftragsbestätigung.</li>
       <li><?= (int) config('coupon_rabatt_prozent') ?> % Nachlass auf den Listenpreis bei einem Gutscheinmotiv.</li>
       <li>
         <?= (int) $pn['prozent'] ?> % Nachlass auf Leistungen unserer eigenen Häuser
         (<a href="/ueber-uns.html#sonst-titel">Class Brothers, KI-Assistenz, SnackWorks, Badische
-        Entertainment</a>), <?= (int) $pn['monate'] ?> Monate ab Ihrer Buchung.
+        Entertainment</a>), <?= (int) $pn['monate'] ?> Monate ab Deiner Buchung.
       </li>
     </ul>
   </div>
@@ -251,7 +252,7 @@ $f = fortschritt_oeffentlich();
 
 <section class="band band-cta band-bestellen" aria-labelledby="buchen-abschluss-titel">
   <div class="wrap schmal zentriert">
-    <h2 id="buchen-abschluss-titel">Bereit für Ihre Fläche?</h2>
+    <h2 id="buchen-abschluss-titel">Bereit für Deine Fläche?</h2>
     <p class="band-lead">
       Die Teilnehmer-Karte zeigt, wer schon dabei ist – als Beleg dafür, dass hier wirklich
       etwas entsteht. Die Buchung selbst dauert wenige Minuten.
