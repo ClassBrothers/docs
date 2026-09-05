@@ -1,0 +1,12 @@
+# Geheimnisse und laufender Betrieb gehören nicht ins Repository.
+.env
+storage/db/*.sqlite
+storage/db/*.sqlite-wal
+storage/db/*.sqlite-shm
+storage/uploads/*
+!storage/uploads/.gitkeep
+storage/logs/*
+!storage/logs/.gitkeep
+
+.DS_Store
+Thumbs.db

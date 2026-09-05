@@ -1,0 +1,987 @@
+/* Alles unterhalb der Falz. Laedt asynchron nach dem Critical CSS. */
+
+/* Der Kopf ist sticky (position:sticky;top:0, siehe critical.css) - ohne
+   das hier wuerde ein Sprungziel (z.B. #gruppe-deckel von den Preiskacheln
+   der Startseite) genau unter dem Header landen und der Anfang des
+   Abschnitts waere verdeckt. Gilt fuer jedes Element mit id, nicht nur
+   fuer einen einzelnen Anker, damit kuenftige Sprungziele automatisch
+   mitgelten. */
+[id]{scroll-margin-top:96px}
+@media (max-width:900px){[id]{scroll-margin-top:84px}}
+@media (max-width:520px){[id]{scroll-margin-top:72px}}
+
+/* --- Baender ---------------------------------------------------------- */
+.band{padding:clamp(2.5rem,1.5rem + 3vw,4.25rem) 0}
+.band-hell{background:var(--flaeche-hell-zwei)}
+.band-dunkel{background:linear-gradient(150deg,var(--flaeche-dunkel),var(--flaeche-dunkel-weich));color:var(--text-auf-dunkel-hell)}
+.band-dunkel h2,.band-dunkel h3{color:var(--akzent-waerme-hell)}
+.band-dunkel a:not(.btn){color:var(--akzent-waerme-hell)}
+.band-cta{background:var(--akzent);color:#fff5f0}
+.band-cta h2{color:#fff}
+.band-cta a:not(.btn){color:#ffe1d6}
+
+/* .btn-sekundaer ist fuer helle Flaechen gezeichnet (dunkler Text,
+   heller Rand). Auf farbigen/dunklen Baendern faellt der Text sonst
+   unter die Kontrastgrenze - hier auf hell umgestellt, wie ein
+   Ghost-Button auf dunklem Grund. */
+.band-cta .btn-sekundaer,.band-dunkel .btn-sekundaer{color:#fff;border-color:rgba(255,255,255,.5)}
+.band-cta .btn-sekundaer:hover,.band-dunkel .btn-sekundaer:hover{background:rgba(255,255,255,.14);color:#fff;border-color:#fff;box-shadow:none}
+.band-recht{padding-top:2.5rem}
+.band-fehler{padding:4rem 0}
+.band-lead{font-size:1.1rem;color:var(--textfarbe-gedaempft);max-width:44em}
+.band-dunkel .band-lead{color:var(--text-auf-dunkel)}
+.band-nachsatz{margin-top:1.75rem;color:var(--textfarbe-gedaempft);max-width:48em}
+.zwischen-cta{margin-top:1.75rem}
+.klein{font-size:.9rem;color:var(--textfarbe-gedaempft)}
+
+/* --- Kartonskizze im Hero --------------------------------------------
+   Eine gezeichnete Kartonschachtel liegt als SVG hinter den Preis-Pillen.
+   Die Pillen selbst tragen die echten Werbeflaechen-Angaben und schweben
+   leicht versetzt, wie schon im Vorgaenger-Design - reines CSS, keine
+   Bilddatei, keine Layout-Verschiebung beim Laden (die SVG traegt feste
+   Masse). */
+.hero-karton{min-width:0;position:relative}
+
+/* Handgezeichneter Pfeil "So könnte das aussehen" - deutet auf das
+   Kartonbild, nur auf der Startseite eingebaut (siehe startseite.php).
+   Ausserhalb sichtbarer Reichweite von .hero versteckt sich das per
+   overflow:hidden von selbst, deshalb absichtlich knapp positioniert. */
+.hero-pfeil{
+  position:absolute;top:-1rem;left:-.5rem;z-index:2;
+  display:flex;align-items:flex-start;gap:.35rem;
+  color:#2b231f;transform:rotate(-6deg);pointer-events:none;
+}
+.hero-pfeil svg{
+  display:block;flex-shrink:0;margin-top:.3rem;
+  filter:drop-shadow(0 0 2px #fff8ee) drop-shadow(0 0 2px #fff8ee) drop-shadow(0 0 3px #fff8ee);
+}
+.hero-pfeil-text{
+  font-family:var(--schrift-kopf);font-style:italic;font-weight:700;
+  font-size:.9rem;line-height:1.2;white-space:nowrap;
+  background:rgba(255,250,244,.94);padding:.25rem .6rem;border-radius:8px;
+  box-shadow:0 2px 6px rgba(60,30,10,.22);
+}
+@media (max-width:900px){
+  .hero-pfeil{display:none}
+}
+.karton-skizze{
+  position:relative;background:var(--flaeche-weiss);border:2px solid var(--rahmenfarbe);
+  border-radius:var(--radius-karte);padding:2.25rem 1.25rem 1.25rem;box-shadow:var(--schatten);
+  overflow:hidden;
+}
+.karton-illustration{
+  position:absolute;bottom:2%;right:-4%;width:46%;height:auto;opacity:.6;
+  filter:drop-shadow(0 8px 16px rgba(60,35,20,.14));pointer-events:none;
+}
+.karton-dampf{animation:dampf 3.6s ease-out infinite;opacity:0}
+.karton-dampf:nth-child(2){animation-delay:.9s}
+.karton-dampf:nth-child(3){animation-delay:1.8s}
+@keyframes dampf{0%{opacity:0;transform:translateY(0) scaleX(1)}40%{opacity:.55}100%{opacity:0;transform:translateY(-22px) scaleX(1.4)}}
+
+.karton-deckel{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:.6rem;margin-bottom:.6rem}
+.flaeche{
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  border-radius:var(--radius-knopf);padding:.75rem .6rem;text-align:center;
+  font-family:var(--schrift-ui);font-weight:700;font-size:.8rem;line-height:1.25;color:var(--flaeche-dunkel);
+  background:var(--flaeche-weiss);border:1.5px solid var(--rahmenfarbe);box-shadow:var(--schatten-sm);
+  animation:schweben 5.4s ease-in-out infinite;
+}
+.flaeche::before{content:"";width:.5rem;height:.5rem;border-radius:50%;background:var(--akzent-waerme);margin-bottom:.3rem}
+.flaeche small{display:block;font-family:var(--schrift-text);font-weight:500;font-size:.72rem;color:var(--textfarbe-gedaempft);margin-top:.1rem}
+.flaeche-gross{grid-row:span 2;animation-delay:.2s}
+.flaeche-gross::before{background:var(--akzent)}
+.flaeche-mittel{animation-delay:.8s}
+.flaeche-klein{animation-delay:1.4s}
+.karton-seite{position:relative;z-index:1;margin-bottom:.75rem}
+.flaeche-seite{padding:.55rem;font-size:.76rem;animation-delay:.5s}
+.flaeche-seite::before{background:var(--akzent-sekundaer)}
+.karton-boden{position:relative;z-index:1;margin:0;font-size:.9rem;color:var(--textfarbe-gedaempft);border-top:1px solid var(--rahmenfarbe);padding-top:.75rem}
+
+@keyframes schweben{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@media (prefers-reduced-motion:reduce){
+  .flaeche{animation:none}
+  .karton-dampf{animation:none;opacity:0}
+}
+
+/* --- Fortschritt ------------------------------------------------------ */
+.fortschritt{background:var(--flaeche-weiss);border-block:1px solid var(--rahmenfarbe);padding:2rem 0}
+.fortschritt-titel{font-size:1.35rem;margin-bottom:1.25rem}
+.fortschritt-zahlen{display:flex;flex-wrap:wrap;gap:2rem;margin-bottom:1.5rem}
+.fortschritt-zahlen p{margin:0;display:flex;flex-direction:column}
+.fortschritt-zahlen strong{font-family:var(--schrift-kopf);font-size:2rem;line-height:1;color:var(--akzent)}
+.fortschritt-zahlen span{font-size:.9rem;color:var(--textfarbe-gedaempft)}
+.balken-gruppe{display:grid;gap:1rem;max-width:640px}
+.balken-kopf{display:flex;justify-content:space-between;font-size:.9rem;font-weight:600;margin-bottom:.35rem}
+.balken{height:14px;background:var(--flaeche-hell-zwei);border-radius:var(--radius-badge);overflow:hidden;border:1px solid var(--rahmenfarbe)}
+.balken-fuellung{display:block;width:0;height:100%;background:var(--akzent);border-radius:var(--radius-badge);transition:width .6s ease}
+.balken-fuellung-zwei{background:var(--akzent-sekundaer)}
+.fortschritt-hinweis{margin:1.25rem 0 0;font-size:.95rem;color:var(--textfarbe-gedaempft);max-width:52em}
+.fortschritt-ersparnis{margin:1.5rem 0 0;padding:1rem 1.25rem;background:var(--flaeche-hell-zwei);border-radius:var(--radius-knopf);font-size:1rem}
+.fortschritt-ersparnis strong{color:var(--akzent-sekundaer-dunkel);font-family:var(--schrift-kopf);font-size:1.3rem;margin:0 .3rem}
+.fortschritt-ersparnis-klein{display:block;font-size:.82rem;color:var(--textfarbe-gedaempft);margin-top:.3rem}
+
+/* --- Ersparnisrechner --------------------------------------------------- */
+.rechner{margin-top:1.5rem}
+
+/* Ergebnis im Look einer alten Registrierkasse: dunkles Display, die
+   beiden Summen als leuchtende "Kacheln" mitten im Satz statt als
+   trockene Tabelle. */
+.rechner-kasse{
+  margin-top:1.5rem;padding:1.75rem;border-radius:var(--radius-karte);
+  background:linear-gradient(155deg,var(--flaeche-dunkel) 0%,var(--flaeche-dunkel-weich) 100%);
+  color:var(--text-auf-dunkel);text-align:center;
+}
+.rechner-fliesstext{margin:0;font-size:1.15rem;line-height:1.7}
+.rechner-kachel{
+  display:inline-block;margin:.15rem .1rem;padding:.2rem .6rem;
+  font-family:var(--schrift-kopf);font-size:1.15rem;font-weight:700;letter-spacing:.02em;
+  background:var(--akzent-waerme);color:#241C18;border-radius:6px;
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.15);
+}
+.rechner-kachel-akzent{background:var(--akzent)}
+.rechner-steuer{margin:.9rem 0 0;font-size:.88rem;font-style:italic;color:var(--text-auf-dunkel-hell)}
+
+/* --- Fläche buchen: Formular links, Flächenplan mit Lupe rechts -------- */
+.bestellen-grid{display:grid;grid-template-columns:1fr 340px;gap:2rem;align-items:start}
+.bestellen-formular-spalte{min-width:0}
+/* top muss die Hoehe des sticky Headers (siehe .kopf in critical.css,
+   position:sticky;top:0) einrechnen, sonst rutscht die Grafik beim
+   Scrollen unter den Header und wird oben abgeschnitten - beide Elemente
+   sind unabhaengig voneinander sticky und wuerden sonst um dieselbe
+   Bildschirmzeile konkurrieren. */
+.bestellen-grafik-spalte{position:sticky;top:calc(76px + 1rem)}
+@media (max-width:900px){
+  .bestellen-grid{display:block}
+  .bestellen-grafik-spalte{position:static;max-width:340px;margin:2rem auto 0}
+}
+
+/* aspect-ratio noetig: ohne feste Hoehe koennen die absolut positionierten
+   Kinder (Lupenglas, Umrandungen) ihre height:% nicht aufloesen - dieselbe
+   Falle wie schon bei .psk-map/.teilnehmer-eintrag/.wahl in dieser Datei,
+   nur diesmal bei der Hoehe statt beim hidden-Attribut. */
+.flaechenplan-lupe{position:relative;aspect-ratio:2000/4545}
+.flaechenplan-lupe a{display:block}
+.flaechenplan-bild{width:100%;height:auto;display:block;border-radius:var(--radius-karte);border:1px solid var(--rahmenfarbe)}
+/* Rundes Lupenglas, das per JS bei Mausbewegung positioniert und mit dem
+   hochaufgeloesten Bild als vergroesserter Bildausschnitt gefuellt wird -
+   siehe main.js. pointer-events:none, damit es die Mausereignisse auf dem
+   darunterliegenden Bild nicht selbst abfaengt. */
+.flaechenplan-lupenglas{
+  position:absolute;width:160px;height:160px;border-radius:50%;
+  border:3px solid var(--flaeche-weiss);pointer-events:none;background-repeat:no-repeat;
+  box-shadow:0 2px 14px rgba(0,0,0,.35),inset 0 0 0 1px var(--rahmenfarbe);
+}
+.flaechenplan-bildunterschrift{margin-top:.6rem;font-size:.85rem;color:var(--textfarbe-gedaempft)}
+@media (hover:none){.flaechenplan-lupenglas{display:none}}
+
+/* Umrandung je Paket - liegt die ganze Zeit im DOM (Position in % der
+   Bildmasse), wird per JS nur ein-/ausgeblendet, wenn die passende
+   Formatauswahl im Formular unter der Maus ist. */
+.flaechenplan-umrandung{
+  position:absolute;border:3px solid var(--akzent-waerme);border-radius:4px;
+  opacity:0;transition:opacity .12s ease;pointer-events:none;
+  box-shadow:0 0 0 1px rgba(0,0,0,.25);
+}
+.flaechenplan-umrandung.ist-aktiv{opacity:1}
+
+/* Permanente "verkauft"-Markierung auf der Grafik, unabhaengig vom Hover-
+   Effekt oben - liegt einfach als Prozentwert im DOM, kein JS noetig, siehe
+   werbepartner.php. */
+.flaechenplan-verkauft{
+  position:absolute;background:rgba(43,35,31,.72);border:2px solid var(--akzent);
+  border-radius:4px;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+}
+.flaechenplan-verkauft span{
+  font-family:var(--schrift-ui);font-size:.62rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.04em;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);
+}
+.flaechen-gruppe{margin:0 0 1.1rem}
+.flaechen-gruppe:last-of-type{margin-bottom:0}
+.flaechen-gruppe legend{
+  font-family:var(--schrift-ui);font-size:.9rem;font-weight:700;color:var(--textfarbe-gedaempft);
+  padding:0 0 .35rem;margin-bottom:.5rem;border-bottom:1px solid var(--rahmenfarbe);width:100%;
+}
+
+@media (prefers-reduced-motion:reduce){.balken-fuellung{transition:none}}
+
+/* --- Schritte --------------------------------------------------------- */
+.schritte{list-style:none;margin:2rem 0 0;padding:0;display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.schritte li{background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);padding:1.4rem 1.25rem;position:relative}
+.schritt-nr{
+  display:flex;align-items:center;justify-content:center;width:36px;height:36px;
+  border-radius:50%;background:var(--flaeche-dunkel);color:var(--akzent-waerme-hell);
+  font-family:var(--schrift-kopf);font-weight:700;font-size:1.1rem;margin-bottom:.75rem;
+}
+.schritte h3{margin:0 0 .35rem;font-size:1.05rem}
+.schritte p{margin:0;font-size:.94rem;color:var(--textfarbe-gedaempft)}
+.schritte-vier{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+
+/* --- Karten ----------------------------------------------------------- */
+.karten{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));margin-top:1.75rem}
+.karten-zwei{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.karte{background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);padding:1.5rem}
+.karte h3{margin:0 0 .5rem;color:var(--flaeche-dunkel)}
+.karte p{margin:0;color:var(--textfarbe-gedaempft);font-size:.97rem}
+.karte-gross{padding:1.9rem}
+.karte-gross h3{font-size:1.3rem;font-family:var(--schrift-kopf)}
+
+/* --- Partnerlogos, "Was wir sonst so können" --------------------------- */
+.partner-eintrag{display:flex;align-items:flex-start;gap:1.25rem;margin-bottom:1.75rem}
+.partner-eintrag:last-child{margin-bottom:0}
+.partner-logo-box{
+  flex:0 0 180px;width:180px;background:#fff;border-radius:10px;
+  padding:1rem;display:flex;align-items:center;justify-content:center;
+}
+.partner-logo{height:48px;width:auto;max-width:100%;display:block}
+.partner-eintrag p{margin:0}
+@media (max-width:600px){
+  .partner-eintrag{flex-direction:column}
+  .partner-logo-box{flex:0 0 auto;width:auto;align-self:flex-start}
+}
+
+/* --- Preise ----------------------------------------------------------- */
+.preis-gitter{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin-top:1.75rem}
+.preis-karte{display:flex;flex-direction:column;background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-top:4px solid var(--akzent);border-radius:var(--radius-karte);padding:1.5rem}
+.preis-karte-fun{border-top-color:var(--akzent-sekundaer);background:#f3f8f2}
+.preis-karte h3{margin:0 0 .25rem}
+.preis-masse{font-size:.85rem;color:var(--textfarbe-gedaempft);margin:0 0 .75rem}
+.preis-zahl{font-family:var(--schrift-kopf);font-size:1.75rem;font-weight:700;color:var(--akzent);margin:0 0 .6rem;line-height:1.1}
+.preis-zahl small{display:block;font-family:var(--schrift-text);font-size:.78rem;font-weight:500;color:var(--textfarbe-gedaempft)}
+.preis-text{margin:0 0 1.1rem;font-size:.94rem;color:var(--textfarbe-gedaempft);flex-grow:1}
+.preis-karte-btn{align-self:flex-start}
+
+.tabelle-wrap{overflow-x:auto;margin-top:1.5rem;border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);background:var(--flaeche-weiss)}
+.preistabelle{width:100%;border-collapse:collapse;min-width:560px}
+.preistabelle th,.preistabelle td{padding:.9rem 1rem;text-align:left;border-bottom:1px solid var(--rahmenfarbe);vertical-align:top}
+.preistabelle thead th{background:var(--flaeche-hell-zwei);font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;color:var(--textfarbe-gedaempft)}
+.preistabelle tbody th{font-weight:700;color:var(--flaeche-dunkel)}
+.tabelle-sub{display:block;font-weight:400;font-size:.85rem;color:var(--textfarbe-gedaempft);margin-top:.2rem}
+.tabelle-preis{font-weight:700;color:var(--akzent);white-space:nowrap}
+.tabelle-preis small{display:block;font-weight:400;font-size:.78rem;color:var(--textfarbe-gedaempft)}
+
+/* --- "Was ein Unternehmen wirklich kauft" ------------------------------ */
+.kauft-liste{list-style:none;margin:1.5rem 0 0;padding:0;display:grid;gap:1.1rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.kauft-liste li{display:flex;align-items:flex-start;gap:.75rem}
+.kauft-icon{flex:0 0 auto;margin-top:.1rem}
+.kauft-liste span:last-child{font-size:.97rem}
+.tabelle-gut{font-weight:700;color:var(--akzent-sekundaer)}
+
+.coupon-hinweis{
+  margin-top:2rem;padding:1.6rem 1.75rem;border-radius:var(--radius-karte);
+  background:linear-gradient(135deg,#fff6e4,#fdeccd);border:2px solid var(--akzent-waerme-hell);
+}
+.coupon-hinweis h3{margin-top:0;font-family:var(--schrift-kopf);font-size:1.3rem;color:var(--flaeche-dunkel)}
+.coupon-hinweis p{margin:0;color:#5a4a2c}
+
+.motiv-vorbehalt{margin-top:1.25rem;padding:1.25rem 1.4rem;background:var(--flaeche-hell-zwei);border-left:4px solid var(--akzent);border-radius:0 var(--radius-knopf) var(--radius-knopf) 0}
+.motiv-vorbehalt h3{margin:0 0 .5rem;font-size:1.05rem}
+.motiv-vorbehalt p{margin:0;font-size:.94rem;color:var(--textfarbe-gedaempft)}
+
+.info-box{background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);padding:1.5rem;margin-top:1.5rem}
+.info-box h3{margin-top:0}
+.info-box-fuss{margin:1rem 0 0;font-size:.9rem;color:var(--textfarbe-gedaempft)}
+
+/* --- Listen ----------------------------------------------------------- */
+.liste-check{list-style:none;margin:0 0 1em;padding:0}
+.liste-check li{position:relative;padding-left:1.6rem;margin-bottom:.5rem}
+.liste-check li::before{content:"";position:absolute;left:0;top:.55em;width:.6rem;height:.6rem;border-radius:50%;background:var(--akzent-waerme)}
+.liste-links{list-style:none;margin:0 0 1em;padding:0}
+.liste-links li{margin-bottom:.5rem}
+.liste-links-mitte{display:inline-block;text-align:left}
+
+/* --- Formulare -------------------------------------------------------- */
+.band-bestellen{background:var(--flaeche-hell-zwei)}
+.bestellen-kopf{max-width:44em;margin-bottom:1.75rem}
+.formular{background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);padding:clamp(1.25rem,1rem + 1.5vw,2.25rem);box-shadow:var(--schatten)}
+.formular-breit{max-width:860px}
+.formular fieldset{border:0;padding:0;margin:0 0 2rem}
+.formular fieldset:last-of-type{margin-bottom:0}
+.formular legend{
+  font-family:var(--schrift-kopf);font-weight:700;font-size:1.15rem;color:var(--flaeche-dunkel);
+  padding:0 0 .75rem;margin-bottom:1rem;border-bottom:2px solid var(--flaeche-hell-zwei);width:100%;
+}
+.feld{margin-bottom:1.15rem}
+.feld-reihe{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.feld-klein{max-width:none}
+.feld label,.feld-label{font-family:var(--schrift-ui);display:block;font-weight:700;font-size:.86rem;letter-spacing:.01em;margin-bottom:.35rem}
+.feld-optional{font-weight:400;color:var(--textfarbe-gedaempft);font-size:.88rem}
+.feld-hilfe{margin:.4rem 0 0;font-size:.87rem;color:var(--textfarbe-gedaempft)}
+.pflicht{color:var(--akzent)}
+
+.feld input[type=text],.feld input[type=email],.feld input[type=tel],.feld input[type=url],
+.feld input[type=number],.feld input[type=search],.feld input[type=password],.feld select,.feld textarea{
+  width:100%;padding:.7rem .85rem;font:inherit;font-size:1rem;color:var(--textfarbe);
+  background:var(--flaeche-weiss);border:1.5px solid var(--rahmenfarbe);border-radius:var(--radius-knopf);
+}
+.feld input:focus,.feld select:focus,.feld textarea:focus{border-color:var(--flaeche-dunkel);outline:2px solid rgba(22,55,91,.18);outline-offset:0}
+.feld textarea{resize:vertical;min-height:5rem}
+.feld input[type=file]{width:100%;font-size:.95rem;padding:.6rem;border:1.5px dashed var(--rahmenfarbe);border-radius:var(--radius-knopf);background:var(--flaeche-hell)}
+
+.feld-check label{display:flex;gap:.65rem;align-items:flex-start;font-weight:400;font-size:.95rem;line-height:1.5;cursor:pointer}
+.feld-check input[type=checkbox]{flex:0 0 auto;width:1.15rem;height:1.15rem;margin-top:.2rem;accent-color:var(--akzent)}
+.feld-coupon{background:#fff8e8;border:1px solid var(--akzent-waerme-hell);border-radius:var(--radius-knopf);padding:.9rem 1rem}
+
+.feld-fehler input,.feld-fehler select,.feld-fehler textarea{border-color:var(--akzent);background:#fdf5f4}
+/* .feld-fehler faerbt sonst nur input/select/textarea um - die Captcha-
+   Antworten sind aber <button>-Elemente (Icon-Kacheln) und blieben ohne
+   diese Zeile optisch unmarkiert, obwohl die Fehlermeldung darunter schon
+   erschien. */
+.feld-fehler .captcha-optionen{padding:.5rem;border:2px solid var(--akzent);border-radius:var(--radius-karte);background:#fdf5f4}
+.feld-meldung{margin:.4rem 0 0;font-size:.88rem;font-weight:600;color:var(--akzent)}
+
+.hinweis{padding:.9rem 1.1rem;border-radius:var(--radius-knopf);margin:0 0 1.5rem;font-size:.97rem}
+.hinweis-fehler{background:#fdeeec;border:1px solid #eab8b2;color:#7d241c}
+.hinweis-ok{background:#eff6ee;border:1px solid #b9d6b6;color:#2c5330}
+.hinweis-todo{background:#fff6e0;border:1px solid var(--akzent-waerme-hell);color:#6b5314}
+.hinweis-todo code{background:rgba(0,0,0,.06);padding:.1em .35em;border-radius:3px}
+.hinweis-gross{padding:1.75rem 1.5rem;font-size:1.15rem;text-align:center}
+
+/* Sicherheitsabfrage Kontaktformular */
+.captcha-frage{font-weight:600;margin:0 0 .5rem}
+.captcha-optionen{display:flex;flex-wrap:wrap;gap:.6rem}
+.captcha-knopf{font-size:1.8rem;line-height:1;padding:.55rem .85rem;border:2px solid var(--rahmenfarbe);border-radius:var(--radius-knopf);background:var(--flaeche-weiss);cursor:pointer}
+.captcha-knopf:hover{border-color:var(--akzent)}
+.captcha-knopf.ist-gewaehlt{border-color:var(--akzent);background:#fff7ef;box-shadow:inset 0 0 0 1px var(--akzent)}
+.captcha-alternative{margin-top:.75rem;font-size:.92rem}
+.captcha-alternative summary{cursor:pointer;color:var(--akzent);font-weight:600}
+.captcha-alternative .feld{margin-top:.75rem}
+
+.formular-fuss{margin:1rem 0 0;font-size:.88rem;color:var(--textfarbe-gedaempft)}
+.formular-inline{display:grid;gap:1rem;align-items:end;grid-template-columns:1fr;max-width:520px}
+
+/* Honeypot: fuer Menschen unsichtbar, fuer Bots verlockend. */
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* Auswahlkacheln */
+.wahl-gitter{display:grid;gap:.75rem;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-top:.25rem}
+.wahl-gitter-preis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.wahl-reihe{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:.25rem}
+.wahl-reihe-spalte{flex-direction:column}
+.wahl-reihe-spalte .wahl-schmal{flex:1 1 auto}
+.feld-hilfe-inline{font-weight:400;font-size:.85rem;color:var(--textfarbe-gedaempft)}
+.wahl{position:relative;display:block;cursor:pointer}
+/* Wie bei .modal/.consent/.teilnehmer-eintrag: eigenes display:block
+   sticht sonst das hidden-Attribut aus (hier fuer die Wunschflaechen-
+   Filterung nach gewaehltem Paket gebraucht). */
+.wahl[hidden]{display:none}
+.wahl-schmal{flex:1 1 220px}
+.wahl input{position:absolute;opacity:0;width:1px;height:1px}
+.wahl-inhalt{
+  display:flex;flex-direction:column;gap:.15rem;height:100%;
+  padding:.9rem 1rem;border:2px solid var(--rahmenfarbe);border-radius:var(--radius-knopf);
+  background:var(--flaeche-weiss);transition:border-color .15s ease,background-color .15s ease;
+}
+.wahl-inhalt strong{font-size:1rem}
+.wahl-inhalt small{font-size:.84rem;color:var(--textfarbe-gedaempft)}
+.wahl-preis{font-style:normal;font-weight:700;font-size:.92rem;color:var(--akzent);margin-top:.35rem}
+.wahl-badge{font-family:var(--schrift-ui);font-style:normal;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:var(--akzent-sekundaer);padding:.2rem .55rem;border-radius:var(--radius-badge);margin-top:.4rem;display:inline-block}
+.wahl input:checked + .wahl-inhalt{border-color:var(--akzent);background:#fff7ef;box-shadow:inset 0 0 0 1px var(--akzent)}
+.wahl input:focus-visible + .wahl-inhalt{outline:3px solid var(--flaeche-dunkel);outline-offset:2px}
+.wahl-vergeben{cursor:not-allowed}
+.wahl-vergeben .wahl-inhalt{opacity:.55}
+.wahl-vergeben-marke{font-style:normal;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--akzent);margin-top:.3rem;display:block}
+
+/* Mengen je Format */
+.formate-liste{display:flex;flex-direction:column;gap:1rem;margin-top:.5rem}
+.format-zeile{border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);padding:1rem 1.15rem;background:var(--flaeche-hell)}
+.format-zeile-kopf{display:flex;flex-wrap:wrap;align-items:baseline;gap:.15rem .6rem;margin-bottom:.6rem}
+.format-zeile-kopf strong{font-size:1rem}
+.format-zeile-kopf small{color:var(--textfarbe-gedaempft);font-size:.84rem}
+.menge-wahl label.feld-optional{margin:0}
+
+/* Mengenauswahl */
+.menge-wahl{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.menge-knopf{
+  padding:.65rem 1.15rem;font-family:var(--schrift-ui);font-weight:700;cursor:pointer;
+  background:var(--flaeche-weiss);border:2px solid var(--rahmenfarbe);border-radius:var(--radius-badge);color:var(--textfarbe);
+  transition:all .2s ease;
+}
+.menge-knopf:hover{border-color:var(--akzent)}
+.menge-knopf.ist-aktiv{background:var(--akzent);border-color:var(--akzent);color:var(--text-auf-akzent)}
+.menge-wahl input[type=number]{max-width:170px}
+
+/* Summenanzeige beim Werbepartner */
+.summe{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem 1rem;
+  margin-top:1.25rem;padding:1rem 1.25rem;background:linear-gradient(155deg,var(--flaeche-dunkel),var(--flaeche-dunkel-weich));color:#fff;border-radius:var(--radius-knopf);
+}
+.summe-label{font-size:.9rem;color:var(--text-auf-dunkel)}
+.summe-wert{font-family:var(--schrift-kopf);font-size:1.6rem;font-weight:700;color:var(--akzent-waerme-hell)}
+.summe-hinweis{font-size:.85rem;color:var(--text-auf-dunkel);width:100%}
+
+/* --- Konfetti-Danke --------------------------------------------------- */
+.danke{
+  position:relative;overflow:hidden;text-align:center;
+  background:var(--flaeche-weiss);border:2px solid var(--akzent-sekundaer);border-radius:var(--radius-karte);
+  padding:2.5rem 1.5rem 2rem;margin-bottom:2.5rem;box-shadow:var(--schatten);
+}
+.danke h2{margin:.5rem 0}
+.danke p{margin:0 auto .5rem;max-width:40em;color:var(--textfarbe-gedaempft)}
+.danke-ruhig{border-color:var(--flaeche-dunkel);padding:2rem 1.5rem}
+.danke-weiter{font-size:.95rem}
+.danke-konfetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.danke-karton{position:relative;width:96px;height:64px;margin:0 auto 1rem}
+.danke-boden{position:absolute;bottom:0;left:0;width:96px;height:34px;background:var(--akzent-waerme);border-radius:4px}
+.danke-deckel{
+  position:absolute;top:14px;left:0;width:96px;height:30px;background:#dcb954;border-radius:4px;
+  transform-origin:bottom center;animation:deckel-auf .7s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes deckel-auf{from{transform:rotateX(0) translateY(0)}to{transform:rotateX(-115deg) translateY(-6px)}}
+@media (prefers-reduced-motion:reduce){.danke-deckel{animation:none;transform:rotateX(-115deg) translateY(-6px)}}
+
+/* --- FAQ -------------------------------------------------------------- */
+.faq{padding:clamp(2.5rem,1.5rem + 3vw,4rem) 0}
+.faq > h2{max-width:20em}
+.faq-liste{display:grid;gap:.75rem;margin-top:1.75rem;max-width:52em}
+.faq-item{background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);overflow:hidden}
+.faq-item summary{
+  cursor:pointer;padding:1.1rem 3rem 1.1rem 1.35rem;position:relative;list-style:none;
+}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary h3{display:inline;margin:0;font-size:1.05rem;font-family:var(--schrift-text);font-weight:700;color:var(--flaeche-dunkel)}
+.faq-item summary::after{
+  content:"";position:absolute;right:1.35rem;top:1.5rem;width:.6rem;height:.6rem;
+  border-right:2px solid var(--akzent);border-bottom:2px solid var(--akzent);
+  transform:rotate(45deg);transition:transform .2s ease;
+}
+.faq-item[open] summary::after{transform:rotate(-135deg);top:1.75rem}
+.faq-item summary:hover{background:var(--flaeche-hell-zwei)}
+.faq-antwort{padding:0 1.35rem 1.25rem;color:var(--textfarbe-gedaempft)}
+.faq-antwort p:last-child{margin-bottom:0}
+@media (prefers-reduced-motion:reduce){.faq-item summary::after{transition:none}}
+
+/* --- Teilnehmerseite -------------------------------------------------- */
+.teilnehmer-steuerung{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;margin:1.5rem 0}
+.such-feld{flex:1 1 240px}
+.such-feld input{width:100%;padding:.7rem .85rem;font:inherit;border:1.5px solid var(--rahmenfarbe);border-radius:var(--radius-badge);background:var(--flaeche-weiss)}
+.segment{display:inline-flex;background:var(--flaeche-weiss);border:1.5px solid var(--rahmenfarbe);border-radius:var(--radius-badge);padding:3px}
+.segment-knopf{padding:.5rem 1rem;font-family:var(--schrift-ui);font-size:.85rem;font-weight:700;border:0;background:none;border-radius:var(--radius-badge);cursor:pointer;color:var(--textfarbe-gedaempft);transition:all .2s ease}
+.segment-knopf.ist-aktiv{background:var(--flaeche-dunkel);color:#fff}
+
+.teilnehmer-raster{display:grid;grid-template-columns:1.15fr .85fr;gap:1.5rem;align-items:start}
+.karte-halter{position:relative;background:var(--flaeche-hell-zwei);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);overflow:hidden;min-height:460px}
+.karte-flaeche{height:460px;width:100%}
+.karte-consent{padding:2rem 1.75rem;text-align:center}
+.karte-consent h3{margin-top:0}
+.karte-consent p{color:var(--textfarbe-gedaempft);font-size:.95rem;max-width:34em;margin-inline:auto}
+.karte-consent-fuss{font-size:.85rem;margin-top:.9rem}
+.karte-legende{display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap;font-size:.9rem;color:var(--textfarbe-gedaempft);margin-top:.75rem}
+/* Form UND Farbe unterscheiden Gastronomie/Unternehmen - wer Rot und Dunkelbraun
+   schlecht auseinanderhaelt, erkennt es trotzdem (WCAG 1.4.1). */
+.legende-punkt,.teilnehmer-punkt{display:inline-block;width:.75rem;height:.75rem;flex:0 0 auto}
+.legende-gastro,.teilnehmer-punkt-gastro{background:var(--akzent);border-radius:50%}
+.legende-unternehmen,.teilnehmer-punkt-unternehmen{background:var(--flaeche-dunkel);border-radius:3px}
+.legende-punkt{margin-right:.35rem}
+
+.liste-spalte{background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);padding:1.25rem;max-height:520px;overflow-y:auto}
+.liste-zaehler{font-size:.88rem;color:var(--textfarbe-gedaempft);margin:0 0 .75rem}
+.teilnehmer-liste{list-style:none;margin:0;padding:0}
+.teilnehmer-eintrag{display:flex;align-items:center;gap:.5rem;border-bottom:1px solid var(--rahmenfarbe)}
+.teilnehmer-eintrag:last-child{border-bottom:0}
+/* Ohne das wuerde das eigene display:flex oben das hidden-Attribut aus
+   main.js (Such-/Filterfunktion) unwirksam machen - genau wie bei .modal
+   und .consent weiter unten, deshalb hier derselbe Kniff. */
+.teilnehmer-eintrag[hidden]{display:none}
+.teilnehmer-knopf{flex:1;display:flex;gap:.6rem;align-items:flex-start;text-align:left;padding:.7rem .25rem;background:none;border:0;font:inherit;cursor:pointer}
+.teilnehmer-knopf:hover{color:var(--akzent)}
+.teilnehmer-punkt{margin-top:.4rem}
+.teilnehmer-text strong{display:block;font-size:.97rem}
+.teilnehmer-text small{color:var(--textfarbe-gedaempft);font-size:.85rem}
+.teilnehmer-link{font-size:.85rem;white-space:nowrap}
+.liste-leer{color:var(--textfarbe-gedaempft);font-size:.95rem;padding:1rem 0}
+.leer-zustand{text-align:center;padding:1.5rem .5rem}
+.leer-zustand h3{margin-top:0}
+.leer-zustand p{color:var(--textfarbe-gedaempft)}
+.leer-hinweis{font-size:.87rem;margin-top:1.25rem}
+
+/* Kartenmodul. Eigene Klassen, damit es ohne fremdes Stylesheet sitzt.
+   Liegt spaeter Leaflet unter /assets/js/leaflet.js, uebernimmt dessen
+   eigenes CSS - die Klassen hier stoeren sich nicht. */
+/* Keine eigene Hoehe/Breite hier: .psk-map sitzt immer auf demselben Element
+   wie .karte-flaeche, das schon height:460px;width:100% traegt. Ein eigenes
+   height:100% wuerde sich gegen die feste Hoehe durchsetzen (spaetere Regel,
+   gleiche Spezifitaet) und mangels definierter Hoehe von .karte-halter auf 0
+   zusammenfallen - dann bleibt die ganze Karte unsichtbar (overflow:hidden
+   schneidet alles ab einer Boxhoehe von 0 weg), obwohl kein Fehler auftritt. */
+.psk-map{position:relative;overflow:hidden;background:#e8e2d6;touch-action:none;cursor:grab}
+.psk-map.ist-gezogen{cursor:grabbing}
+.psk-kacheln{position:absolute;inset:0;transform:translateZ(0)}
+.psk-kachel{position:absolute;width:256px;height:256px;user-select:none;-webkit-user-drag:none;opacity:0;transition:opacity .25s ease}
+.psk-kachel.ist-da{opacity:1}
+.psk-marker{
+  position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;padding:0;
+  border:2px solid #fff;border-radius:50%;cursor:pointer;
+  box-shadow:0 1px 5px rgba(0,0,0,.45);transition:transform .15s ease;
+}
+.psk-marker:hover,.psk-marker.ist-aktiv{transform:scale(1.35);z-index:5}
+.psk-marker-gastro{background:var(--akzent)}
+/* Nicht nur Farbe: Unternehmen als abgerundetes Quadrat statt Kreis. */
+.psk-marker-unternehmen{background:var(--flaeche-dunkel);border-radius:5px}
+.psk-popup{
+  position:absolute;z-index:10;transform:translate(-50%,-100%);margin-top:-16px;
+  background:#fff;border-radius:var(--radius-knopf);box-shadow:var(--schatten);
+  padding:.7rem .9rem;font-size:.88rem;min-width:170px;max-width:240px;
+}
+.psk-popup strong{display:block;margin-bottom:.15rem}
+.psk-popup small{color:var(--textfarbe-gedaempft)}
+.psk-popup-zu{position:absolute;top:2px;right:6px;border:0;background:none;font-size:1.1rem;cursor:pointer;color:var(--textfarbe-gedaempft)}
+.psk-zoom{position:absolute;top:10px;left:10px;z-index:20;display:flex;flex-direction:column;gap:2px}
+.psk-zoom button{
+  width:32px;height:32px;font:700 18px/1 system-ui,sans-serif;color:var(--flaeche-dunkel);
+  background:#fff;border:1px solid var(--rahmenfarbe);cursor:pointer;
+}
+.psk-zoom button:first-child{border-radius:6px 6px 0 0}
+.psk-zoom button:last-child{border-radius:0 0 6px 6px}
+.psk-attribution{
+  position:absolute;right:0;bottom:0;z-index:20;
+  background:rgba(255,255,255,.85);padding:.1rem .45rem;font-size:.7rem;border-radius:6px 0 0 0;
+}
+@media (prefers-reduced-motion:reduce){.psk-kachel,.psk-marker{transition:none}}
+
+/* --- Werbeideen --------------------------------------------------------
+   Kartenraster fuer die Ideen-Seite. Baut auf demselben Karten-Look wie
+   .karte auf, mit einer betonten Zitat-Zeile (.idee-claim) obendran. */
+.ideen-raster{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:1.75rem}
+.idee{
+  background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-left:4px solid var(--akzent);
+  border-radius:var(--radius-karte);padding:1.5rem;transition:transform .2s ease,box-shadow .2s ease;
+}
+.idee:hover{transform:translateY(-3px);box-shadow:var(--schatten)}
+.idee-claim{
+  font-family:var(--schrift-kopf);font-weight:700;font-size:1.15rem;line-height:1.3;
+  color:var(--flaeche-dunkel);margin:0 0 .65rem;
+}
+.idee p:not(.idee-claim):not(.idee-meta){color:var(--textfarbe-gedaempft);font-size:.96rem;margin:0 0 .9rem}
+.idee-meta{
+  display:inline-block;font-family:var(--schrift-ui);font-weight:700;font-size:.72rem;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--akzent-sekundaer-dunkel);
+  background:rgba(var(--akzent-sekundaer-rgb),.09);padding:.3rem .65rem;border-radius:var(--radius-badge);margin:0;
+}
+.ideen-teaser .idee{border-left-color:var(--akzent-waerme)}
+@media (prefers-reduced-motion:reduce){.idee{transition:none}}
+
+/* --- Kontakt ---------------------------------------------------------- */
+.kontakt-raster{display:grid;grid-template-columns:1.3fr .7fr;gap:2rem;align-items:start}
+.kontakt-daten{background:var(--flaeche-hell-zwei);border-radius:var(--radius-karte);padding:1.5rem}
+.kontakt-daten h2{font-size:1.2rem}
+.kontakt-daten h3{font-size:1rem;margin-top:1.5rem}
+
+/* --- Stoerer ---------------------------------------------------------- */
+.stoerer{
+  position:fixed;right:1.25rem;bottom:1.25rem;z-index:70;
+  display:flex;align-items:center;gap:.65rem;
+  padding:.75rem 1.1rem;border:0;border-radius:var(--radius-badge);cursor:pointer;
+  background:linear-gradient(135deg,var(--akzent),var(--akzent-glut));color:#fff;
+  font-family:var(--schrift-ui);font-size:.88rem;font-weight:600;line-height:1.25;text-align:left;
+  box-shadow:0 6px 20px rgba(43,35,31,.28);
+  transition:transform .15s ease,box-shadow .15s ease;
+  animation:stoerer-puls 2.6s ease-out infinite;
+}
+.stoerer:hover{background:var(--akzent-dunkel);transform:translateY(-2px)}
+.stoerer-icon{font-size:1.4rem}
+.stoerer strong{display:block}
+@keyframes stoerer-puls{0%{box-shadow:0 6px 20px rgba(43,35,31,.28),0 0 0 0 rgba(var(--akzent-rgb),.35)}70%{box-shadow:0 6px 20px rgba(43,35,31,.28),0 0 0 14px rgba(var(--akzent-rgb),0)}100%{box-shadow:0 6px 20px rgba(43,35,31,.28),0 0 0 0 rgba(var(--akzent-rgb),0)}}
+@media (prefers-reduced-motion:reduce){.stoerer{transition:none;animation:none}.stoerer:hover{transform:none}}
+@media (max-width:560px){
+  .stoerer{right:.75rem;bottom:.75rem;padding:.65rem .9rem;font-size:.82rem}
+  .stoerer-text{display:none}
+  .stoerer::after{content:"Lieblings-Pizzeria empfehlen";font-weight:700}
+}
+
+/* --- Modal --------------------------------------------------------------
+   Aufgeteilt in einen nicht scrollenden Rahmen (.modal-box) und einen
+   scrollenden Innenbereich (.modal-inhalt): so bleibt der Schließen-Knopf
+   immer sichtbar, egal wie weit der Inhalt darunter gescrollt ist - wichtig
+   auf kleinen Bildschirmen, wo Formular plus Text nicht auf einmal passen.
+   dvh ist die zweite (progressive) Deklaration, damit Browser ohne
+   Unterstuetzung beim vh-Wert bleiben, statt die Regel zu verwerfen. -------- */
+.modal{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
+.modal[hidden]{display:none}
+.modal-hinter{position:fixed;inset:0;background:rgba(20,14,10,.6)}
+.modal-box{
+  position:relative;z-index:1;width:min(100%,560px);
+  max-height:90vh;max-height:90dvh;
+  display:flex;flex-direction:column;overflow:hidden;
+  background:var(--flaeche-hell);border-radius:var(--radius-karte);box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+.modal-inhalt{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1.75rem}
+.modal-box h2{margin-top:0;font-size:1.4rem;padding-right:2.25rem}
+.modal-vorspann{color:var(--textfarbe-gedaempft);font-size:.97rem}
+.modal-zu{
+  position:absolute;top:.6rem;right:.75rem;z-index:2;width:36px;height:36px;flex:none;
+  border:0;background:none;font-size:1.6rem;line-height:1;cursor:pointer;color:var(--textfarbe-gedaempft);border-radius:50%;
+}
+.modal-zu:hover{background:var(--flaeche-hell-zwei);color:var(--textfarbe)}
+.modal .formular{box-shadow:none;padding:0;border:0;background:transparent}
+
+/* --- Consent ------------------------------------------------------------
+   Gleicher Aufbau wie .modal: eigener Hintergrund zum Wegklicken, eigener
+   scrollender Innenbereich, .modal-zu fuer den Schließen-Knopf mitbenutzt. */
+.consent{position:fixed;inset:0;z-index:130;display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
+.consent[hidden]{display:none}
+.consent-hinter{position:fixed;inset:0;background:rgba(20,14,10,.6)}
+.consent-box{
+  position:relative;z-index:1;width:min(100%,640px);
+  max-height:90vh;max-height:90dvh;
+  display:flex;flex-direction:column;overflow:hidden;
+  background:var(--flaeche-weiss);border:1px solid var(--rahmenfarbe);border-radius:var(--radius-karte);
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+.consent-inhalt{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1.5rem}
+.consent-box h2{font-size:1.15rem;margin-top:0;padding-right:2.25rem}
+.consent-box p{font-size:.92rem;color:var(--textfarbe-gedaempft)}
+.consent-optionen{display:grid;gap:.6rem;margin:1rem 0}
+.consent-option label{display:flex;gap:.6rem;align-items:flex-start;font-size:.9rem;cursor:pointer}
+.consent-option input{margin-top:.2rem;accent-color:var(--akzent)}
+.consent-knoepfe{display:flex;flex-wrap:wrap;gap:.6rem}
+.consent-knoepfe .btn{flex:1 1 auto;padding:.7rem 1rem;font-size:.92rem}
+.consent-fuss{font-size:.82rem;margin:.9rem 0 0}
+
+@media (max-width:480px){
+  .modal,.consent{padding:.5rem}
+  .modal-box,.consent-box{max-height:95vh;max-height:95dvh;border-radius:var(--radius-knopf)}
+  .modal-inhalt,.consent-inhalt{padding:1.15rem}
+  .modal-box h2,.consent-box h2{font-size:1.15rem}
+  .modal-zu{top:.35rem;right:.45rem}
+}
+
+/* --- Fuss ------------------------------------------------------------- */
+.fuss{background:linear-gradient(155deg,var(--flaeche-dunkel) 0%,var(--flaeche-dunkel-weich) 100%);color:var(--text-auf-dunkel);padding:3rem 0 1.5rem;margin-top:0}
+/* Nur der Streifen am Kopf der Fusszeile, nicht der am Seitenanfang (siehe
+   critical.css - .tricolore-bar kommt an beiden Stellen vor). */
+.fuss .tricolore-bar{position:relative;top:-50px}
+.fuss-innen{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:2rem}
+.fuss h2{font-size:.95rem;color:var(--akzent-waerme-hell);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem}
+.fuss ul{list-style:none;margin:0;padding:0}
+.fuss li{margin-bottom:.45rem}
+.fuss a{color:var(--text-auf-dunkel-hell)}
+.fuss a:hover{color:var(--akzent-waerme-hell)}
+.fuss p{font-size:.84rem}
+.fuss-logo{height:56px;width:auto;margin-bottom:.9rem;background:#fff;border-radius:8px;padding:.35rem .5rem}
+.fuss-initiator{font-size:.86rem;color:var(--text-auf-dunkel-gedaempft)}
+.fuss-unten{border-top:1px solid rgba(255,255,255,.15);margin-top:2.5rem;padding-top:1.25rem}
+.fuss-services{font-size:.85rem;color:var(--text-auf-dunkel-gedaempft)}
+.fuss-recht{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;font-size:.85rem;margin:0}
+.link-button{background:none;border:0;padding:0;font:inherit;color:var(--text-auf-dunkel-hell);text-decoration:underline;cursor:pointer}
+.link-button:hover{color:var(--akzent-waerme-hell)}
+/* Im Danke-Kasten ist der Untergrund hell statt dunkel - eigene Farbe, damit der Knopf lesbar bleibt. */
+.danke .link-button{color:var(--akzent)}
+.danke .link-button:hover{color:var(--akzent-dunkel)}
+
+/* --- Rechtstexte ------------------------------------------------------ */
+.band-recht h2{font-size:1.25rem;margin-top:2rem}
+.band-recht p,.band-recht li{font-size:.97rem}
+.band-recht code{background:var(--flaeche-hell-zwei);padding:.1em .35em;border-radius:3px;font-size:.9em}
+.adressblock{padding:.9rem 1.1rem;background:var(--flaeche-hell-zwei);border-radius:var(--radius-knopf);font-style:normal}
+.muster-widerruf{
+  margin:1.25rem 0;padding:1.25rem 1.4rem;background:var(--flaeche-weiss);
+  border:1.5px dashed var(--rahmenfarbe);border-radius:var(--radius-knopf);
+}
+.muster-widerruf p{margin:0 0 .9rem}
+.muster-widerruf p:last-child{margin-bottom:0}
+
+/* --- Umbrueche -------------------------------------------------------- */
+@media (max-width:960px){
+  .teilnehmer-raster{grid-template-columns:1fr}
+  .kontakt-raster{grid-template-columns:1fr}
+  .fuss-innen{grid-template-columns:1fr 1fr}
+  .liste-spalte{max-height:none}
+}
+@media (max-width:600px){
+  .feld-reihe{grid-template-columns:1fr}
+  .fuss-innen{grid-template-columns:1fr}
+  .karton-deckel{grid-template-columns:1fr}
+  .flaeche-gross{grid-row:auto}
+  .consent-knoepfe .btn{flex:1 1 100%}
+  .band-lead{font-size:1.02rem}
+}
+
+/* --- Druck ------------------------------------------------------------ */
+@media print{
+  .kopf,.fuss,.stoerer,.consent,.modal,.hero-aktionen,.band-cta{display:none!important}
+  body{background:#fff;font-size:11pt}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:9pt;color:#555}
+}
+
+/* Fällt die Karte aus, steht hier ein Hinweis statt einer leeren Fläche. */
+.karte-fehler{display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;color:var(--textfarbe-gedaempft)}
+
+
+/* Echte Seitenverhältnisse der Druckflächen. Die Rundung selbst kommt
+   ueber .flaeche{border-radius:var(--radius-knopf)} weiter oben - eigene
+   Variable war hier nicht noetig. */
+.flaeche-gross  { aspect-ratio: 88 / 136; }   /* hochkant */
+.flaeche-mittel { aspect-ratio: 1 / 1; }      /* quadratisch */
+.flaeche-klein  { aspect-ratio: 88 / 40; }    /* quer */
+.flaeche-seite  { aspect-ratio: 93 / 23; }    /* schmaler Streifen */
+
+
+:root {
+  /* Zentrale Stellschrauben – hier drehen, nicht weiter unten */
+  --holz-bild:      url('/assets/img/holz-tisch.jpg');
+  --holz-abdunkeln: 0.12;   /* wie stark das Holz zurücktritt: 0 bis 1 */
+  --radius-bild:    10px;
+}
+
+/* --- Hintergrund: Holztisch mit Leseschutz --- */
+.hero {
+  position: relative;
+  background-image: var(--holz-bild);
+  background-size: cover;
+  background-position: center;
+  isolation: isolate;
+}
+
+/*
+ * Der Verlauf liegt über dem Holz und wird zur Textseite hin dichter.
+ * Ohne ihn steht die Überschrift auf Maserung und verliert an Kontrast.
+ */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    100deg,
+    rgba(255, 250, 244, 0.94) 0%,
+    rgba(255, 250, 244, 0.88) 38%,
+    rgba(255, 250, 244, 0.35) 68%,
+    rgba(255, 250, 244, 0.15) 100%
+  );
+}
+
+/* Auf schmalen Bildschirmen steht der Text über dem Bild – dort dichter */
+@media (max-width: 780px) {
+  .hero::before {
+    background: rgba(255, 250, 244, 0.90);
+  }
+}
+
+/* --- Das Bild --- */
+.hero-bild {
+  margin: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.hero-bild img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-bild);
+  /* Grosszuegiger, weicher Schatten mit spuerbarem Versatz nach unten,
+     damit das Bild sichtbar ueber dem Holztisch schwebt statt darauf
+     aufzuliegen. */
+  box-shadow: 0 34px 60px -20px rgba(60, 30, 10, 0.5), 0 12px 24px -10px rgba(60, 30, 10, 0.3);
+}
+
+/* --- Schweben als Ersatz für die alte Karton-Animation --- */
+@keyframes hero-schweben {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero-bild img {
+    animation: hero-schweben 7s ease-in-out infinite;
+  }
+}
+
+/* Milchglas hinter dem Hero-Text */
+.hero-text {
+  position: relative;
+  padding: 2rem 2.25rem;
+  border-radius: 14px;
+  background: rgba(255, 250, 244, 0.9);
+  -webkit-backdrop-filter: blur(10px) saturate(115%);
+  backdrop-filter: blur(10px) saturate(115%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 30px -14px rgba(60, 30, 10, 0.55);
+}
+
+/* Ältere Browser können nicht blurren – dort dichter füllen */
+@supports not (backdrop-filter: blur(1px)) {
+  .hero-text { background: rgba(255, 250, 244, 0.92); }
+}
+
+@media (max-width: 780px) {
+  .hero-text { padding: 1.5rem 1.25rem; }
+}
+
+.hero-lead{font-size:.95rem}
+
+/* .btn-sekundaer.btn-gross: eigene, gruene Akzentfarbe statt der
+   Standard-Akzentfarbe (Rot), damit sich die zweite Hero-Aktion von der
+   ersten (rot) klar unterscheidet. */
+.btn-sekundaer.btn-gross{color:#3e6b43;border-color:#3e6b43}
+.btn-sekundaer.btn-gross:hover{color:#2c5330;border-color:#2c5330;background:rgba(62,107,67,.08)}
+
+/* .btn-primaer.kopf-cta: behebt den alten Kontrastfehler im Kopfbereich
+   (siehe Etappe 3) - .kopf-nav a:hover ist spezifischer als .btn-primaer:hover
+   und faerbte die Schrift beim Ueberfahren in dieselbe Akzentfarbe wie den
+   Hintergrund-Verlauf, wodurch die Beschriftung praktisch verschwand. Jetzt
+   ausdruecklich weiss im Normalzustand, im Hover-Zustand ein klar
+   umrissener heller Knopf mit roter Schrift statt rot auf rot. */
+.btn-primaer.kopf-cta{color:#fff}
+.btn-primaer.kopf-cta:hover{background:#fff;border-color:var(--akzent);color:var(--akzent)}
+
+/* Hero-Hintergrund je Seite: .hero liest den Bild-Wert ueber die
+   CSS-Variable --holz-bild (siehe :root weiter oben), eine Modifier-Klasse
+   pro Seite ueberschreibt sie lokal fuer genau diese Seite. Zeigt eine
+   Datei (noch) nicht auf dem Server, faellt background-image lautlos auf
+   "kein Bild" zurueck (nie ein kaputtes Bildsymbol) - die Seite bleibt
+   nutzbar, nur ohne Fotohintergrund, bis das echte Foto da ist.
+   VORLAEUFIG alle vier auf das Holztisch-Bild der Startseite gesetzt,
+   damit der Eindruck schon jetzt stimmt - austauschen, sobald eigene
+   Fotos je Seite vorliegen (siehe Bildliste im Lieferbericht). */
+.hero-werbepartner{--holz-bild:url('/assets/img/holz-tisch.jpg')}
+.hero-werbeideen{--holz-bild:url('/assets/img/holz-tisch.jpg')}
+.hero-teilnehmer{--holz-bild:url('/assets/img/holz-tisch.jpg')}
+.hero-ueber-uns{--holz-bild:url('/assets/img/holz-tisch.jpg')}
+
+/* --- "Warum kostenlos": volle Breite, wechselnde Icon-Seite, auf ---
+   schmalen Bildschirmen klappt der zweite und dritte Punkt hinter einem
+   "Mehr lesen" ein - ganz ohne JavaScript ueber <details>/<summary>. */
+.warum-liste{display:flex;flex-direction:column;gap:2.25rem;margin-top:2rem;max-width:900px;margin-left:auto;margin-right:auto}
+.warum-punkt{display:flex;align-items:center;gap:1.75rem}
+.warum-punkt-rechts{flex-direction:row-reverse}
+.warum-icon{
+  flex-shrink:0;width:64px;height:64px;border-radius:50%;
+  background:var(--flaeche-hell-zwei);color:var(--akzent);
+  display:flex;align-items:center;justify-content:center;
+}
+.warum-icon svg{width:30px;height:30px}
+.warum-text h3{margin:0 0 .4rem;font-family:var(--schrift-kopf);font-size:1.1rem;color:var(--flaeche-dunkel)}
+.warum-text p{margin:0}
+
+@media (max-width:640px){
+  .warum-punkt,.warum-punkt-rechts{flex-direction:column;text-align:center;gap:.85rem}
+}
+
+/* Checkbox-Trick statt <details>: neuere Chromium-Versionen clippen den
+   Inhalt eines geschlossenen <details> ueber die interne ::details-content
+   Pseudo-Box (block-size:0), was sich vom Kind-Element aus nicht mehr
+   zuverlaessig ueberschreiben laesst - eine unsichtbare Checkbox plus
+   Sibling-Selektor braucht diesen Umweg nicht und bleibt ohne JavaScript
+   bedienbar (Klick auf das Label, Leertaste im Fokus). */
+.warum-mehr-schalter{position:absolute;width:1px;height:1px;opacity:0}
+.warum-mehr-knopf{display:none}
+.warum-mehr-inhalt{display:flex;flex-direction:column;gap:2.25rem;margin-top:2.25rem}
+
+@media (max-width:780px){
+  .warum-mehr-knopf{
+    display:inline-block;cursor:pointer;margin-top:.5rem;
+    font-family:var(--schrift-ui);font-weight:700;font-size:.9rem;color:var(--akzent);
+  }
+  .warum-mehr-inhalt{display:none}
+  .warum-mehr-schalter:checked ~ .warum-mehr-inhalt{display:flex}
+}
+
+/* Etappe 3, offene Punkte aus dem Aenderungspaket: */
+
+/* 1) "Im roten Abschnitt steht ein roter Button auf rotem Grund" -
+   .band-cta hat einen roten Hintergrund, .btn-primaer darauf denselben
+   Rotton. Wie schon fuer .btn-sekundaer auf farbigen Baendern: umgekehrte
+   Farben, heller Knopf mit roter Schrift statt rot auf rot. */
+.band-cta .btn-primaer{background:#fff;color:var(--akzent);box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.band-cta .btn-primaer:hover{background:#fff5f0;color:var(--akzent-glut)}
+.band-cta .btn-primaer::after{display:none}
+
+/* 2) Zählanzeige zentrieren und ueber die Breite strecken - wirkte
+   gedraengt, weil die Zahlen linksbuendig dicht beieinander standen. */
+.fortschritt-zahlen{justify-content:center}
+@media (min-width:640px){
+  .fortschritt-zahlen{justify-content:space-evenly;gap:1rem}
+}
+
+/* 3) Haeufige Fragen im Layout zentrieren. */
+.faq-liste{margin-left:auto;margin-right:auto}
+.faq > h2{margin-left:auto;margin-right:auto}
+@media (min-width:640px){
+  .faq{text-align:center}
+  .faq-liste{text-align:left}
+}
+
+/* 4) "Trag Deine Gastronomie ein": Formular zentrieren, stand bisher
+   linksbuendig in der vollen Breite von .wrap. */
+.bestellen-kopf{margin-left:auto;margin-right:auto;text-align:center}
+.formular-breit{margin-left:auto;margin-right:auto}
+
+/* Nachtrag 01: Telefonnummer im Header, direkt vor dem Menuknopf bzw. der
+   Buchen-Schaltflaeche. .kopf-nav traegt margin-left:auto im Critical CSS -
+   das wandert hierher, damit Telefonnummer und Navigation gemeinsam rechts
+   stehen und die Nummer auch bei geschlossenem Mobilmenu sichtbar bleibt. */
+.kopf-telefon{
+  margin-left:auto;display:inline-flex;align-items:center;gap:.4rem;
+  font-family:var(--schrift-ui);font-weight:600;font-size:.9rem;
+  color:var(--textfarbe);text-decoration:none;white-space:nowrap;flex:0 0 auto;
+}
+.kopf-telefon:hover{color:var(--akzent)}
+.kopf-telefon-icon{width:18px;height:18px;flex:0 0 auto}
+.kopf-nav{margin-left:0}
+@media (max-width:520px){
+  .kopf-telefon-text{display:none}
+}
+
+/* Nachtrag 01, Etappe 5.2: Bestellassistent in drei Schritten. */
+.assistent-fortschritt{
+  font-family:var(--schrift-ui);font-weight:700;font-size:.85rem;letter-spacing:.03em;
+  text-transform:uppercase;color:var(--akzent);margin:0 0 1.25rem;
+}
+.assistent-nav{display:flex;justify-content:space-between;gap:1rem;margin-top:1.5rem}
+.assistent-nav .assistent-weiter{margin-left:auto}
+.assistent-schritt legend:focus{outline:none}
+
+/* .summe{display:flex} und [hidden]{display:none} haben dieselbe
+   Spezifitaet - das spaeter geladene .summe gewinnt sonst gegen das
+   hidden-Attribut, das main.js zum Ein-/Ausblenden setzt (Mengenregeln
+   und Gesamtsumme im Bestellassistenten, Auftragswert auf der
+   Buchungsseite). Eine gezielt hoehere Spezifitaet stellt das gerade. */
+.summe[hidden]{display:none}
+
+/* Nachtrag 01, Etappe 3.3: Platzhalter-Flaechen (eigene Buchungen der
+   Gruendungspartner) sind weiterhin buchbar, darum eine eigene, waermere
+   Farbe statt des roten "verkauft" - sie sollen nicht wie vergriffen
+   wirken. */
+.wahl-platzhalter .wahl-inhalt{opacity:.85}
+.wahl-platzhalter-marke{
+  font-style:normal;font-size:.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.04em;color:var(--akzent-waerme-hell);margin-top:.3rem;display:block;
+}
+.flaechenplan-platzhalter{background:rgba(43,35,31,.72);border-color:var(--akzent-waerme)}
+.balken-kleingedruckt{font-size:.82rem;color:var(--textfarbe-gedaempft);margin:.35rem 0 0}
+
+/* .feld select uebernahm bisher dieselben Regeln wie die Textfelder, blieb
+   aber je nach Browser spuerbar niedriger: die native Pfeil-Grafik zaehlt
+   dort mit zum Innenabstand, ohne dass CSS darauf Einfluss hat. appearance:
+   none nimmt dem Browser diese Eigen-Darstellung ab, ein eigener Pfeil per
+   Hintergrundbild ersetzt sie 1:1, und line-height sorgt zusammen mit dem
+   ohnehin schon gleichen padding fuer dieselbe Bauhoehe wie bei input. */
+.feld select{
+  appearance:none;-webkit-appearance:none;-moz-appearance:none;
+  line-height:1.3;padding-right:2.5rem;
+  background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 7.5l5 5 5-5' fill='none' stroke='%23241c18' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .85rem center;background-size:16px;
+}
+.feld select::-ms-expand{display:none}
+
+/* "Welche Größe verkaufst Du am häufigsten?" bekommt bewusst mehr Hoehe,
+   damit das Dropdown im Schritt "Dein Bedarf" staerker heraussticht. Als
+   Selektor bewusst .feld select.feld-select-hoch statt nur der Klasse: die
+   allgemeine Feld-Regel setzt padding ueber Element+Klasse (.feld select)
+   und wuerde eine einzelne Klasse in der Spezifitaet sonst ausstechen. */
+.feld select.feld-select-hoch{padding-top:2.2rem;padding-bottom:2.2rem}
+
+/* 20px Abstand zwischen einem einleitenden Absatz im Assistenten und der
+   naechsten Feldueberschrift darunter - .feld-hilfe traegt sonst nur oben
+   einen Abstand, keinen unten. */
+.feld-hilfe-abstand{margin-bottom:20px}
+
+/* Bestellassistent: die Schritte tragen kein [id], die globale
+   scroll-margin-top-Regel fuer Anker (siehe Dateianfang) greift hier also
+   nicht. Ohne eigenen Wert scrollt "Weiter"/"Zurueck" den naechsten Schritt
+   bis an die Fensteroberkante und damit unter den sticky Header - dieselbe
+   Rechnung wie bei .bestellen-grafik-spalte (76px Headerhoehe), hier zur
+   Lesbarkeit zusaetzlich 50px tiefer verankert. */
+.assistent-schritt{scroll-margin-top:calc(76px + 50px)}
+
