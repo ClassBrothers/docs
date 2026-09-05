@@ -80,12 +80,11 @@ $f       = fortschritt();
       <p class="kicker">Unterstützung für Gastronomie und Gäste</p>
       <h1>Kostenlose Pizzakartons für Freiburg</h1>
       <p class="hero-lead">
-        Ein bedruckter Pizzakarton kostet Dich im Einkauf rund 45 Cent. Bei tausend Kartons im
-        Monat sind das 450 Euro, die niemand sieht und jeder zahlt. Seit die Verpackungssteuer
-        da ist, redet endlich jemand darüber. Wir ändern was: Unternehmen aus der Region buchen
-        Werbeflächen auf den Kartons, Du bekommst sie umsonst. Lebensmittelecht, hygienisch
-        zugelassen und eine Aktion, über die man spricht.<br>
-        <a href="#bestellen">Hier bekommst Du Pizzakartons kostenlos.</a>.
+        Ein bedruckter Pizzakarton kostet im Einkauf rund 40 Cent. Im Monat kommen schnell 400
+        Euro zusammen. Seit die Verpackungssteuer da ist, kommen nochmal 50ct drauf.<br><br>
+        Für die Gastro ändern wir jetzt was! Hier kannst Du kostenlose Pizzakartons bestellen,
+        die durch Werbung regionaler Unternehmen finanziert werden. Damit es auch zukünftig
+        noch Pizza zum Mitnehmen gibt!
       </p>
       <div class="hero-aktionen">
         <a class="btn btn-primaer btn-gross" href="#bestellen">Kartons bestellen</a>
@@ -250,7 +249,7 @@ $f       = fortschritt();
     <h2 id="vorteile-titel">Was hast Du davon?</h2>
     <div class="karten">
       <article class="karte">
-        <h3>Der Karton kostet nichts</h3>
+        <h3>Pizzakartons kostenlos</h3>
         <p>Kein Einkaufspreis, keine Liefergebühr. Was Du bisher für Verpackung ausgegeben hast, bleibt im Betrieb.</p>
       </article>
       <article class="karte">
@@ -263,7 +262,7 @@ $f       = fortschritt();
       </article>
       <article class="karte">
         <h3>Nachbarn werben für Nachbarn</h3>
-        <p>Auf dem Deckel steht kein Konzern, sondern die Gastronomie zwei Straßen weiter. Das kommt an.</p>
+        <p>Coole Werbung regionaler Unternehmen. Mit jedem Karton gibst Du ein Statement raus, dass die Gastronomie wichtig ist!</p>
       </article>
       <article class="karte">
         <h3>Keine Bindung</h3>
@@ -276,6 +275,10 @@ $f       = fortschritt();
       <article class="karte">
         <h3>Du musst nichts stapeln</h3>
         <p>Dreitausend Kartons passen in keine Pizzeria. Wir lagern sie für Dich und liefern jeden Monat nach, was Du brauchst.</p>
+      </article>
+      <article class="karte">
+        <h3>Hygienisch &amp; in Deutschland produziert</h3>
+        <p>Unsere Pizzakartons werden in Deutschland unter Beachtung der hygienischen Vorgaben hergestellt.</p>
       </article>
     </div>
   </div>

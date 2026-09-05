@@ -47,11 +47,11 @@ $v->text('betrieb', 'Der Name der Gastronomie', true, 150)
   ->text('betriebsart', 'Die Betriebsart', true, 60)
   ->text('betriebsart_frei', 'Die Angabe, was Ihr macht', false, 150)
   ->text('aktueller_lieferant', 'Der aktuelle Lieferant', false, 150)
-  ->auswahl('aktuelle_groesse', 'Die aktuelle Größe', ['28', '30', '32', '33', 'andere'])
+  ->auswahl('aktuelle_groesse', 'Die aktuelle Größe', ['28', '30', '32', '33', 'andere'], false)
   ->langtext('anmerkung', 'Deine Anmerkung', false, 1500)
-  ->checkbox('bestellung_ok', 'Ohne diese Bestätigung können wir Deine Menge nicht einplanen.')
+  ->checkbox('bestellung_ok', 'Bitte bestätige, dass Du gemäß der AGB verbindlich bestellst - ohne dieses Häkchen können wir Deine Menge nicht einplanen.')
   ->checkbox('karte_ok', '', false)
-  ->checkbox('datenschutz_ok', 'Ohne Zustimmung zu den Datenschutzhinweisen dürfen wir Deine Angaben nicht verarbeiten.');
+  ->checkbox('datenschutz_ok', 'Bitte bestätige, dass Du die Datenschutzhinweise gelesen hast und mit der Verarbeitung Deiner Angaben einverstanden bist - ohne dieses Häkchen dürfen wir sie nicht verarbeiten.');
 
 // Betriebsart muss aus unserer Liste stammen.
 $betriebsarten = ['Pizzeria', 'Restaurant', 'Imbiss', 'Lieferdienst mit eigener Küche',
@@ -67,28 +67,30 @@ if ($v->get('betriebsart') === 'Anderes' && $v->get('betriebsart_frei') === null
     $v->fehlerSetzen('betriebsart_frei', 'Bitte kurz sagen, was Ihr macht.');
 }
 
-// Neue Pflichtfragen zur Bedarfsplanung (Schritt "Dein Bedarf").
-$kartonsWocheRoh = trim(str_replace(['.', ' ', "\u{00A0}"], '', (string) ($_POST['kartons_woche'] ?? '')));
-$kartonsWoche    = null;
-if ($kartonsWocheRoh === '' || !preg_match('/^\d+$/', $kartonsWocheRoh)) {
-    $v->fehlerSetzen('kartons_woche', 'Bitte gib an, wie viele Kartons Du ungefähr pro Woche brauchst.');
-} else {
-    $kartonsWoche = (int) $kartonsWocheRoh;
-    if ($kartonsWoche < 1) {
-        $v->fehlerSetzen('kartons_woche', 'Bitte gib an, wie viele Kartons Du ungefähr pro Woche brauchst.');
-        $kartonsWoche = null;
+// Vier freiwillige Fragen zur Bedarfsplanung (Schritt "Dein Bedarf") -
+// helfen uns beim Planen, sind aber kein Grund, jemanden an der Bestellung
+// zu hindern. Nur bei tatsaechlicher Angabe pruefen.
+$kartonsMonatBedarfRoh = trim(str_replace(['.', ' ', "\u{00A0}"], '', (string) ($_POST['kartons_monat_bedarf'] ?? '')));
+$kartonsMonatBedarf    = null;
+if ($kartonsMonatBedarfRoh !== '') {
+    if (!preg_match('/^\d+$/', $kartonsMonatBedarfRoh) || (int) $kartonsMonatBedarfRoh < 1) {
+        $v->fehlerSetzen('kartons_monat_bedarf', 'Das sollte eine Zahl größer als null sein.');
+    } else {
+        $kartonsMonatBedarf = (int) $kartonsMonatBedarfRoh;
     }
 }
 
 $aktuellerEinkaufspreisRoh  = trim(str_replace(',', '.', (string) ($_POST['aktueller_einkaufspreis'] ?? '')));
 $aktuellerEinkaufspreisCent = null;
-if ($aktuellerEinkaufspreisRoh === '' || !is_numeric($aktuellerEinkaufspreisRoh)) {
-    $v->fehlerSetzen('aktueller_einkaufspreis', 'Bitte gib an, was ein Karton Dich aktuell im Einkauf kostet, zum Beispiel 0,45.');
-} else {
-    $aktuellerEinkaufspreisCent = (int) round(((float) $aktuellerEinkaufspreisRoh) * 100);
-    if ($aktuellerEinkaufspreisCent <= 0) {
-        $v->fehlerSetzen('aktueller_einkaufspreis', 'Der Einkaufspreis muss größer als null sein.');
-        $aktuellerEinkaufspreisCent = null;
+if ($aktuellerEinkaufspreisRoh !== '') {
+    if (!is_numeric($aktuellerEinkaufspreisRoh)) {
+        $v->fehlerSetzen('aktueller_einkaufspreis', 'Das sollte eine Zahl sein, zum Beispiel 0,45.');
+    } else {
+        $aktuellerEinkaufspreisCent = (int) round(((float) $aktuellerEinkaufspreisRoh) * 100);
+        if ($aktuellerEinkaufspreisCent <= 0) {
+            $v->fehlerSetzen('aktueller_einkaufspreis', 'Der Einkaufspreis muss größer als null sein.');
+            $aktuellerEinkaufspreisCent = null;
+        }
     }
 }
 
@@ -189,13 +191,13 @@ $abrufMenge = null;
 if ($lieferart === 'abruf') {
     $abrufRoh = trim(str_replace(['.', ' ', "\u{00A0}"], '', (string) ($_POST['abruf_menge'] ?? '')));
     if ($abrufRoh === '' || !preg_match('/^\d+$/', $abrufRoh)) {
-        $v->fehlerSetzen('abruf_menge', 'Bitte gib die gewünschte Menge je Abruf ein.');
+        $v->fehlerSetzen('abruf_menge', 'Bitte gib die gewünschte Menge pro Monat ein.');
     } else {
         $abrufMenge = (int) $abrufRoh;
         if ($abrufMenge < (int) $lieferung['abruf_min']) {
-            $v->fehlerSetzen('abruf_menge', 'Mindestliefermenge sind ' . zahl((int) $lieferung['abruf_min']) . ' Stück.');
+            $v->fehlerSetzen('abruf_menge', 'Mindestens ' . zahl((int) $lieferung['abruf_min']) . ' Stück pro Monat.');
         } elseif ($mengeFehler === null && $abrufMenge > $gesamtmenge) {
-            $v->fehlerSetzen('abruf_menge', 'Die Abrufmenge kann nicht größer sein als Deine Gesamtbestellung.');
+            $v->fehlerSetzen('abruf_menge', 'Die Menge pro Monat kann nicht größer sein als Deine Gesamtbestellung.');
         }
     }
 }
@@ -223,7 +225,7 @@ try {
              betriebsart, betriebsart_frei, anmerkung,
              bestellung_ok, karte_ok, datenschutz_ok, versand_zuschlag_ok,
              einkaufspreis_cent, kartons_monat, lieferart, abruf_menge,
-             kartons_woche, aktueller_einkaufspreis_cent, aktuelle_groesse, aktueller_lieferant,
+             kartons_monat_bedarf, aktueller_einkaufspreis_cent, aktuelle_groesse, aktueller_lieferant,
              einwilligung_am, einwilligung_zweck, status, erstellt_am, quelle)
          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
         [
@@ -232,7 +234,7 @@ try {
             $d['betriebsart'], $d['betriebsart_frei'], $d['anmerkung'],
             $d['bestellung_ok'], $d['karte_ok'], $d['datenschutz_ok'], (int) $ausserhalbFreiburg,
             $einkaufspreisCent, $kartonsMonat, $lieferart, $abrufMenge,
-            $kartonsWoche, $aktuellerEinkaufspreisCent, $d['aktuelle_groesse'], $d['aktueller_lieferant'],
+            $kartonsMonatBedarf, $aktuellerEinkaufspreisCent, $d['aktuelle_groesse'], $d['aktueller_lieferant'],
             $jetzt, implode('; ', $zwecke), 'neu', $jetzt, 'website',
         ]
     );
@@ -273,7 +275,7 @@ $positionsText = implode("\n", $positionsZeilen);
 
 $lieferartLabels = ['gesamt' => 'Alles auf einmal', 'abruf' => 'Monatlicher Abruf', 'abholung' => 'Abholung'];
 $lieferartText = $lieferartLabels[$lieferart]
-    . ($lieferart === 'abruf' ? ' (' . zahl((int) $abrufMenge) . ' Kartons je Abruf)' : '');
+    . ($lieferart === 'abruf' ? ' (' . zahl((int) $abrufMenge) . ' Kartons pro Monat)' : '');
 
 // Bestaetigung an den Betrieb
 mail_send(
@@ -316,10 +318,10 @@ mail_ops(
     . 'Lieferung:    ' . $lieferartText . "\n"
     . 'Versandzuschlag: ' . ($ausserhalbFreiburg ? 'ja – außerhalb ' . $porto['frei_in'] : 'nein') . "\n"
     . 'Karte:        ' . ($d['karte_ok'] ? 'JA – bitte freigeben' : 'nein') . "\n"
-    . "Bedarf laut Angabe:\n"
-    . '  Kartons/Woche: ' . zahl((int) $kartonsWoche) . "\n"
-    . '  Einkaufspreis: ' . preis((int) $aktuellerEinkaufspreisCent) . "\n"
-    . '  Aktuelle Größe: ' . $d['aktuelle_groesse'] . "\n"
+    . "Bedarf laut Angabe (freiwillig, kann fehlen):\n"
+    . '  Kartons/Monat: ' . ($kartonsMonatBedarf !== null ? zahl($kartonsMonatBedarf) : '–') . "\n"
+    . '  Einkaufspreis: ' . ($aktuellerEinkaufspreisCent !== null ? preis($aktuellerEinkaufspreisCent) : '–') . "\n"
+    . '  Aktuelle Größe: ' . ($d['aktuelle_groesse'] ?: '–') . "\n"
     . '  Aktueller Lieferant: ' . ($d['aktueller_lieferant'] ?: '–') . "\n"
     . 'Anmerkung:    ' . ($d['anmerkung'] ?: '–') . "\n\n"
     . 'Freigabe: ' . url('/admin'),

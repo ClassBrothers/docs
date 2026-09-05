@@ -396,6 +396,12 @@
       var wert = gewaehlt ? gewaehlt.value : 'gesamt';
       if (abrufFeld) { abrufFeld.hidden = wert !== 'abruf'; }
       if (abholungHinweis) { abholungHinweis.hidden = wert !== 'abholung'; }
+      // Ein verstecktes Pflichtfeld bleibt trotz hidden-Attribut auf seinem
+      // Vorfahren ein Kandidat fuer die Browser-Validierung (anders als bei
+      // einem hidden-Attribut direkt am Feld) - ohne dieses Umschalten
+      // blockiert "Menge pro Monat" das "Weiter" auch bei "Alles auf einmal"
+      // oder "Abholung", wo es gar nicht sichtbar ist.
+      if (abrufMengeFeld) { abrufMengeFeld.required = wert === 'abruf'; }
       lagerHinweisAktualisieren();
     }
 
@@ -473,20 +479,17 @@
   /* ------------------------------------------------------------------ */
   var betriebsartFeld = document.querySelector('[data-betriebsart-feld]');
   if (betriebsartFeld) {
-    var betriebsartWahlen   = betriebsartFeld.querySelectorAll('[data-betriebsart-wahl]');
     var betriebsartFreiFeld = document.querySelector('[data-betriebsart-frei]');
     var lieferdienstHinweis = document.querySelector('[data-betriebsart-lieferdienst-hinweis]');
 
     function betriebsartAnzeigen() {
-      var gewaehlt = betriebsartFeld.querySelector('[data-betriebsart-wahl]:checked');
+      var gewaehlt = betriebsartFeld.selectedOptions && betriebsartFeld.selectedOptions[0];
       var wert = gewaehlt ? gewaehlt.getAttribute('data-betriebsart-wahl') : '';
       if (betriebsartFreiFeld) { betriebsartFreiFeld.hidden = wert !== 'anderes'; }
       if (lieferdienstHinweis) { lieferdienstHinweis.hidden = wert !== 'lieferdienst'; }
     }
 
-    Array.prototype.forEach.call(betriebsartWahlen, function (f) {
-      f.addEventListener('change', betriebsartAnzeigen);
-    });
+    betriebsartFeld.addEventListener('change', betriebsartAnzeigen);
     betriebsartAnzeigen();
   }
 
@@ -518,19 +521,26 @@
     var anzahl = schritte.length;
     var aktuell = 0;
 
-    function schrittZeigen(index) {
+    // Zweiter Parameter steuert Fokus/Scroll: bei der ersten Anzeige nach
+    // einem normalen Seitenaufruf soll die Seite nicht ungefragt springen
+    // (das war der Bug mit dem Sprung ohne sichtbaren Anker in der URL) -
+    // beim Wechsel per Weiter/Zurueck oder beim Anspringen eines Schritts
+    // mit Fehler ist das Scrollen dagegen gewollt.
+    function schrittZeigen(index, mitFokus) {
       aktuell = index;
       schritte.forEach(function (schritt, i) {
         schritt.hidden = i !== index;
         schritt.classList.toggle('ist-aktiv', i === index);
       });
       if (fortschritt) { fortschritt.textContent = 'Schritt ' + (index + 1) + ' von ' + anzahl; }
-      var ueberschrift = schritte[index].querySelector('legend');
-      if (ueberschrift) {
-        ueberschrift.setAttribute('tabindex', '-1');
-        ueberschrift.focus({ preventScroll: true });
+      if (mitFokus) {
+        var ueberschrift = schritte[index].querySelector('legend');
+        if (ueberschrift) {
+          ueberschrift.setAttribute('tabindex', '-1');
+          ueberschrift.focus({ preventScroll: true });
+        }
+        schritte[index].scrollIntoView({ behavior: wenigerBewegung ? 'auto' : 'smooth', block: 'start' });
       }
-      schritte[index].scrollIntoView({ behavior: wenigerBewegung ? 'auto' : 'smooth', block: 'start' });
     }
 
     Array.prototype.forEach.call(assistent.querySelectorAll('[data-assistent-weiter]'), function (knopf) {
@@ -545,32 +555,44 @@
           if (typeof ungueltig.reportValidity === 'function') { ungueltig.reportValidity(); }
           return;
         }
-        if (aktuell < anzahl - 1) { schrittZeigen(aktuell + 1); }
+        if (aktuell < anzahl - 1) { schrittZeigen(aktuell + 1, true); }
       });
     });
     Array.prototype.forEach.call(assistent.querySelectorAll('[data-assistent-zurueck]'), function (knopf) {
       knopf.hidden = false;
       knopf.addEventListener('click', function () {
-        if (aktuell > 0) { schrittZeigen(aktuell - 1); }
+        if (aktuell > 0) { schrittZeigen(aktuell - 1, true); }
       });
     });
 
     if (fortschritt) { fortschritt.hidden = false; }
-    schrittZeigen(0);
+
+    // Nach einem fehlgeschlagenen Absenden landet der erste Schritt mit
+    // einer markierten Stelle (Fehlermeldung oder aria-invalid) als
+    // Startschritt - sonst bleiben Fehler in Schritt 2 oder 3 unsichtbar,
+    // weil der Assistent immer bei Schritt 1 anfaengt.
+    var startSchritt = 0;
+    for (var i = 0; i < schritte.length; i++) {
+      if (schritte[i].querySelector('.feld-fehler, .feld-meldung')) {
+        startSchritt = i;
+        break;
+      }
+    }
+    schrittZeigen(startSchritt, startSchritt > 0);
   }
 
   /* ------------------------------------------------------------------ */
   /* Schritt "Dein Bedarf" speist automatisch den Ersparnisrechner oben  */
-  /* auf der Seite: Wochenbedarf wird auf einen Monat hochgerechnet.     */
+  /* auf der Seite.                                                      */
   /* ------------------------------------------------------------------ */
-  var bedarfKartonsWoche  = document.querySelector('[data-bedarf-kartons-woche]');
+  var bedarfKartonsMonat  = document.querySelector('[data-bedarf-kartons-monat]');
   var bedarfEinkaufspreis = document.querySelector('[data-bedarf-einkaufspreis]');
-  if (bedarfKartonsWoche && bedarfEinkaufspreis) {
+  if (bedarfKartonsMonat && bedarfEinkaufspreis) {
     function bedarfInRechnerUebernehmen() {
       if (!rPreis || !rMonat) { return; }
-      var woche = parseInt(bedarfKartonsWoche.value, 10);
-      if (!isNaN(woche) && woche > 0) {
-        rMonat.value = String(Math.round(woche * 4.33));
+      var monat = parseInt(bedarfKartonsMonat.value, 10);
+      if (!isNaN(monat) && monat > 0) {
+        rMonat.value = String(monat);
         // Ereignis statt Direktaufruf: rechnerBerechnen() ist im eigenen
         // Block deklariert (strict mode = blockscoped) und von hier aus
         // nicht erreichbar - der bestehende input-Listener uebernimmt das.
@@ -581,7 +603,7 @@
         rPreis.dispatchEvent(new Event('input', { bubbles: true }));
       }
     }
-    bedarfKartonsWoche.addEventListener('input', bedarfInRechnerUebernehmen);
+    bedarfKartonsMonat.addEventListener('input', bedarfInRechnerUebernehmen);
     bedarfEinkaufspreis.addEventListener('input', bedarfInRechnerUebernehmen);
   }
 

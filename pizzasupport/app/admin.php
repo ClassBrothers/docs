@@ -344,7 +344,7 @@ function admin_seite(?string $meldung): void
         }
         $lieferText = $lieferartLabels[$z['lieferart']] ?? $z['lieferart'];
         if ($z['lieferart'] === 'abruf' && $z['abruf_menge']) {
-            $lieferText .= '<br><small>' . zahl((int) $z['abruf_menge']) . ' je Abruf</small>';
+            $lieferText .= '<br><small>' . zahl((int) $z['abruf_menge']) . ' pro Monat</small>';
         }
         // Grobe Faustregel, keine amtliche Pruefung: Baden-Wuerttemberg
         // liegt ueberwiegend in den PLZ-Bereichen 68-79 und 88 - alles

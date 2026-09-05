@@ -56,7 +56,7 @@ return [
     // -----------------------------------------------------------------
     'karton_formate' => [
         ['id' => '30', 'label' => '30 × 30 cm', 'hinweis' => 'Standard',            'default' => false, 'sofort' => false],
-        ['id' => '32', 'label' => '32 × 32 cm', 'hinweis' => 'unsere Erstauflage',  'default' => true,  'sofort' => true],
+        ['id' => '32', 'label' => '32 × 32 cm', 'hinweis' => 'beliebtestes Format', 'default' => true,  'sofort' => false],
         ['id' => '33', 'label' => '33 × 33 cm', 'hinweis' => 'Familienformat',      'default' => false, 'sofort' => false],
     ],
     'karton_hoehe_cm' => 3,   // vom Kunden bestaetigt: 3 cm, nicht die 4 cm aus der Flaechenplan-Legende

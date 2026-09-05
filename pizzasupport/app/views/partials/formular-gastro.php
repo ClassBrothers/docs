@@ -33,26 +33,7 @@ $betriebsarten = [
 ];
 $aktuelleGroessen = ['28' => '28 × 28 cm', '30' => '30 × 30 cm', '32' => '32 × 32 cm', '33' => '33 × 33 cm', 'andere' => 'Andere Größe'];
 
-$standardFormat = '32';
-$weitereFormate = [];
-foreach ($formate as $fm) {
-    if (!empty($fm['default'])) {
-        $standardFormat = $fm['id'];
-    } else {
-        $weitereFormate[] = $fm['id'];
-    }
-}
 $altMengen = $altw['menge'] ?? [];
-
-// Bei einer Wiederanzeige nach einem Fehler muessen die "weiteren Formate"
-// gleich offen sein, wenn dort schon eine Menge eingetragen wurde - sonst
-// verschwindet eine gueltige Eingabe optisch hinter dem Umschalter.
-$weitereFormateOffen = false;
-foreach ($weitereFormate as $wfId) {
-    if (alt($altMengen, $wfId) !== '') {
-        $weitereFormateOffen = true;
-    }
-}
 ?>
 <section class="band band-bestellen" id="bestellen" aria-labelledby="bestellen-titel">
   <div class="wrap">
@@ -78,8 +59,9 @@ foreach ($weitereFormate as $wfId) {
     <div class="bestellen-kopf">
       <h2 id="bestellen-titel">Trag Deine Gastronomie ein</h2>
       <p class="band-lead">
-        Unverbindlich bis zum Startschuss. Wir melden uns, sobald die Produktion
-        freigegeben ist – und vorher nur, wenn wir eine Rückfrage haben.
+        Du trägst Deine Gastro unverbindlich ein. Wir drucken erst, wenn wir 50 Gastronomien
+        in Freiburg im Boot haben. Wir melden uns, sobald diese Zahl erreicht ist, damit Du
+        weißt, wann die Kartons ankommen und Du planen kannst.
       </p>
     </div>
 
@@ -140,23 +122,20 @@ foreach ($weitereFormate as $wfId) {
             <div class="feld<?= isset($fehler['ort']) ? ' feld-fehler' : '' ?>">
               <label for="g-ort">Ort <span class="pflicht" aria-hidden="true">*</span></label>
               <input type="text" id="g-ort" name="ort" required maxlength="100"
-                     value="<?= e(alt($altw, 'ort', 'Freiburg im Breisgau')) ?>" autocomplete="address-level2">
+                     value="<?= e(alt($altw, 'ort', 'Freiburg')) ?>" autocomplete="address-level2">
               <?php if (isset($fehler['ort'])): ?><p class="feld-meldung"><?= e($fehler['ort']) ?></p><?php endif; ?>
             </div>
           </div>
 
-          <div class="feld<?= isset($fehler['betriebsart']) ? ' feld-fehler' : '' ?>" data-betriebsart-feld>
-            <span class="feld-label">Wir sind… <span class="pflicht" aria-hidden="true">*</span></span>
-            <div class="wahl-gitter" role="radiogroup" aria-label="Betriebsart">
+          <div class="feld<?= isset($fehler['betriebsart']) ? ' feld-fehler' : '' ?>">
+            <label for="g-betriebsart">Wir sind… <span class="pflicht" aria-hidden="true">*</span></label>
+            <select id="g-betriebsart" name="betriebsart" required data-betriebsart-feld>
+              <option value="">Bitte auswählen</option>
               <?php foreach ($betriebsarten as $baId => $baLabel): ?>
-                <label class="wahl wahl-schmal">
-                  <input type="radio" id="g-ba-<?= e($baId) ?>" name="betriebsart" value="<?= e($baLabel) ?>"
-                         required data-betriebsart-wahl="<?= e($baId) ?>"
-                         <?= alt($altw, 'betriebsart') === $baLabel ? 'checked' : '' ?>>
-                  <span class="wahl-inhalt"><?= e($baLabel) ?></span>
-                </label>
+                <option value="<?= e($baLabel) ?>" data-betriebsart-wahl="<?= e($baId) ?>"
+                        <?= alt($altw, 'betriebsart') === $baLabel ? 'selected' : '' ?>><?= e($baLabel) ?></option>
               <?php endforeach; ?>
-            </div>
+            </select>
             <?php if (isset($fehler['betriebsart'])): ?><p class="feld-meldung"><?= e($fehler['betriebsart']) ?></p><?php endif; ?>
           </div>
 
@@ -195,56 +174,13 @@ foreach ($weitereFormate as $wfId) {
 
       <div class="assistent-schritt" data-schritt="2">
 
-        <fieldset>
-          <legend>Dein Bedarf</legend>
-          <p class="feld-hilfe">
-            Vier kurze Fragen, damit wir richtig planen können. Wir bestellen die Auflage nach
-            dem, was Ihr tatsächlich braucht – je genauer Deine Angabe, desto weniger Kartons
-            stehen am Ende falsch im Lager.
-          </p>
-
-          <div class="feld-reihe">
-            <div class="feld<?= isset($fehler['kartons_woche']) ? ' feld-fehler' : '' ?>">
-              <label for="g-kartons-woche">Kartons pro Woche, ungefähr <span class="pflicht" aria-hidden="true">*</span></label>
-              <input type="number" id="g-kartons-woche" name="kartons_woche" required inputmode="numeric" min="1"
-                     value="<?= e(alt($altw, 'kartons_woche')) ?>" data-bedarf-kartons-woche>
-              <?php if (isset($fehler['kartons_woche'])): ?><p class="feld-meldung"><?= e($fehler['kartons_woche']) ?></p><?php endif; ?>
-            </div>
-            <div class="feld<?= isset($fehler['aktueller_einkaufspreis']) ? ' feld-fehler' : '' ?>">
-              <label for="g-aktueller-einkaufspreis">Aktueller Einkaufspreis je Karton <span class="feld-optional">(Euro)</span> <span class="pflicht" aria-hidden="true">*</span></label>
-              <input type="text" id="g-aktueller-einkaufspreis" name="aktueller_einkaufspreis" required inputmode="decimal"
-                     placeholder="z. B. 0,45" value="<?= e(alt($altw, 'aktueller_einkaufspreis')) ?>" data-bedarf-einkaufspreis>
-              <?php if (isset($fehler['aktueller_einkaufspreis'])): ?><p class="feld-meldung"><?= e($fehler['aktueller_einkaufspreis']) ?></p><?php endif; ?>
-            </div>
-          </div>
-
-          <div class="feld-reihe">
-            <div class="feld<?= isset($fehler['aktuelle_groesse']) ? ' feld-fehler' : '' ?>">
-              <label for="g-aktuelle-groesse">Welche Größe nutzt Du heute? <span class="pflicht" aria-hidden="true">*</span></label>
-              <select id="g-aktuelle-groesse" name="aktuelle_groesse" required>
-                <option value="">Bitte auswählen</option>
-                <?php foreach ($aktuelleGroessen as $agId => $agLabel): $agId = (string) $agId; ?>
-                  <option value="<?= e($agId) ?>"<?= alt($altw, 'aktuelle_groesse') === $agId ? ' selected' : '' ?>><?= e($agLabel) ?></option>
-                <?php endforeach; ?>
-              </select>
-              <?php if (isset($fehler['aktuelle_groesse'])): ?><p class="feld-meldung"><?= e($fehler['aktuelle_groesse']) ?></p><?php endif; ?>
-            </div>
-            <div class="feld">
-              <label for="g-aktueller-lieferant">Bei wem kaufst Du aktuell ein? <span class="feld-optional">(freiwillig)</span></label>
-              <input type="text" id="g-aktueller-lieferant" name="aktueller_lieferant" maxlength="150"
-                     value="<?= e(alt($altw, 'aktueller_lieferant')) ?>">
-            </div>
-          </div>
-        </fieldset>
-
         <fieldset class="konfigurator">
           <legend>Format und Menge</legend>
           <p class="feld-hilfe">
-            Trag bei jedem Format ein, wie viele Kartons Du davon brauchst. Du kannst auch
-            mehrere Formate mischen – leer lassen heißt, Du bestellst davon keins.
-            Die Erstauflage läuft auf <?= e($standardFormat) ?> × <?= e($standardFormat) ?> ×
-            <?= (int) config('karton_hoehe_cm') ?> cm. Die übrigen Größen produzieren wir, sobald
-            dafür genug Bedarf zusammenkommt.
+            Wir liefern zum Aktionsbeginn im November aus, die nächste Lieferung nach ca. 4
+            Wochen im Dezember. Wie viele Kartons möchtest Du im November kostenlos erhalten?
+            Trag bei jedem Format ein, wie viele Kartons Du brauchst. Du kannst verschiedene
+            Formate mischen.
           </p>
 
           <div class="feld<?= isset($fehler['menge']) ? ' feld-fehler' : '' ?>">
@@ -253,55 +189,24 @@ foreach ($weitereFormate as $wfId) {
                  data-gesamt-min="<?= (int) $mengen['min'] ?>"
                  data-gesamt-max="<?= (int) $mengen['max'] ?>">
               <?php foreach ($formate as $fm): ?>
-                <?php if ($fm['id'] === $standardFormat): ?>
-                  <div class="format-zeile">
-                    <div class="format-zeile-kopf">
-                      <strong><?= e($fm['label']) ?></strong>
-                      <small><?= e($fm['hinweis']) ?><?= !empty($fm['sofort']) ? ' · läuft als Erstes' : '' ?></small>
-                    </div>
-                    <div class="menge-wahl" data-menge-gruppe="<?= e($fm['id']) ?>">
-                      <?php foreach ($mengen['presets'] as $p): ?>
-                        <button type="button" class="menge-knopf" data-menge-wert="<?= (int) $p ?>">
-                          <?= zahl((int) $p) ?>
-                        </button>
-                      <?php endforeach; ?>
-                      <label class="feld-optional" for="g-menge-<?= e($fm['id']) ?>">Anzahl</label>
-                      <input type="number" id="g-menge-<?= e($fm['id']) ?>" name="menge[<?= e($fm['id']) ?>]"
-                             min="0" max="<?= (int) $mengen['max'] ?>" step="<?= (int) $mengen['step'] ?>"
-                             value="<?= e(alt($altMengen, $fm['id'])) ?>" inputmode="numeric" placeholder="0">
-                    </div>
+                <div class="format-zeile">
+                  <div class="format-zeile-kopf">
+                    <strong><?= e($fm['label']) ?></strong>
+                    <small><?= e($fm['hinweis']) ?></small>
                   </div>
-                <?php endif; ?>
-              <?php endforeach; ?>
-
-              <?php if ($weitereFormate): ?>
-                <input type="checkbox" id="g-andere-groesse-schalter" class="andere-groesse-schalter"
-                       <?= $weitereFormateOffen ? 'checked' : '' ?>>
-                <label for="g-andere-groesse-schalter" class="andere-groesse-knopf">Ich brauche eine andere Größe</label>
-                <div class="andere-groesse-inhalt">
-                  <?php foreach ($formate as $fm): ?>
-                    <?php if ($fm['id'] !== $standardFormat): ?>
-                      <div class="format-zeile">
-                        <div class="format-zeile-kopf">
-                          <strong><?= e($fm['label']) ?></strong>
-                          <small><?= e($fm['hinweis']) ?></small>
-                        </div>
-                        <div class="menge-wahl" data-menge-gruppe="<?= e($fm['id']) ?>">
-                          <?php foreach ($mengen['presets'] as $p): ?>
-                            <button type="button" class="menge-knopf" data-menge-wert="<?= (int) $p ?>">
-                              <?= zahl((int) $p) ?>
-                            </button>
-                          <?php endforeach; ?>
-                          <label class="feld-optional" for="g-menge-<?= e($fm['id']) ?>">Anzahl</label>
-                          <input type="number" id="g-menge-<?= e($fm['id']) ?>" name="menge[<?= e($fm['id']) ?>]"
-                                 min="0" max="<?= (int) $mengen['max'] ?>" step="<?= (int) $mengen['step'] ?>"
-                                 value="<?= e(alt($altMengen, $fm['id'])) ?>" inputmode="numeric" placeholder="0">
-                        </div>
-                      </div>
-                    <?php endif; ?>
-                  <?php endforeach; ?>
+                  <div class="menge-wahl" data-menge-gruppe="<?= e($fm['id']) ?>">
+                    <?php foreach ($mengen['presets'] as $p): ?>
+                      <button type="button" class="menge-knopf" data-menge-wert="<?= (int) $p ?>">
+                        <?= zahl((int) $p) ?>
+                      </button>
+                    <?php endforeach; ?>
+                    <label class="feld-optional" for="g-menge-<?= e($fm['id']) ?>">Anzahl</label>
+                    <input type="number" id="g-menge-<?= e($fm['id']) ?>" name="menge[<?= e($fm['id']) ?>]"
+                           min="0" max="<?= (int) $mengen['max'] ?>" step="<?= (int) $mengen['step'] ?>"
+                           value="<?= e(alt($altMengen, $fm['id'])) ?>" inputmode="numeric" placeholder="0">
+                  </div>
                 </div>
-              <?php endif; ?>
+              <?php endforeach; ?>
             </div>
             <p class="feld-hilfe" data-mengenregeln>
               Je Format mindestens <?= zahl((int) $mengen['format_min']) ?> Stück, in Schritten von
@@ -329,26 +234,14 @@ foreach ($weitereFormate as $wfId) {
           </div>
         </fieldset>
 
-        <div class="assistent-nav">
-          <button type="button" class="btn btn-sekundaer assistent-zurueck" data-assistent-zurueck hidden>Zurück</button>
-          <button type="button" class="btn btn-primaer assistent-weiter" data-assistent-weiter hidden>Weiter</button>
-        </div>
-      </div>
-
-      <div class="assistent-schritt" data-schritt="3">
-
         <fieldset class="konfigurator" data-lieferart-gruppe>
-          <legend>Lieferung und Freigaben</legend>
-          <p class="feld-hilfe">
-            Wir lagern Deine Kartons und liefern ab, wenn Du sie brauchst. Eine Lieferung pro
-            Monat ist für Dich kostenfrei, ab <?= zahl((int) $lieferung['abruf_min']) ?> Kartons
-            je Abruf. Brauchst Du im selben Monat noch eine, kostet die Zustellung im
-            Liefergebiet <?= e(preis((int) $lieferung['zusatz_pauschale_cent'], false)) ?> € netto ab
-            <?= zahl((int) $lieferung['zusatz_mindestmenge']) ?> Kartons; außerhalb des
-            Liefergebiets rechnen wir den Versand nach Aufwand ab und stimmen ihn vorher mit
-            Dir ab. Wir bündeln Fahrten, deshalb kann es bis zu
-            <?= (int) $lieferung['zusatz_frist_werktage'] ?> Werktage dauern – länger nicht.
-            Abholen kannst Du jederzeit, kostenlos und ohne Mengenbeschränkung.
+          <legend>Lieferung</legend>
+          <p class="feld-hilfe feld-hilfe-abstand">
+            Wir liefern Kartons einmal pro Monat kostenlos aus. Die Mindestmenge sind 300
+            Kartons. Brauchst Du im selben Monat weitere Kartons, werden mindestens 300 Stück
+            per Hermes geliefert und die Zustellung kostet 10 Euro zzgl. 19% MwSt. je
+            Lieferung. Bei größeren Mengen stimmen wir uns vorher mit Dir ab. Du kannst
+            Kartons in Tiengen und auf der Haid nach vorheriger Absprache kostenlos abholen.
           </p>
 
           <div class="feld">
@@ -362,7 +255,7 @@ foreach ($weitereFormate as $wfId) {
               <label class="wahl wahl-schmal">
                 <input type="radio" name="lieferart" value="abruf" data-lieferart-wahl
                        <?= alt($altw, 'lieferart') === 'abruf' ? 'checked' : '' ?>>
-                <span class="wahl-inhalt"><strong>Monatlicher Abruf</strong><small>Teilmengen über mehrere Monate</small></span>
+                <span class="wahl-inhalt"><strong>Monatlicher Abruf</strong><small>Anzahl jeden Monat bis auf Widerruf</small></span>
               </label>
               <label class="wahl wahl-schmal">
                 <input type="radio" name="lieferart" value="abholung" data-lieferart-wahl
@@ -373,12 +266,12 @@ foreach ($weitereFormate as $wfId) {
           </div>
 
           <div class="feld<?= isset($fehler['abruf_menge']) ? ' feld-fehler' : '' ?>" data-lieferart-feld="abruf" hidden>
-            <label for="g-abrufmenge">Gewünschte Menge je Abruf</label>
+            <label for="g-abrufmenge">Menge pro Monat</label>
             <input type="number" id="g-abrufmenge" name="abruf_menge" inputmode="numeric"
                    min="<?= (int) $lieferung['abruf_min'] ?>" value="<?= e(alt($altw, 'abruf_menge')) ?>"
                    aria-describedby="g-abrufmenge-hilfe">
             <p class="feld-hilfe" id="g-abrufmenge-hilfe" data-abrufmenge-hinweis>
-              Mindestens <?= zahl((int) $lieferung['abruf_min']) ?> Kartons je Abruf.
+              Mindestens <?= zahl((int) $lieferung['abruf_min']) ?> Kartons pro Monat.
             </p>
             <?php if (isset($fehler['abruf_menge'])): ?><p class="feld-meldung"><?= e($fehler['abruf_menge']) ?></p><?php endif; ?>
           </div>
@@ -393,6 +286,55 @@ foreach ($weitereFormate as $wfId) {
             Das ist einiges auf einmal. Sag uns kurz per Anmerkung Bescheid, falls bei Dir die
             Lagerfläche knapp werden könnte – dann teilen wir die Lieferung sinnvoll auf.
           </p>
+        </fieldset>
+
+        <div class="assistent-nav">
+          <button type="button" class="btn btn-sekundaer assistent-zurueck" data-assistent-zurueck hidden>Zurück</button>
+          <button type="button" class="btn btn-primaer assistent-weiter" data-assistent-weiter hidden>Weiter</button>
+        </div>
+      </div>
+
+      <div class="assistent-schritt" data-schritt="3">
+
+        <fieldset>
+          <legend>Dein Bedarf</legend>
+          <p class="feld-hilfe feld-hilfe-abstand">
+            Bitte hilf uns, Preise und Mengen besser einschätzen zu können. Was hast Du bisher
+            bezahlt und welche Formate verwendest Du?
+          </p>
+
+          <div class="feld-reihe">
+            <div class="feld<?= isset($fehler['kartons_monat_bedarf']) ? ' feld-fehler' : '' ?>">
+              <label for="g-kartons-monat-bedarf">Bedarf Pizzakartons pro Monat (ungefähr) <span class="feld-optional">(freiwillig)</span></label>
+              <input type="number" id="g-kartons-monat-bedarf" name="kartons_monat_bedarf" inputmode="numeric" min="1"
+                     value="<?= e(alt($altw, 'kartons_monat_bedarf')) ?>" data-bedarf-kartons-monat>
+              <?php if (isset($fehler['kartons_monat_bedarf'])): ?><p class="feld-meldung"><?= e($fehler['kartons_monat_bedarf']) ?></p><?php endif; ?>
+            </div>
+            <div class="feld<?= isset($fehler['aktueller_einkaufspreis']) ? ' feld-fehler' : '' ?>">
+              <label for="g-aktueller-einkaufspreis">Aktueller Einkaufspreis je Karton <span class="feld-optional">(Euro, netto ohne Mehrwertsteuer, freiwillig)</span></label>
+              <input type="text" id="g-aktueller-einkaufspreis" name="aktueller_einkaufspreis" inputmode="decimal"
+                     placeholder="z. B. 0,45" value="<?= e(alt($altw, 'aktueller_einkaufspreis')) ?>" data-bedarf-einkaufspreis>
+              <?php if (isset($fehler['aktueller_einkaufspreis'])): ?><p class="feld-meldung"><?= e($fehler['aktueller_einkaufspreis']) ?></p><?php endif; ?>
+            </div>
+          </div>
+
+          <div class="feld-reihe">
+            <div class="feld<?= isset($fehler['aktuelle_groesse']) ? ' feld-fehler' : '' ?>">
+              <label for="g-aktuelle-groesse">Welche Größe verkaufst Du am häufigsten? <span class="feld-optional">(freiwillig)</span></label>
+              <select id="g-aktuelle-groesse" name="aktuelle_groesse" class="feld-select-hoch">
+                <option value="">Bitte auswählen</option>
+                <?php foreach ($aktuelleGroessen as $agId => $agLabel): $agId = (string) $agId; ?>
+                  <option value="<?= e($agId) ?>"<?= alt($altw, 'aktuelle_groesse') === $agId ? ' selected' : '' ?>><?= e($agLabel) ?></option>
+                <?php endforeach; ?>
+              </select>
+              <?php if (isset($fehler['aktuelle_groesse'])): ?><p class="feld-meldung"><?= e($fehler['aktuelle_groesse']) ?></p><?php endif; ?>
+            </div>
+            <div class="feld">
+              <label for="g-aktueller-lieferant">Bei wem kaufst Du aktuell ein? <span class="feld-optional">(freiwillig)</span></label>
+              <input type="text" id="g-aktueller-lieferant" name="aktueller_lieferant" maxlength="150"
+                     value="<?= e(alt($altw, 'aktueller_lieferant')) ?>">
+            </div>
+          </div>
         </fieldset>
 
         <fieldset>
@@ -413,8 +355,9 @@ foreach ($weitereFormate as $wfId) {
                      <?= (empty($altw) || alt($altw, 'karte_ok')) ? 'checked' : '' ?>>
               <span>
                 Mein Betrieb darf mit Name, Adresse und Website auf der
-                <a href="/teilnehmer.html">Teilnehmerkarte</a> erscheinen. <strong>Kostenfrei</strong>,
-                jederzeit widerrufbar, und wir schalten jeden Eintrag von Hand frei.
+                <a href="/teilnehmer.html">Teilnehmerkarte</a> erscheinen. Kostenfrei und
+                jederzeit durch beide Seiten widerrufbar. Ich verlinke nach Möglichkeit einen
+                Link von meiner Website zu https://pizzasupport.de
               </span>
             </label>
           </div>
@@ -430,8 +373,9 @@ foreach ($weitereFormate as $wfId) {
             <label>
               <input type="checkbox" name="bestellung_ok" value="1" required <?= alt($altw, 'bestellung_ok') ? 'checked' : '' ?>>
               <span>
-                Ich bestelle verbindlich im Sinne des Startschuss-Prinzips: Sobald genug Betriebe
-                und genug Werbebudget zusammen sind, geht meine Menge in die Produktion.
+                Ich bestelle verbindlich gemäß der <a href="/agb.html" target="_blank" rel="noopener">AGB</a>
+                und akzeptiere diese hiermit im Sinne des Startschuss-Prinzips: Sobald genug
+                Betriebe und genug Werbebudget zusammen sind, geht meine Menge in die Produktion.
                 Bis dahin kann ich jederzeit formlos absagen. Für mich fallen keine Kosten an.
                 <span class="pflicht" aria-hidden="true">*</span>
               </span>
@@ -445,7 +389,9 @@ foreach ($weitereFormate as $wfId) {
               <span>
                 Ich habe die <a href="/datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a>
                 gelesen und bin mit der Verarbeitung meiner Angaben zur Abwicklung dieser
-                Bestellung einverstanden. <span class="pflicht" aria-hidden="true">*</span>
+                Bestellung einverstanden, ich stimme zu, per Mail über den Projektverlauf
+                informiert zu werden und kann mich davon jederzeit abmelden.
+                <span class="pflicht" aria-hidden="true">*</span>
               </span>
             </label>
             <?php if (isset($fehler['datenschutz_ok'])): ?><p class="feld-meldung"><?= e($fehler['datenschutz_ok']) ?></p><?php endif; ?>
