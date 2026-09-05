@@ -49,9 +49,11 @@ $altMengen = $altw['menge'] ?? [];
         <h2>Drin. Danke Dir!</h2>
         <p><?= e((string) $erfolg) ?></p>
         <p class="danke-weiter">
-          Solange wir sammeln, hilft jede weitere Pizzeria.
+          Jede weitere Pizzeria hilft uns, ans Ziel zu kommen. Empfiehl die Aktion an
+          befreundete Gastros und schick ihnen unseren Link oder teile unsere Seite auf
+          Social Media. Du kannst uns auch einen Tipp geben, welche Gastro wir ansprechen
+          sollen:
           <button type="button" class="link-button" data-modal-oeffnen="modal-empfehlung">Kennst Du noch einen Laden?</button>
-          Oder schau, <a href="/teilnehmer.html">wer schon dabei ist</a>.
         </p>
       </div>
     <?php endif; ?>
