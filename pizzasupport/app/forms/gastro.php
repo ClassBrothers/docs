@@ -257,7 +257,11 @@ try {
         redirect($zurueckFehler);
     }
     error_log('gastro-insert: ' . $eDb->getMessage());
-    flash_set('gastro_fehler', ['betrieb' => 'Da ist bei uns etwas schiefgegangen. Bitte versuch es gleich noch einmal oder schreib uns direkt.']);
+    // Kein Eingabefehler, sondern ein Problem bei uns (z. B. eine fehlende
+    // Migration) - das gehoert nicht an ein bestimmtes Feld wie "betrieb",
+    // sonst wirkt es wie ein Problem mit dem eingegebenen Namen. '_system'
+    // ist kein Feldname und wird daher nirgends als feld-fehler markiert.
+    flash_set('gastro_fehler', ['_system' => 'Da ist bei uns etwas schiefgegangen. Bitte versuch es gleich noch einmal oder schreib uns direkt.']);
     flash_set('gastro_alt', $_POST);
     redirect($zurueckFehler);
 }

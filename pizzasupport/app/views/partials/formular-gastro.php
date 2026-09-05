@@ -67,7 +67,11 @@ $altMengen = $altw['menge'] ?? [];
       </p>
     </div>
 
-    <?php if ($fehler): ?>
+    <?php if (isset($fehler['_system'])): ?>
+      <p class="hinweis hinweis-fehler" id="gastro-fehler" role="alert">
+        <?= e($fehler['_system']) ?>
+      </p>
+    <?php elseif ($fehler): ?>
       <p class="hinweis hinweis-fehler" id="gastro-fehler" role="alert">
         Ein paar Angaben fehlen oder passen noch nicht. Die betroffenen Felder sind markiert.
       </p>
