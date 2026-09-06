@@ -1,0 +1,12 @@
+# Fallback: Wenn der DocumentRoot faelschlich auf das Projektverzeichnis
+# statt auf public/ zeigt, darf hier nichts direkt erreichbar sein.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(app|storage|bin|docs)/ - [F,L]
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+<FilesMatch "\.(env|sqlite|sqlite-wal|sqlite-shm|sql|log|md)$">
+    Require all denied
+</FilesMatch>

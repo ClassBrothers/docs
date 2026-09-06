@@ -1,0 +1,57 @@
+/* Verwaltungsoberflaeche. Bewusst nuechtern - hier wird gearbeitet. */
+:root{--navy:#16375b;--tomate:#b5342a;--gruen:#3e6b43;--linie:#dcd4c8;--papier:#f7f3ec}
+*{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:#2b231f;font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:1.5rem}
+h1{font-size:1.4rem;margin:0}
+h2{font-size:1.1rem;margin:2.5rem 0 .75rem;color:var(--navy)}
+a{color:var(--tomate)}
+code{background:#e9e2d7;padding:.1em .35em;border-radius:3px;font-size:.9em}
+
+.admin-kopf{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;
+  border-bottom:2px solid var(--navy);padding-bottom:.75rem;margin-bottom:1.5rem}
+
+.login{max-width:340px;margin:12vh auto;background:#fff;border:1px solid var(--linie);border-radius:12px;padding:1.75rem}
+.login h1{font-size:1.15rem;margin-bottom:1.25rem}
+.login label{display:block;font-weight:600;font-size:.9rem;margin:.85rem 0 .25rem}
+.login input{width:100%;padding:.6rem .7rem;font:inherit;border:1.5px solid var(--linie);border-radius:6px}
+.login button{width:100%;margin-top:1.25rem;padding:.7rem;font:inherit;font-weight:700;
+  background:var(--navy);color:#fff;border:0;border-radius:6px;cursor:pointer}
+.fehler{background:#fdeeec;border:1px solid #eab8b2;color:#7d241c;padding:.6rem .8rem;border-radius:6px;font-size:.9rem}
+.meldung{background:#eff6ee;border:1px solid #b9d6b6;color:#2c5330;padding:.6rem .8rem;border-radius:6px}
+
+.kacheln{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:1rem}
+.kachel{background:#fff;border:1px solid var(--linie);border-radius:10px;padding:1rem}
+.kachel strong{display:block;font-size:1.4rem;color:var(--navy)}
+.kachel span{font-size:.82rem;color:#6d6058}
+.kachel-gut{border-color:var(--gruen);background:#f2f8f1}
+
+.tabelle-wrap{overflow-x:auto;background:#fff;border:1px solid var(--linie);border-radius:10px}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{padding:.6rem .75rem;text-align:left;border-bottom:1px solid var(--linie);vertical-align:top;font-size:.9rem}
+thead th{background:#efe8dd;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#6d6058}
+small{color:#6d6058;line-height:1.4}
+
+.status{display:inline-block;padding:.15rem .5rem;border-radius:999px;font-size:.75rem;font-weight:700;background:#e9e2d7}
+.status-freigegeben{background:#d8ecd6;color:#2c5330}
+.status-abgelehnt{background:#f6dedb;color:#7d241c}
+.status-neu{background:#fdf0d4;color:#6b5314}
+
+.aktionen{white-space:nowrap}
+.inline{display:inline}
+.aktionen button{padding:.35rem .7rem;margin:0 .2rem .2rem 0;font:inherit;font-size:.8rem;font-weight:600;
+  border:1px solid var(--linie);background:#fff;border-radius:6px;cursor:pointer}
+.aktionen button.gut{border-color:var(--gruen);color:var(--gruen)}
+.aktionen button.gut:hover{background:var(--gruen);color:#fff}
+.aktionen button.schlecht{border-color:var(--tomate);color:var(--tomate)}
+.aktionen button.schlecht:hover{background:var(--tomate);color:#fff}
+
+.hinweis-klein,.fuss-hinweis{font-size:.85rem;color:#6d6058}
+.fuss-hinweis{margin-top:2.5rem;border-top:1px solid var(--linie);padding-top:1rem}
+
+.liefermenge-form{display:flex;align-items:center;gap:.35rem;margin-top:.4rem;font-size:.82rem;white-space:nowrap}
+.liefermenge-form label{display:flex;align-items:center;gap:.3rem}
+.liefermenge-form input[type=number]{width:4.5rem;padding:.25rem .4rem;border:1px solid var(--linie);border-radius:5px;font:inherit}
+.liefermenge-form button{padding:.25rem .55rem;font:inherit;font-size:.78rem;border:1px solid var(--linie);background:#fff;border-radius:5px;cursor:pointer}
+
+.warnung{font-size:.78rem;font-weight:700;color:#8a5a00;background:#fdf0d4;padding:.1rem .4rem;border-radius:4px}
+.csv-link{display:inline-block;margin:.3rem 0 .8rem;font-size:.85rem;color:var(--tomate);text-decoration:underline}

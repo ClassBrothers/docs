@@ -1,0 +1,54 @@
+# Beispielkonfiguration für nginx.
+# Das Gegenstück zu public/.htaccess. Pfade anpassen.
+
+server {
+    listen 443 ssl http2;
+    server_name pizzasupport.de;
+
+    root /var/www/pizzasupport/public;
+    index index.php;
+
+    ssl_certificate     /etc/letsencrypt/live/pizzasupport.de/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/pizzasupport.de/privkey.pem;
+
+    # Alles, was keine echte Datei ist, geht an den Front Controller.
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_hide_header X-Powered-By;
+    }
+
+    # Assets tragen einen Versionsparameter und dürfen dauerhaft im Cache liegen.
+    location ~* \.(css|js|woff2|svg|png|jpe?g|webp|avif|ico)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        access_log off;
+    }
+
+    # Nichts ausliefern, was nicht ausgeliefert werden soll.
+    location ~ /\.          { deny all; }
+    location ~ \.(sqlite|sql|log|md|env)$ { deny all; }
+
+    client_max_body_size 14m;   # Motiv-Uploads bis 12 MB plus Overhead
+    gzip on;
+    gzip_types text/css application/javascript application/json image/svg+xml text/xml;
+}
+
+# HTTP auf HTTPS und www auf die kanonische Domain
+server {
+    listen 80;
+    server_name pizzasupport.de www.pizzasupport.de;
+    return 301 https://pizzasupport.de$request_uri;
+}
+server {
+    listen 443 ssl http2;
+    server_name www.pizzasupport.de;
+    ssl_certificate     /etc/letsencrypt/live/pizzasupport.de/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/pizzasupport.de/privkey.pem;
+    return 301 https://pizzasupport.de$request_uri;
+}
