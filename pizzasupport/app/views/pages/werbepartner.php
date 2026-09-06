@@ -87,7 +87,7 @@ $f = fortschritt_oeffentlich();
         Deiner Marke und die Unterstützung von Gastro und Gästen.
       </p>
       <div class="hero-aktionen">
-        <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche jetzt buchen</a>
+        <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche buchen</a>
         <a class="btn btn-sekundaer btn-gross" href="#preise">Preise ansehen</a>
       </div>
     </div>
@@ -155,7 +155,7 @@ $f = fortschritt_oeffentlich();
     </div>
 
     <p class="zwischen-cta">
-      <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche jetzt buchen</a>
+      <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche buchen</a>
     </p>
   </div>
 </section>
@@ -226,7 +226,7 @@ $f = fortschritt_oeffentlich();
       steht auf der Seite zur <a href="/verpackungssteuer-freiburg.html">Freiburger Verpackungssteuer</a>.
     </p>
     <p class="zwischen-cta">
-      <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche jetzt buchen</a>
+      <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche buchen</a>
     </p>
   </div>
 </section>
@@ -258,7 +258,7 @@ $f = fortschritt_oeffentlich();
       etwas entsteht. Die Buchung selbst dauert wenige Minuten.
     </p>
     <p>
-      <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche jetzt buchen</a>
+      <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche buchen</a>
     </p>
   </div>
 </section>

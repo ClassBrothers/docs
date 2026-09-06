@@ -176,8 +176,12 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
         <legend>Dein Motiv</legend>
 
         <div class="feld<?= isset($fehler['motiv']) ? ' feld-fehler' : '' ?>">
-          <label for="w-motiv">Druckdatei hochladen <span class="feld-optional">(JPG, PNG, WebP oder PDF, max. 12 MB)</span></label>
-          <input type="file" id="w-motiv" name="motiv" accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf">
+          <label for="w-motiv">Druckdatei hochladen</label>
+          <input type="file" id="w-motiv" name="motiv"
+                 accept=".jpg,.jpeg,.tif,.tiff,.pdf,.svg,.eps,.png,image/jpeg,image/tiff,application/pdf,image/svg+xml,application/postscript,image/png">
+          <p class="feld-hilfe">
+            Datei muss in 300dpi vorliegen. Es sind JPG, Tiff, PDF, SVG und EPS möglich bis 12MB Größe.
+          </p>
           <?php if (isset($fehler['motiv'])): ?><p class="feld-meldung"><?= e($fehler['motiv']) ?></p><?php endif; ?>
         </div>
 
@@ -334,7 +338,12 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
         <div class="feld feld-check<?= isset($fehler['datenschutz_ok']) ? ' feld-fehler' : '' ?>">
           <label>
             <input type="checkbox" name="datenschutz_ok" value="1" required>
-            <span>Ich habe die <a href="/datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a> gelesen. <span class="pflicht" aria-hidden="true">*</span></span>
+            <span>
+              Ich habe die <a href="/datenschutz.html" target="_blank" rel="noopener">Datenschutzhinweise</a>
+              gelesen und stimme der Verarbeitung und Speicherung meiner Daten zum Zweck der
+              Kontaktaufnahme, Auftragsannahme und Verarbeitung zu.
+              <span class="pflicht" aria-hidden="true">*</span>
+            </span>
           </label>
           <?php if (isset($fehler['datenschutz_ok'])): ?><p class="feld-meldung"><?= e($fehler['datenschutz_ok']) ?></p><?php endif; ?>
         </div>
@@ -355,39 +364,57 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
 
     <?php if ($flaechenplanVorhanden): ?>
       <?php
-        // Einzelkoordinaten je Kennung, von Hand aus der Originalgrafik
-        // (2000 x 4545 px) abgemessen und in Prozent der Bildmasse
-        // umgerechnet. Fehlt eine Kennung hier (z.B. die neuen StartUp-
-        // Felder SU-S/SU-M, die im Plan noch nicht einzeln eingezeichnet
-        // sind), bleibt sie einfach ohne Hervorhebung buchbar - kein Fehler.
+        // Einzelkoordinaten je Kennung, aus der Originalgrafik
+        // (flaechenplan-gross.jpg, 2500 x 4556 px) ausgemessen und in
+        // Prozent der Bildmasse umgerechnet. Fehlt eine Kennung hier,
+        // bleibt sie einfach ohne Hervorhebung buchbar - kein Fehler.
+        // Das betrifft derzeit nur SU-M5: Der Plan zeichnet in der Fun Area
+        // vier M- und zwoelf S-Felder, der Flaechenkatalog fuehrt fuenf M-
+        // und zehn S-Felder. Beim Kunden angefragt, bis dahin bleibt der
+        // Katalog unveraendert (siehe config.php).
         $flaechenplanKennungKoordinaten = [
-            'D1'   => ['left' => 18.2, 'top' => 8.0,  'width' => 20.0, 'height' => 8.8],
-            'D2'   => ['left' => 18.2, 'top' => 17.7, 'width' => 20.0, 'height' => 13.6],
-            'D3'   => ['left' => 18.2, 'top' => 31.7, 'width' => 20.0, 'height' => 4.4],
-            'D4'   => ['left' => 40.0, 'top' => 8.0,  'width' => 20.0, 'height' => 13.6],
-            'D5'   => ['left' => 40.0, 'top' => 22.1, 'width' => 20.0, 'height' => 4.4],
-            'D6'   => ['left' => 40.0, 'top' => 27.0, 'width' => 20.0, 'height' => 8.8],
-            'D7'   => ['left' => 61.9, 'top' => 8.0,  'width' => 20.0, 'height' => 4.4],
-            'D8'   => ['left' => 61.9, 'top' => 13.3, 'width' => 20.0, 'height' => 8.8],
-            'D9'   => ['left' => 61.9, 'top' => 22.5, 'width' => 20.0, 'height' => 13.6],
-            'DIN1' => ['left' => 16.0, 'top' => 2.5,  'width' => 18.5, 'height' => 3.0],
-            'DIN2' => ['left' => 65.5, 'top' => 2.5,  'width' => 18.5, 'height' => 3.0],
-            'DSL1' => ['left' => 6.0,  'top' => 7.0,  'width' => 6.9,  'height' => 8.5],
-            'DSL2' => ['left' => 6.0,  'top' => 29.0, 'width' => 6.9,  'height' => 8.3],
-            'DSR1' => ['left' => 87.1, 'top' => 7.0,  'width' => 6.9,  'height' => 8.5],
-            'DSR2' => ['left' => 87.1, 'top' => 29.0, 'width' => 6.9,  'height' => 8.3],
-            'BH1'  => ['left' => 15.5, 'top' => 38.5, 'width' => 22.0, 'height' => 3.0],
-            'BH2'  => ['left' => 40.0, 'top' => 38.5, 'width' => 21.0, 'height' => 3.0],
-            'BH3'  => ['left' => 63.5, 'top' => 38.5, 'width' => 21.5, 'height' => 3.0],
-            'BL1'  => ['left' => 6.0,  'top' => 44.0, 'width' => 6.0,  'height' => 8.0],
-            'BL2'  => ['left' => 6.0,  'top' => 54.0, 'width' => 6.0,  'height' => 9.0],
-            'BL3'  => ['left' => 6.0,  'top' => 65.0, 'width' => 6.0,  'height' => 8.5],
-            'BR1'  => ['left' => 86.0, 'top' => 44.0, 'width' => 8.0,  'height' => 8.0],
-            'BR2'  => ['left' => 86.0, 'top' => 54.0, 'width' => 8.0,  'height' => 9.0],
-            'BR3'  => ['left' => 86.0, 'top' => 65.0, 'width' => 8.0,  'height' => 8.5],
-            'BF1'  => ['left' => 16.7, 'top' => 74.7, 'width' => 22.1, 'height' => 5.0],
-            'BF2'  => ['left' => 38.8, 'top' => 74.7, 'width' => 23.3, 'height' => 5.0],
-            'BF3'  => ['left' => 62.1, 'top' => 74.7, 'width' => 24.3, 'height' => 5.0],
+            'D1'     => ['left' => 19.32, 'top' => 11.35, 'width' => 19.44, 'height' => 10.67],
+            'D2'     => ['left' => 19.36, 'top' => 22.91, 'width' => 19.44, 'height' => 16.42],
+            'D3'     => ['left' => 19.4,  'top' => 40.21, 'width' => 19.4,  'height' => 4.92],
+            'D4'     => ['left' => 40.4,  'top' => 11.35, 'width' => 19.44, 'height' => 16.44],
+            'D5'     => ['left' => 40.44, 'top' => 28.67, 'width' => 19.4,  'height' => 4.92],
+            'D6'     => ['left' => 40.36, 'top' => 34.46, 'width' => 19.48, 'height' => 10.65],
+            'D7'     => ['left' => 61.44, 'top' => 11.37, 'width' => 19.4,  'height' => 4.87],
+            'D8'     => ['left' => 61.44, 'top' => 17.12, 'width' => 19.44, 'height' => 10.67],
+            'D9'     => ['left' => 61.44, 'top' => 28.69, 'width' => 19.44, 'height' => 16.42],
+            'DIN1'   => ['left' => 17.4,  'top' => 5.0,   'width' => 17.0,  'height' => 3.14],
+            'DIN2'   => ['left' => 66.24, 'top' => 5.0,   'width' => 17.04, 'height' => 3.14],
+            'DSL1'   => ['left' => 7.8,   'top' => 10.6,  'width' => 5.68,  'height' => 9.33],
+            'DSL2'   => ['left' => 7.8,   'top' => 36.63, 'width' => 5.68,  'height' => 9.33],
+            'DSR1'   => ['left' => 86.76, 'top' => 10.45, 'width' => 5.72,  'height' => 9.35],
+            'DSR2'   => ['left' => 86.76, 'top' => 36.63, 'width' => 5.72,  'height' => 9.33],
+            'BH1'    => ['left' => 17.2,  'top' => 48.31, 'width' => 20.76, 'height' => 3.12],
+            'BH2'    => ['left' => 39.72, 'top' => 48.31, 'width' => 20.76, 'height' => 3.12],
+            'BH3'    => ['left' => 62.24, 'top' => 48.31, 'width' => 20.72, 'height' => 3.12],
+            'BL1'    => ['left' => 7.8,   'top' => 53.47, 'width' => 5.68,  'height' => 11.39],
+            'BL2'    => ['left' => 7.8,   'top' => 65.83, 'width' => 5.68,  'height' => 11.37],
+            'BL3'    => ['left' => 7.8,   'top' => 78.18, 'width' => 5.68,  'height' => 11.35],
+            'BR1'    => ['left' => 86.68, 'top' => 53.47, 'width' => 5.68,  'height' => 11.39],
+            'BR2'    => ['left' => 86.68, 'top' => 65.83, 'width' => 5.68,  'height' => 11.37],
+            'BR3'    => ['left' => 86.68, 'top' => 78.18, 'width' => 5.68,  'height' => 11.35],
+            'BF1'    => ['left' => 18.0,  'top' => 91.59, 'width' => 20.64, 'height' => 3.12],
+            'BF2'    => ['left' => 40.0,  'top' => 91.59, 'width' => 20.88, 'height' => 3.12],
+            'BF3'    => ['left' => 62.64, 'top' => 91.59, 'width' => 20.6,  'height' => 3.12],
+            // Fun Area: im Plan als M1-M4 und S1-S12 beschriftet.
+            'SU-M1'  => ['left' => 20.8,  'top' => 70.59, 'width' => 28.84, 'height' => 3.2],
+            'SU-S1'  => ['left' => 50.6,  'top' => 70.59, 'width' => 13.92, 'height' => 3.2],
+            'SU-S2'  => ['left' => 65.52, 'top' => 70.59, 'width' => 13.88, 'height' => 3.2],
+            'SU-S3'  => ['left' => 20.8,  'top' => 74.34, 'width' => 13.92, 'height' => 3.2],
+            'SU-M2'  => ['left' => 35.68, 'top' => 74.34, 'width' => 28.84, 'height' => 3.2],
+            'SU-S4'  => ['left' => 65.52, 'top' => 74.34, 'width' => 13.88, 'height' => 3.23],
+            'SU-S5'  => ['left' => 20.8,  'top' => 78.09, 'width' => 13.92, 'height' => 3.2],
+            'SU-S6'  => ['left' => 35.68, 'top' => 78.07, 'width' => 13.96, 'height' => 3.23],
+            'SU-M3'  => ['left' => 50.6,  'top' => 78.09, 'width' => 28.8,  'height' => 3.2],
+            'SU-M4'  => ['left' => 20.8,  'top' => 81.85, 'width' => 28.84, 'height' => 3.2],
+            'SU-S7'  => ['left' => 50.6,  'top' => 81.85, 'width' => 13.92, 'height' => 3.2],
+            'SU-S8'  => ['left' => 65.52, 'top' => 81.85, 'width' => 13.88, 'height' => 3.2],
+            'SU-S9'  => ['left' => 20.8,  'top' => 85.6,  'width' => 13.92, 'height' => 3.2],
+            'SU-S10' => ['left' => 35.68, 'top' => 85.6,  'width' => 13.96, 'height' => 3.2],
         ];
 
         $verkauftMitKoordinaten = array_filter(

@@ -35,7 +35,7 @@ $kauftPunkte = [
     </ul>
     <?php if (!empty($kauftMitCta)): ?>
       <p class="zwischen-cta">
-        <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche jetzt buchen</a>
+        <a class="btn btn-primaer btn-gross" href="/flaeche-buchen.html">Fläche buchen</a>
       </p>
     <?php endif; ?>
   </div>

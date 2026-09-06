@@ -159,7 +159,7 @@
    Kinder (Lupenglas, Umrandungen) ihre height:% nicht aufloesen - dieselbe
    Falle wie schon bei .psk-map/.teilnehmer-eintrag/.wahl in dieser Datei,
    nur diesmal bei der Hoehe statt beim hidden-Attribut. */
-.flaechenplan-lupe{position:relative;aspect-ratio:2000/4545}
+.flaechenplan-lupe{position:relative;aspect-ratio:2500/4556}
 .flaechenplan-lupe a{display:block}
 .flaechenplan-bild{width:100%;height:auto;display:block;border-radius:var(--radius-karte);border:1px solid var(--rahmenfarbe)}
 /* Rundes Lupenglas, das per JS bei Mausbewegung positioniert und mit dem

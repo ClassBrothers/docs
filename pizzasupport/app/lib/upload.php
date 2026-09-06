@@ -2,9 +2,16 @@
 /**
  * Motiv-Uploads der Werbepartner.
  *
- * Regeln: nur Bild- und PDF-Formate, maximal 12 MB, Ablage ausserhalb des
- * Web-Roots unter zufaelligem Namen. Der Originalname wandert nur in die
- * Datenbank, nie ins Dateisystem.
+ * Regeln: nur druckfaehige Bild-, PDF- und Vektorformate, maximal 12 MB,
+ * Ablage ausserhalb des Web-Roots unter zufaelligem Namen. Der Originalname
+ * wandert nur in die Datenbank, nie ins Dateisystem.
+ *
+ * SVG und EPS koennen Skripte enthalten. Das ist hier vertretbar, weil die
+ * Dateien nie ueber den Webserver ausgeliefert werden: Sie liegen unter
+ * storage/uploads ausserhalb des Web-Roots, der Adminbereich zeigt nur den
+ * Dateinamen als Text an, und geholt werden sie per FTP. Wer die Ablage
+ * spaeter doch oeffentlich ausliefert, muss diese Typen vorher entfernen
+ * oder die Dateien beim Ausliefern zwingend als Download deklarieren.
  */
 
 declare(strict_types=1);
@@ -14,10 +21,16 @@ const UPLOAD_MAX_BYTES = 12 * 1024 * 1024;
 function upload_erlaubte_typen(): array
 {
     return [
-        'image/jpeg'      => 'jpg',
-        'image/png'       => 'png',
-        'image/webp'      => 'webp',
-        'application/pdf' => 'pdf',
+        'image/jpeg'            => 'jpg',
+        'image/tiff'            => 'tif',
+        'application/pdf'       => 'pdf',
+        'image/svg+xml'         => 'svg',
+        'application/postscript' => 'eps',
+        'image/x-eps'           => 'eps',
+        // PNG war bisher schon erlaubt und bleibt es - im Hinweistext steht
+        // es nicht mehr, abgewiesen wird eine brauchbare Datei deswegen aber
+        // nicht.
+        'image/png'             => 'png',
     ];
 }
 
@@ -44,8 +57,19 @@ function upload_motiv(?array $datei): array
     $finfo = new finfo(FILEINFO_MIME_TYPE);
     $mime  = (string) $finfo->file($datei['tmp_name']);
     $typen = upload_erlaubte_typen();
+
+    // Aeltere libmagic-Versionen erkennen eine SVG-Datei nur als XML oder
+    // Text. Dann selbst nachsehen, statt eine gueltige Datei abzuweisen -
+    // der Inhalt entscheidet weiterhin, nicht die Endung.
+    if (!isset($typen[$mime]) && in_array($mime, ['text/xml', 'application/xml', 'text/plain', 'text/html'], true)) {
+        $anfang = (string) file_get_contents($datei['tmp_name'], false, null, 0, 4096);
+        if (stripos($anfang, '<svg') !== false) {
+            $mime = 'image/svg+xml';
+        }
+    }
+
     if (!isset($typen[$mime])) {
-        return ['ok' => false, 'fehler' => 'Erlaubt sind JPG, PNG, WebP und PDF.'];
+        return ['ok' => false, 'fehler' => 'Erlaubt sind JPG, Tiff, PDF, SVG und EPS.'];
     }
 
     $ziel_dir = APP_ROOT . '/storage/uploads/' . gmdate('Y/m');
