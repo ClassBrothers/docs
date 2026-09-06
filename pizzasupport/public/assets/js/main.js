@@ -407,41 +407,30 @@
 
     var abrufMindest = abrufMengeFeld ? (parseInt(abrufMengeFeld.getAttribute('min'), 10) || 0) : 0;
 
+    // Der Hinweis nennt nur noch die Mindestmenge. Eine Hochrechnung, auf
+    // wie viele Monate sich die Bestellung verteilt, stand hier frueher
+    // auch - sie ging aber davon aus, dass die Monatsmenge eine feste
+    // Gesamtbestellung aufteilt. Seit "Anzahl jeden Monat bis auf Widerruf"
+    // stimmt diese Annahme nicht mehr, deshalb ist die Rechnung raus.
     function abrufMengeAnzeigen() {
       if (!abrufMengeFeld || !abrufHinweis) { return; }
       var abrufMenge = parseInt(abrufMengeFeld.value, 10);
-      var gesamt = 0;
-      Array.prototype.forEach.call(document.querySelectorAll('input[name^="menge["]'), function (f) {
-        var n = parseInt(f.value, 10);
-        if (!isNaN(n) && n > 0) { gesamt += n; }
-      });
 
-      // Unter der Mindestmenge ist eine Monatsverteilung Unsinn - stattdessen
-      // klar sagen, dass die Menge zu klein ist.
       if (abrufMengeFeld.value !== '' && abrufMenge > 0 && abrufMenge < abrufMindest) {
         var fehlertext = 'Mindestliefermenge sind ' + abrufMindest.toLocaleString('de-DE') + ' Stück.';
         abrufHinweis.textContent = fehlertext;
         abrufMengeFeld.setCustomValidity(fehlertext);
         return;
       }
-      abrufMengeFeld.setCustomValidity('');
 
-      if (abrufMenge > 0 && gesamt > 0) {
-        var monate = Math.ceil(gesamt / abrufMenge);
-        abrufHinweis.textContent = abrufHinweisText + ' Bei dieser Menge verteilt sich Deine Bestellung auf etwa '
-          + monate + (monate === 1 ? ' Monat.' : ' Monate.');
-      } else {
-        abrufHinweis.textContent = abrufHinweisText;
-      }
+      abrufMengeFeld.setCustomValidity('');
+      abrufHinweis.textContent = abrufHinweisText;
     }
 
     Array.prototype.forEach.call(lieferartFelder, function (f) {
       f.addEventListener('change', lieferartAnzeigen);
     });
     if (abrufMengeFeld) { abrufMengeFeld.addEventListener('input', abrufMengeAnzeigen); }
-    document.addEventListener('input', function (e) {
-      if (e.target.matches('input[name^="menge["]')) { abrufMengeAnzeigen(); }
-    });
     lieferartAnzeigen();
     abrufMengeAnzeigen();
   }
