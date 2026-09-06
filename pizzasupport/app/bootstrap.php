@@ -80,6 +80,62 @@ function zahl(int $n): string
 }
 
 /**
+ * Bestellfrist der laufenden Auflage, siehe config('aktion.ende').
+ *
+ * Gibt alles zurueck, was Aktionsband und Formularhinweise brauchen -
+ * einmal berechnet, damit dieselbe Zahl ueberall auf der Seite steht:
+ *
+ *   aktiv     Frist ist gesetzt und noch nicht abgelaufen
+ *   abgelaufen Frist ist gesetzt und vorbei
+ *   tage      volle Tage bis einschliesslich zum Fristtag (0 = letzter Tag)
+ *   datum     Fristtag als "30.09.26"
+ *   datum_lang "30. September 2026"
+ *
+ * Ohne gesetzte Frist sind 'aktiv' und 'abgelaufen' beide false - dann
+ * blendet sich der Hinweis ueberall von selbst aus.
+ *
+ * @return array{aktiv: bool, abgelaufen: bool, tage: int, datum: string, datum_lang: string}
+ */
+function aktion(): array
+{
+    static $a = null;
+    if ($a !== null) {
+        return $a;
+    }
+
+    $leer = ['aktiv' => false, 'abgelaufen' => false, 'tage' => 0, 'datum' => '', 'datum_lang' => ''];
+    $roh  = trim((string) config('aktion.ende', ''));
+    if ($roh === '') {
+        return $a = $leer;
+    }
+
+    try {
+        // Fristtag zaehlt ganz mit: Schluss ist erst um Mitternacht danach.
+        $ende  = new DateTimeImmutable($roh . ' 23:59:59');
+        $jetzt = new DateTimeImmutable('now');
+    } catch (Exception $e) {
+        error_log('aktion(): unbrauchbares Datum in config aktion.ende: ' . $roh);
+        return $a = $leer;
+    }
+
+    $abgelaufen = $jetzt > $ende;
+    // Volle Tage bis zum Fristtag, gerechnet ab heute 00:00 - sonst haengt
+    // die angezeigte Zahl an der Uhrzeit des Seitenaufrufs.
+    $tage = (int) $jetzt->setTime(0, 0)->diff($ende->setTime(0, 0))->days;
+
+    $monate = [1 => 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+               'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+
+    return $a = [
+        'aktiv'      => !$abgelaufen,
+        'abgelaufen' => $abgelaufen,
+        'tage'       => $abgelaufen ? 0 : $tage,
+        'datum'      => $ende->format('d.m.y'),
+        'datum_lang' => $ende->format('j') . '. ' . $monate[(int) $ende->format('n')] . ' ' . $ende->format('Y'),
+    ];
+}
+
+/**
  * E-Mail-Adresse aus der Konfiguration, bereinigt fuer mailto:-Links.
  */
 function firma_email_link(): string

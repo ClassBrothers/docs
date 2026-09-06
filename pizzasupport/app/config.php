@@ -236,6 +236,21 @@ return [
     ],
 
     // -----------------------------------------------------------------
+    // Bestellfrist dieser Auflage. Gilt fuer beide Formulare: Kartons der
+    // Gastronomie und Werbeflaechen der Unternehmen.
+    //
+    // 'ende' ist der letzte Bestelltag einschliesslich. Danach wechseln
+    // Aktionsband und Formularhinweise selbsttaetig auf "Frist abgelaufen"
+    // (siehe aktion() in bootstrap.php). Die Formulare selbst bleiben
+    // technisch offen - ob sie zum Fristende auch schliessen sollen, ist
+    // eine Entscheidung des Kunden und bewusst nicht vorweggenommen.
+    // 'ende' leer lassen schaltet den Hinweis komplett ab.
+    // -----------------------------------------------------------------
+    'aktion' => [
+        'ende' => '2026-09-30',
+    ],
+
+    // -----------------------------------------------------------------
     // Startschuss-Prinzip: Ab hier laeuft die Produktion an.
     // Beide Werte muessen erreicht sein.
     // -----------------------------------------------------------------

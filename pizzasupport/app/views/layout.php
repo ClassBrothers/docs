@@ -123,6 +123,8 @@ $aktuell = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
   </div>
 </header>
 
+<?php include APP_ROOT . '/app/views/partials/aktionsband.php'; ?>
+
 <?php if ($meldung = flash_get('fehler_global')): ?>
   <div class="wrap"><p class="hinweis hinweis-fehler" role="alert"><?= e((string) $meldung) ?></p></div>
 <?php endif; ?>

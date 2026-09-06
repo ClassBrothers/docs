@@ -66,6 +66,22 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
 
     <div class="bestellen-kopf">
       <h2 id="buchen-titel">Deine Fläche(n)</h2>
+      <?php /* Zweiter und letzter Platz fuer die Bestellfrist: hier faellt
+               die Entscheidung. Der erste steht als Band unter dem Kopf. */ ?>
+      <?php $aktionBuchen = aktion(); ?>
+      <?php if ($aktionBuchen['aktiv']): ?>
+        <p class="frist-hinweis">
+          <strong>Buchungen nur bis <?= e($aktionBuchen['datum']) ?> möglich!</strong>
+          <?= $aktionBuchen['tage'] === 0
+              ? 'Heute ist der letzte Tag.'
+              : 'Danach ist die Fläche dieser Auflage vergeben – noch ' . zahl($aktionBuchen['tage']) . ' Tag' . ($aktionBuchen['tage'] === 1 ? '' : 'e') . '.' ?>
+        </p>
+      <?php elseif ($aktionBuchen['abgelaufen']): ?>
+        <p class="frist-hinweis frist-hinweis-vorbei">
+          <strong>Die Buchungsfrist am <?= e($aktionBuchen['datum']) ?> ist abgelaufen.</strong>
+          Reservier trotzdem – wir melden uns, sobald die nächste Auflage startet.
+        </p>
+      <?php endif; ?>
       <p class="band-lead">
         Du reservierst hier eine Fläche. Kosten entstehen dabei nicht. Verbindlich wird die
         Buchung erst, wenn genug Gastronomien und genug Flächen zusammengekommen sind und wir

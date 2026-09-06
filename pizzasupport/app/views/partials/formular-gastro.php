@@ -60,6 +60,22 @@ $altMengen = $altw['menge'] ?? [];
 
     <div class="bestellen-kopf">
       <h2 id="bestellen-titel">Trag Deine Gastronomie ein</h2>
+      <?php /* Zweiter und letzter Platz fuer die Bestellfrist: hier faellt
+               die Entscheidung. Der erste steht als Band unter dem Kopf. */ ?>
+      <?php $aktionGastro = aktion(); ?>
+      <?php if ($aktionGastro['aktiv']): ?>
+        <p class="frist-hinweis">
+          <strong>Bestellungen nur bis <?= e($aktionGastro['datum']) ?> möglich!</strong>
+          <?= $aktionGastro['tage'] === 0
+              ? 'Heute ist der letzte Tag.'
+              : 'Danach schließen wir diese Auflage – noch ' . zahl($aktionGastro['tage']) . ' Tag' . ($aktionGastro['tage'] === 1 ? '' : 'e') . '.' ?>
+        </p>
+      <?php elseif ($aktionGastro['abgelaufen']): ?>
+        <p class="frist-hinweis frist-hinweis-vorbei">
+          <strong>Die Bestellfrist am <?= e($aktionGastro['datum']) ?> ist abgelaufen.</strong>
+          Trag Dich trotzdem ein – wir melden uns, sobald die nächste Auflage startet.
+        </p>
+      <?php endif; ?>
       <p class="band-lead">
         Du trägst Deine Gastro unverbindlich ein. Wir drucken erst, wenn wir 50 Gastronomien
         in Freiburg im Boot haben. Wir melden uns, sobald diese Zahl erreicht ist, damit Du
