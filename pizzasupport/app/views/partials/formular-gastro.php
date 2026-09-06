@@ -64,16 +64,15 @@ $altMengen = $altw['menge'] ?? [];
                die Entscheidung. Der erste steht als Band unter dem Kopf. */ ?>
       <?php $aktionGastro = aktion(); ?>
       <?php if ($aktionGastro['aktiv']): ?>
-        <p class="frist-hinweis">
-          <strong>Bestellungen nur bis <?= e($aktionGastro['datum']) ?> möglich!</strong>
+        <p class="frist-hinweis<?= $aktionGastro['verlaengert'] ? ' frist-hinweis-verlaengert' : '' ?>">
+          <?php if ($aktionGastro['verlaengert']): ?>
+            <strong>Aktion verlängert bis <?= e($aktionGastro['datum']) ?>!</strong>
+          <?php else: ?>
+            <strong>Bestellungen nur bis <?= e($aktionGastro['datum']) ?> möglich!</strong>
+          <?php endif; ?>
           <?= $aktionGastro['tage'] === 0
               ? 'Heute ist der letzte Tag.'
-              : 'Danach schließen wir diese Auflage – noch ' . zahl($aktionGastro['tage']) . ' Tag' . ($aktionGastro['tage'] === 1 ? '' : 'e') . '.' ?>
-        </p>
-      <?php elseif ($aktionGastro['abgelaufen']): ?>
-        <p class="frist-hinweis frist-hinweis-vorbei">
-          <strong>Die Bestellfrist am <?= e($aktionGastro['datum']) ?> ist abgelaufen.</strong>
-          Trag Dich trotzdem ein – wir melden uns, sobald die nächste Auflage startet.
+              : 'Noch ' . zahl($aktionGastro['tage']) . ' Tag' . ($aktionGastro['tage'] === 1 ? '' : 'e') . '.' ?>
         </p>
       <?php endif; ?>
       <p class="band-lead">

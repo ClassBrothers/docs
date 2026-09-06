@@ -239,15 +239,21 @@ return [
     // Bestellfrist dieser Auflage. Gilt fuer beide Formulare: Kartons der
     // Gastronomie und Werbeflaechen der Unternehmen.
     //
-    // 'ende' ist der letzte Bestelltag einschliesslich. Danach wechseln
-    // Aktionsband und Formularhinweise selbsttaetig auf "Frist abgelaufen"
-    // (siehe aktion() in bootstrap.php). Die Formulare selbst bleiben
-    // technisch offen - ob sie zum Fristende auch schliessen sollen, ist
-    // eine Entscheidung des Kunden und bewusst nicht vorweggenommen.
-    // 'ende' leer lassen schaltet den Hinweis komplett ab.
+    // 'ende' ist der letzte Bestelltag einschliesslich. Am Tag danach
+    // verschwinden Aktionsband und Formularhinweise von selbst - bestellen
+    // und buchen kann man weiterhin, nur ohne Frist-Hinweis. 'ende' leer
+    // lassen schaltet den Hinweis sofort ab.
+    //
+    // Verlaengerung: Laeuft die Auflage schlechter als gedacht, hier ein
+    // Datum eintragen, zum Beispiel 'verlaengert_bis' => '2026-10-15'.
+    // Dann laeuft der Countdown bis dahin weiter und der Hinweis lautet
+    // "Aktion verlängert bis 15.10.26". Nur diese eine Zeile aendern, die
+    // Anfuehrungszeichen und das Komma dahinter stehen lassen. Leer heisst
+    // keine Verlaengerung. Ein Datum vor oder gleich 'ende' wird ignoriert.
     // -----------------------------------------------------------------
     'aktion' => [
-        'ende' => '2026-09-30',
+        'ende'            => '2026-09-30',
+        'verlaengert_bis' => '',
     ],
 
     // -----------------------------------------------------------------

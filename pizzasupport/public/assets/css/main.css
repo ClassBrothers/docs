@@ -1004,8 +1004,14 @@
   padding:.2rem .6rem;border-radius:var(--radius-badge);white-space:nowrap;
 }
 .aktionsband-text strong{font-weight:800}
-.aktionsband-vorbei{
-  background:var(--flaeche-dunkel);border-bottom-color:var(--rahmenfarbe);
+/* Verlaengerung: dieselbe Aufmerksamkeit, aber in der warmen Farbe statt
+   im Rot der Erstfrist - eine Verlaengerung ist eine gute Nachricht. */
+.aktionsband-verlaengert{
+  background:linear-gradient(90deg,var(--akzent-waerme) 0%,#c98a1f 100%);
+  color:var(--flaeche-dunkel);border-bottom-color:var(--flaeche-dunkel);
+}
+.aktionsband-verlaengert .aktionsband-marke{
+  background:var(--flaeche-dunkel);color:#fff;
 }
 @media (max-width:520px){
   .aktionsband-innen{font-size:.86rem;gap:.45rem;padding-block:.5rem}
@@ -1018,7 +1024,7 @@
   font-family:var(--schrift-ui);font-size:1rem;line-height:1.45;color:var(--akzent-dunkel);
 }
 .frist-hinweis strong{font-weight:800;color:var(--akzent)}
-.frist-hinweis-vorbei{
-  background:var(--flaeche-hell-zwei);border-color:var(--rahmenfarbe);color:var(--textfarbe);
+.frist-hinweis-verlaengert{
+  background:#fff8e8;border-color:var(--akzent-waerme);color:var(--textfarbe);
 }
-.frist-hinweis-vorbei strong{color:var(--flaeche-dunkel)}
+.frist-hinweis-verlaengert strong{color:#8a5c10}

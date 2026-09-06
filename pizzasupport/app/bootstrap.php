@@ -80,21 +80,20 @@ function zahl(int $n): string
 }
 
 /**
- * Bestellfrist der laufenden Auflage, siehe config('aktion.ende').
+ * Bestellfrist der laufenden Auflage, siehe config('aktion').
  *
- * Gibt alles zurueck, was Aktionsband und Formularhinweise brauchen -
- * einmal berechnet, damit dieselbe Zahl ueberall auf der Seite steht:
+ * Gibt alles zurueck, was Aktionsband, Formularhinweise und Mails
+ * brauchen - einmal berechnet, damit ueberall dieselbe Zahl steht:
  *
- *   aktiv     Frist ist gesetzt und noch nicht abgelaufen
- *   abgelaufen Frist ist gesetzt und vorbei
- *   tage      volle Tage bis einschliesslich zum Fristtag (0 = letzter Tag)
- *   datum     Fristtag als "30.09.26"
- *   datum_lang "30. September 2026"
+ *   aktiv        Frist ist gesetzt und noch nicht abgelaufen. Nur dann
+ *                wird ueberhaupt etwas angezeigt: nach dem Fristtag
+ *                verschwindet der Hinweis, bestellen geht weiter.
+ *   verlaengert  Es laeuft die Verlaengerung, nicht die Ursprungsfrist
+ *   tage         volle Tage bis einschliesslich zum Fristtag (0 = letzter Tag)
+ *   datum        massgeblicher Fristtag als "30.09.26"
+ *   datum_ende   Ursprungsfrist als "30.09.26", auch waehrend der Verlaengerung
  *
- * Ohne gesetzte Frist sind 'aktiv' und 'abgelaufen' beide false - dann
- * blendet sich der Hinweis ueberall von selbst aus.
- *
- * @return array{aktiv: bool, abgelaufen: bool, tage: int, datum: string, datum_lang: string}
+ * @return array{aktiv: bool, verlaengert: bool, tage: int, datum: string, datum_ende: string}
  */
 function aktion(): array
 {
@@ -103,36 +102,67 @@ function aktion(): array
         return $a;
     }
 
-    $leer = ['aktiv' => false, 'abgelaufen' => false, 'tage' => 0, 'datum' => '', 'datum_lang' => ''];
-    $roh  = trim((string) config('aktion.ende', ''));
-    if ($roh === '') {
+    $leer = ['aktiv' => false, 'verlaengert' => false, 'tage' => 0, 'datum' => '', 'datum_ende' => ''];
+
+    // Fristtag zaehlt ganz mit: Schluss ist erst um Mitternacht danach.
+    $tagesende = static function (string $roh, string $feld): ?DateTimeImmutable {
+        $roh = trim($roh);
+        if ($roh === '') {
+            return null;
+        }
+        try {
+            return new DateTimeImmutable($roh . ' 23:59:59');
+        } catch (Exception $e) {
+            error_log('aktion(): unbrauchbares Datum in config aktion.' . $feld . ': ' . $roh);
+            return null;
+        }
+    };
+
+    $ende = $tagesende((string) config('aktion.ende', ''), 'ende');
+    if ($ende === null) {
         return $a = $leer;
     }
 
-    try {
-        // Fristtag zaehlt ganz mit: Schluss ist erst um Mitternacht danach.
-        $ende  = new DateTimeImmutable($roh . ' 23:59:59');
-        $jetzt = new DateTimeImmutable('now');
-    } catch (Exception $e) {
-        error_log('aktion(): unbrauchbares Datum in config aktion.ende: ' . $roh);
+    // Eine Verlaengerung zaehlt nur, wenn sie wirklich hinter der
+    // Ursprungsfrist liegt - sonst waere sie eine stille Verkuerzung.
+    $verlaengertBis = $tagesende((string) config('aktion.verlaengert_bis', ''), 'verlaengert_bis');
+    $verlaengert    = $verlaengertBis !== null && $verlaengertBis > $ende;
+    $frist          = $verlaengert ? $verlaengertBis : $ende;
+
+    $jetzt = new DateTimeImmutable('now');
+    if ($jetzt > $frist) {
         return $a = $leer;
     }
-
-    $abgelaufen = $jetzt > $ende;
-    // Volle Tage bis zum Fristtag, gerechnet ab heute 00:00 - sonst haengt
-    // die angezeigte Zahl an der Uhrzeit des Seitenaufrufs.
-    $tage = (int) $jetzt->setTime(0, 0)->diff($ende->setTime(0, 0))->days;
-
-    $monate = [1 => 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-               'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 
     return $a = [
-        'aktiv'      => !$abgelaufen,
-        'abgelaufen' => $abgelaufen,
-        'tage'       => $abgelaufen ? 0 : $tage,
-        'datum'      => $ende->format('d.m.y'),
-        'datum_lang' => $ende->format('j') . '. ' . $monate[(int) $ende->format('n')] . ' ' . $ende->format('Y'),
+        'aktiv'       => true,
+        'verlaengert' => $verlaengert,
+        // Volle Tage bis zum Fristtag, gerechnet ab heute 00:00 - sonst
+        // haengt die angezeigte Zahl an der Uhrzeit des Seitenaufrufs.
+        'tage'        => (int) $jetzt->setTime(0, 0)->diff($frist->setTime(0, 0))->days,
+        'datum'       => $frist->format('d.m.y'),
+        'datum_ende'  => $ende->format('d.m.y'),
     ];
+}
+
+/**
+ * Fristzeile fuer die Bestaetigungsmails. Leer, solange keine Frist laeuft.
+ */
+function aktion_mailzeile(): string
+{
+    $a = aktion();
+    if (!$a['aktiv']) {
+        return '';
+    }
+    $rest = $a['tage'] === 0
+        ? 'Heute ist der letzte Tag.'
+        : 'Noch ' . zahl($a['tage']) . ' Tag' . ($a['tage'] === 1 ? '' : 'e') . '.';
+
+    return $a['verlaengert']
+        ? "Die Aktion ist verlängert bis {$a['datum']}. $rest\n"
+          . "Wer noch dabei sein will: bis dahin bestellen.\n\n"
+        : "Bestellungen für diese Auflage sind nur bis {$a['datum']} möglich. $rest\n"
+          . "Sag gern weiter, wer noch mitmachen möchte.\n\n";
 }
 
 /**

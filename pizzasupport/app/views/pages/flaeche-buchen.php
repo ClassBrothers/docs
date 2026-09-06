@@ -70,16 +70,15 @@ $gewaehlteFlaechen = is_array($gewaehlteFlaechen) ? $gewaehlteFlaechen : [];
                die Entscheidung. Der erste steht als Band unter dem Kopf. */ ?>
       <?php $aktionBuchen = aktion(); ?>
       <?php if ($aktionBuchen['aktiv']): ?>
-        <p class="frist-hinweis">
-          <strong>Buchungen nur bis <?= e($aktionBuchen['datum']) ?> möglich!</strong>
+        <p class="frist-hinweis<?= $aktionBuchen['verlaengert'] ? ' frist-hinweis-verlaengert' : '' ?>">
+          <?php if ($aktionBuchen['verlaengert']): ?>
+            <strong>Aktion verlängert bis <?= e($aktionBuchen['datum']) ?>!</strong>
+          <?php else: ?>
+            <strong>Buchungen nur bis <?= e($aktionBuchen['datum']) ?> möglich!</strong>
+          <?php endif; ?>
           <?= $aktionBuchen['tage'] === 0
               ? 'Heute ist der letzte Tag.'
-              : 'Danach ist die Fläche dieser Auflage vergeben – noch ' . zahl($aktionBuchen['tage']) . ' Tag' . ($aktionBuchen['tage'] === 1 ? '' : 'e') . '.' ?>
-        </p>
-      <?php elseif ($aktionBuchen['abgelaufen']): ?>
-        <p class="frist-hinweis frist-hinweis-vorbei">
-          <strong>Die Buchungsfrist am <?= e($aktionBuchen['datum']) ?> ist abgelaufen.</strong>
-          Reservier trotzdem – wir melden uns, sobald die nächste Auflage startet.
+              : 'Noch ' . zahl($aktionBuchen['tage']) . ' Tag' . ($aktionBuchen['tage'] === 1 ? '' : 'e') . '.' ?>
         </p>
       <?php endif; ?>
       <p class="band-lead">

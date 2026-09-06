@@ -177,6 +177,7 @@ mail_send(
     . ($d['notiz'] ? "\nAnmerkung zur Platzierung: {$d['notiz']}\n" : '')
     . ($d['coupon'] ? 'Gutscheinmotiv: ja, ' . (int) config('coupon_rabatt_prozent') . " % Nachlass berücksichtigt\n" : '')
     . 'Auftragswert:   ' . preis($netto) . ' netto, ' . preis($brutto) . " brutto\n\n"
+    . aktion_mailzeile()
     . "So geht es weiter: Deine Reservierung ist kostenfrei. Verbindlich wird sie erst,\n"
     . "wenn genug Betriebe und genug Werbevolumen zusammengekommen sind und Du von uns\n"
     . 'eine Auftragsbestätigung und eine Teilrechnung über '

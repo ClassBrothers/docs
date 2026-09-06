@@ -297,6 +297,7 @@ mail_send(
         ? 'Da Du außerhalb ' . $porto['frei_in'] . " bestellst: Abholung oder Lieferung nach\n"
           . "Aufwand, wir melden uns bei Dir dazu.\n\n"
         : '')
+    . aktion_mailzeile()
     . "Wie es weitergeht: Wir sammeln weiter Betriebe und Werbepartner. Sobald genug\n"
     . "zusammengekommen ist, geben wir die Produktion frei und melden uns bei Dir. Die\n"
     . 'Kartons sind dann rund ' . config('startschuss.lieferwochen') . " Wochen später da.\n\n"
