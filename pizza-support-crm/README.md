@@ -105,6 +105,11 @@ Regeln: 2 Sekunden Pause zwischen Abrufen, nichts wird geraten. Findet sich nur 
 Lieferplattform-Eintrag (Lieferando, Wolt, Uber Eats) und keine eigene Website, wird der Betrieb als
 `kein_impressum` markiert und in der Quellnotiz mit „telefonisch erfragen" vermerkt.
 
+Zwei Leads liegen bereits vor, aber **ungeprüft** in `data/anreicherung_leads.csv` (Bellosguardo,
+Antica). Sie stammen aus Suchmaschinen-Treffern, nicht aus dem Impressum selbst — vor der Nutzung
+kurz auf der Website gegenprüfen. Der reguläre Weg ist `bin/enrich.php`, das liest das Impressum
+direkt aus.
+
 **Realistische Erwartung:** Bei kleinen Pizzerien ist eine öffentliche E-Mail die Ausnahme. Der
 bereits geprüfte Beispielfall (Beatzzeria, Wasserstraße 10 — Inhaber über Lieferando-Impressum
 verifiziert, aber keine Mailadresse, nur Kontaktformular) ist der Normalfall. Rechne mit einer

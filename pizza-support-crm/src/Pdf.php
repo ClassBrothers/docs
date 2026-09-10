@@ -65,7 +65,6 @@ final class Pdf
         if (trim($text) === '') {
             return;
         }
-        $this->sicherstellenSeite();
         $font = self::SCHRIFTEN[$schnitt] ?? 'F1';
         $farbBefehl = $farbe ? sprintf("%.3F %.3F %.3F rg\n", $farbe[0] / 255, $farbe[1] / 255, $farbe[2] / 255) : '';
         $zurueck = $farbe ? "0 0 0 rg\n" : '';
@@ -116,7 +115,6 @@ final class Pdf
 
     public function linie(float $x1, float $y1, float $x2, float $y2, float $staerke = 0.2, array $farbe = [180, 180, 180]): void
     {
-        $this->sicherstellenSeite();
         $this->aktuell .= sprintf(
             "q\n%.3F %.3F %.3F RG\n%.2F w\n%.2F %.2F m %.2F %.2F l S\nQ\n",
             $farbe[0] / 255, $farbe[1] / 255, $farbe[2] / 255, $staerke,
@@ -126,7 +124,6 @@ final class Pdf
 
     public function rechteck(float $x, float $y, float $breite, float $hoehe, array $farbe, bool $gefuellt = true): void
     {
-        $this->sicherstellenSeite();
         $operator = $gefuellt ? 'f' : 'S';
         $farbOperator = $gefuellt ? 'rg' : 'RG';
         $this->aktuell .= sprintf(
@@ -266,11 +263,6 @@ final class Pdf
         }
         $pdf .= sprintf("trailer\n<< /Size %d /Root 1 0 R /Info %d 0 R >>\nstartxref\n%d\n%%%%EOF\n", $anzahl, $infoId, $xrefStart);
         return $pdf;
-    }
-
-    private function sicherstellenSeite(): void
-    {
-        // Inhalte landen automatisch auf der ersten Seite, wenn noch keine geoeffnet wurde.
     }
 
     /** Millimeter in PDF-Punkte. */

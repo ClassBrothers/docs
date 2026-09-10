@@ -1,0 +1,6 @@
+# Unverifizierte Rechercheleads — NICHT ungeprueft in die Datenbank uebernehmen.
+# Herkunft: Suchmaschinen-Trefferbeschreibungen, nicht am Impressum selbst geprueft.
+# Vorgehen: Website oeffnen, Impressum aufrufen, Wert bestaetigen, dann in der Kontaktkarte eintragen.
+name;strasse;website_vermutet;email_vermutet;quelle;geprueft
+Pizzeria Bellosguardo;Am Bischofskreuz 13;https://www.pizzeria-bellosguardo.de;riccardo-pacifico@web.de;Suchtreffer pizzeria-bellosguardo.de/impressum;nein
+Ristorante Pizzeria Antica;Eisenbahnstraße 43;https://antica-restaurant.de;Sedatferizi@yahoo.de;Suchtreffer antica-restaurant.de;nein
