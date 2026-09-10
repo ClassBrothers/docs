@@ -1,0 +1,31 @@
+# Schutz fuer den Fall, dass dieser Ordner direkt im Webroot liegt.
+#
+# Sauberer ist es, das Document Root der (Sub-)Domain auf den Unterordner
+# "public/" zeigen zu lassen. Wo das beim Hoster nicht geht, erledigt diese
+# Datei zweierlei: sie sperrt alles ausser "public/" und leitet Aufrufe des
+# Ordners intern nach "public/" um.
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Programmcode, Daten und Vorlagen sind nie direkt abrufbar.
+  RewriteRule ^(src|bin|data|templates)/ - [F,L]
+  RewriteRule ^config\. - [F,L]
+
+  # Alles Uebrige nach public/ leiten (funktioniert auch im Unterverzeichnis).
+  RewriteCond %{REQUEST_URI} !public/
+  RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Zweite Verteidigungslinie, falls mod_rewrite fehlt.
+<FilesMatch "\.(sqlite|sqlite-wal|sqlite-shm|sql|md|xlsx|csv|log)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>

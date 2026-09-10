@@ -26,6 +26,10 @@ php -S 127.0.0.1:8080 -t public
 
 Danach im Browser: <http://127.0.0.1:8080>
 
+**Installation auf einem Webserver (FTP):** siehe [INSTALL-FTP.md](INSTALL-FTP.md) —
+dort läuft die Einrichtung über `public/setup.php` im Browser, Kommandozeile wird nicht
+gebraucht.
+
 Ohne gesetzten `passwort_hash` ist das Tool **nur von 127.0.0.1 aus** erreichbar — Absicht,
 siehe Abschnitt „Hosting".
 

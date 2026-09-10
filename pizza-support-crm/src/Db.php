@@ -22,7 +22,12 @@ final class Db
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         ]);
-        $pdo->exec('PRAGMA journal_mode = WAL');
+        // WAL ist schneller, scheitert aber auf manchen Netzwerk-Dateisystemen —
+        // dort bleibt es beim Standard-Journal, das genuegt fuer den Einzelplatzbetrieb.
+        try {
+            $pdo->exec('PRAGMA journal_mode = WAL');
+        } catch (PDOException) {
+        }
         $pdo->exec('PRAGMA foreign_keys = ON');
         self::$pdo = $pdo;
 
