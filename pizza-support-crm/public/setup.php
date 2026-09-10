@@ -164,7 +164,10 @@ $e = static fn (?string $s): string => htmlspecialchars((string) $s, ENT_QUOTES)
 <style>
   .huelle { max-width: 780px; margin: 30px auto 60px; padding: 0 20px; }
   .schritt { counter-increment: schritt; }
-  .schritt > h3::before { content: counter(schritt) ". "; color: var(--gold); }
+  /* .block > h3 ist im Grundstil ein Flex-Container mit Randausrichtung —
+     hier soll die Nummer direkt vor der Ueberschrift stehen. */
+  .schritt > h3 { justify-content: flex-start; gap: 6px; }
+  .schritt > h3::before { content: counter(schritt) "."; color: var(--gold); }
   .huelle { counter-reset: schritt; }
   .pruefliste { list-style: none; margin: 0; padding: 0; font-size: 13px; }
   .pruefliste li { display: flex; gap: 9px; padding: 5px 0; border-bottom: 1px solid #f0eade; align-items: baseline; }
