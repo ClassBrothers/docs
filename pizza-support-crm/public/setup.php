@@ -22,17 +22,72 @@ $meldungen = [];
 
 /** Was in config.local.php stehen muesste, falls PHP nicht schreiben darf. */
 $konfigEntwurf = '';
+/** Technischer Grund, warum das Schreiben scheiterte — fuer eine ehrliche Fehlermeldung. */
+$konfigFehler = '';
+
+/**
+ * Testet, ob $pfad beschreibbar ist, ohne is_writable() blind zu vertrauen
+ * (das liegt auf manchen Hostern daneben) und ohne bestehenden Inhalt zu
+ * veraendern: existiert die Datei, wird sie nur kurz im Lese/Schreib-Modus
+ * geoeffnet und sofort wieder geschlossen; existiert sie nicht, wird geprueft,
+ * ob im Elternverzeichnis eine neue Datei angelegt werden kann.
+ */
+function kannSchreiben(string $pfad): bool
+{
+    if (is_file($pfad)) {
+        $griff = @fopen($pfad, 'r+');
+        if ($griff === false) {
+            return false;
+        }
+        fclose($griff);
+        return true;
+    }
+    $testDatei = dirname($pfad) . '/.schreibtest-' . bin2hex(random_bytes(4));
+    $ok = @file_put_contents($testDatei, 'test') !== false;
+    if ($ok) {
+        @unlink($testDatei);
+    }
+    return $ok;
+}
 
 /** config.local.php lesen, mit neuen Werten zusammenfuehren und zurueckschreiben. */
 function konfigSchreiben(array $neu): bool
 {
-    global $konfigEntwurf;
-    $vorhanden = is_file(KONFIG) ? (require KONFIG) : [];
-    $zusammen = array_replace_recursive(is_array($vorhanden) ? $vorhanden : [], $neu);
+    global $konfigEntwurf, $konfigFehler;
+    $konfigFehler = '';
+
+    $vorhanden = [];
+    if (is_file(KONFIG)) {
+        try {
+            $geladen = require KONFIG;
+            $vorhanden = is_array($geladen) ? $geladen : [];
+        } catch (Throwable) {
+            // Leere oder kaputte Datei (z.B. durch einen abgebrochenen FTP-Upload) —
+            // lieber neu anlegen, als hier haengenzubleiben.
+            $vorhanden = [];
+        }
+    }
+    $zusammen = array_replace_recursive($vorhanden, $neu);
     $inhalt = "<?php\n// Von setup.php erzeugt — von Hand aenderbar.\nreturn "
         . var_export($zusammen, true) . ";\n";
-    if (file_put_contents(KONFIG, $inhalt) !== false) {
+
+    // FTP-Uploads setzen Dateirechte oft zurueck (haeufig auf 644) — vor dem
+    // Schreiben einen Versuch unternehmen, die Datei beschreibbar zu machen.
+    if (is_file(KONFIG) && !is_writable(KONFIG)) {
+        @chmod(KONFIG, 0666);
+    }
+
+    error_clear_last();
+    $geschrieben = @file_put_contents(KONFIG, $inhalt);
+
+    if ($geschrieben !== false) {
         return true;
+    }
+
+    $technisch = error_get_last();
+    $konfigFehler = $technisch['message'] ?? 'Unbekannter Fehler.';
+    if (!is_file(KONFIG)) {
+        $konfigFehler .= ' — vermutlich ist das Verzeichnis nicht beschreibbar, in dem config.local.php angelegt werden soll (eine Ebene ueber public/).';
     }
     // Schreibt PHP nicht, kann der Inhalt wenigstens per FTP eingesetzt werden.
     $konfigEntwurf = $inhalt;
@@ -49,7 +104,7 @@ if ($freigegeben && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         } elseif (konfigSchreiben(['passwort_hash' => password_hash($passwort, PASSWORD_DEFAULT)])) {
             $meldungen[] = ['gut', 'Passwort gespeichert. Ab jetzt fragt das Tool beim Aufruf danach.'];
         } else {
-            $meldungen[] = ['fehler', 'config.local.php ist nicht schreibbar (Rechte auf 666 setzen). Ersatzweise den Inhalt unten per FTP in die Datei kopieren.'];
+            $meldungen[] = ['fehler', 'config.local.php ist nicht schreibbar: ' . $konfigFehler . ' Ersatzweise den Inhalt unten per FTP in die Datei kopieren.'];
         }
     }
 
@@ -62,7 +117,7 @@ if ($freigegeben && ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         if (konfigSchreiben(['absender' => $absender, 'ziel_gewonnen' => max(1, $ziel), 'etikettenformat' => (string) ($_POST['etikettenformat'] ?? 'L7160')])) {
             $meldungen[] = ['gut', 'Absenderdaten gespeichert.'];
         } else {
-            $meldungen[] = ['fehler', 'config.local.php ist nicht schreibbar (Rechte auf 666 setzen). Ersatzweise den Inhalt unten per FTP in die Datei kopieren.'];
+            $meldungen[] = ['fehler', 'config.local.php ist nicht schreibbar: ' . $konfigFehler . ' Ersatzweise den Inhalt unten per FTP in die Datei kopieren.'];
         }
     }
 
@@ -100,8 +155,14 @@ $pruefungen[] = ['PHP-Version ' . PHP_VERSION, version_compare(PHP_VERSION, '8.1
 foreach (['zip' => 'Excel-Import', 'pdo_sqlite' => 'Datenbank', 'mbstring' => 'Umlaute', 'curl' => 'Anreicherung'] as $erweiterung => $wofuer) {
     $pruefungen[] = ["Erweiterung {$erweiterung} ({$wofuer})", extension_loaded($erweiterung), "Beim Hoster aktivieren — ohne {$erweiterung} fehlt: {$wofuer}."];
 }
-$pruefungen[] = ['Ordner data/ beschreibbar', is_writable(PS_ROOT . '/data'), 'Rechte auf 755 (notfalls 775) setzen.'];
-$pruefungen[] = ['config.local.php beschreibbar', is_file(KONFIG) ? is_writable(KONFIG) : is_writable(PS_ROOT), 'Datei per FTP anlegen und auf 644 setzen.'];
+$pruefungen[] = ['Ordner data/ beschreibbar', kannSchreiben(PS_ROOT . '/data/.schreibtest'), 'Rechte auf 755 (notfalls 775) setzen.'];
+$pruefungen[] = [
+    'config.local.php beschreibbar',
+    kannSchreiben(KONFIG),
+    is_file(KONFIG)
+        ? 'Rechte der Datei auf 666 setzen.'
+        : 'Datei existiert auf dem Server nicht — das ist normal, wenn du den Code per Git statt per ZIP geholt hast (config.local.php ist absichtlich von Git ausgeschlossen). Lege sie per FTP leer an ("<?php\nreturn [];") und setze die Rechte auf 666, dann versuch es hier erneut.',
+];
 $pruefungen[] = ['mod_rewrite aktiv', function_exists('apache_get_modules') ? in_array('mod_rewrite', apache_get_modules(), true) : null, 'Ohne Rewrite muss das Document Root direkt auf public/ zeigen.'];
 
 $hashGesetzt = ((string) ps_cfg('passwort_hash', '')) !== '';

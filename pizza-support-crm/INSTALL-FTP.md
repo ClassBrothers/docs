@@ -53,6 +53,14 @@ Im FTP-Programm (FileZilla: Rechtsklick → Dateiattribute):
 `config.local.php` liegt leer bei (`return [];`) — sie muss nur beschreibbar sein,
 damit der Assistent das Passwort hineinschreiben kann.
 
+> **Hast du den Code über GitHub geholt statt über das fertige ZIP-Paket?** Dann
+> fehlt `config.local.php` auf deinem Rechner — die Datei ist absichtlich aus Git
+> ausgeschlossen (sie soll nie mit Zugangsdaten versehentlich committet werden).
+> Leg sie per FTP selbst an: neue leere Datei `config.local.php` im Hauptverzeichnis
+> (neben `config.example.php`), Inhalt genau `<?php` + Zeilenumbruch + `return [];`,
+> danach Rechte auf 666. Der Assistent sagt dir das auch im Systemcheck, falls du
+> das übersiehst.
+
 ## Schritt 3 — Assistent freischalten
 
 Lege per FTP im Ordner `data/` eine leere Datei mit dem Namen
@@ -81,7 +89,9 @@ Der Assistent führt durch vier Punkte:
    liegt schon in `data/` und steht in der Auswahlliste. Ein Klick, 55 Betriebe drin.
 
 Falls PHP die Konfiguration nicht schreiben darf, zeigt der Assistent den fertigen
-Dateiinhalt an — den kopierst du per FTP in `config.local.php`.
+Dateiinhalt an — den kopierst du per FTP in `config.local.php`. Die Fehlermeldung
+nennt jetzt den echten technischen Grund (z. B. „Permission denied"), nicht nur
+„geht nicht" — der hilft beim Hoster-Support meist mehr als alles andere.
 
 ## Schritt 5 — Sicherheitsprüfung
 
@@ -151,5 +161,6 @@ Abschnitt § 7 UWG.
 | „Kein Passwort gesetzt … nur von 127.0.0.1" | Schritt 4.2 fehlt | `setup.php` aufrufen und Passwort setzen |
 | Verzeichnisliste statt Anmeldung | `mod_rewrite` fehlt | Document Root auf `public/` zeigen lassen |
 | „unable to open database file" | `data/` nicht beschreibbar | Rechte auf 775 setzen |
+| Passwort speichert nicht, „Status: noch nicht gesetzt" bleibt | `config.local.php` fehlt (Git statt ZIP) oder ist trotz 666 wirklich nicht schreibbar | Systemcheck oben auf der Seite prüfen — zeigt jetzt den genauen Grund. Fehlt die Datei: per FTP mit Inhalt `<?php`+Zeilenumbruch+`return [];` anlegen. Ist sie da, aber gesperrt: beim Hoster nachfragen, ob das Verzeichnis „eine Ebene über public/" für PHP beschreibbar ist — manche Pakete sandboxen PHP auf den Docroot. |
 | Import bricht ab | `zip` fehlt | Beim Hoster aktivieren, oder Liste als CSV importieren |
 | Umlaute zerschossen im CSV | Excel-Import ohne UTF-8 | Der Export enthält ein BOM — beim Öffnen „UTF-8" wählen |
