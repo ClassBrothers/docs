@@ -1,0 +1,11 @@
+# Lokale Konfiguration mit Zugangsdaten — gehoert nicht ins Repo
+config.local.php
+
+# Datenbank und Arbeitsdateien
+data/*.sqlite
+data/*.sqlite-wal
+data/*.sqlite-shm
+data/export/
+
+# Betriebssystem
+.DS_Store

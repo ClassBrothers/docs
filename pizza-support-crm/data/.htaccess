@@ -1,0 +1,5 @@
+# Falls dieses Verzeichnis versehentlich im Webroot landet: Zugriff verbieten.
+Require all denied
+<IfModule !mod_authz_core.c>
+  Deny from all
+</IfModule>

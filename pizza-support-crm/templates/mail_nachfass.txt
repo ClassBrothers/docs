@@ -1,0 +1,18 @@
+Betreff: Pizza Support — die Unterlagen wie besprochen
+
+{{Anrede}},
+
+vielen Dank für das Telefonat. Wie besprochen hier die wichtigsten Punkte in Kurzform:
+
+- Ihre Pizzakartons werden vollständig über Werbeflächen auf dem Deckel finanziert — für Sie entstehen keine Kosten.
+- Kein Abo, keine Exklusivbindung, keine Mindestlaufzeit über die vereinbarte Auflage hinaus.
+- Auf Ihrem Karton wirbt kein Gastronomie-Wettbewerber.
+- Gedruckt wird, sobald 50 Freiburger Betriebe zugesagt haben (Startschuss-Prinzip). Bis dahin ist Ihre Zusage unverbindlich.
+
+Alles Weitere finden Sie auf {{Absender_web}}.
+
+Wenn Sie einsteigen möchten, genügt eine kurze Antwort auf diese Mail mit Ihrer ungefähren Kartonmenge pro Monat — dann bereite ich die Vereinbarung vor. Rückfragen jederzeit gern telefonisch unter {{Absender_telefon}}.
+
+Mit freundlichen Grüßen
+
+{{Absender_firma}}

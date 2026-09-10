@@ -1,0 +1,30 @@
+Betreff: Kostenlose Pizzakartons für {{Name}} — Pizza Support Freiburg
+
+{{Anrede}},
+
+Pizzakartons kosten Sie jeden Monat Geld. Bei Pizza Support bekommen Sie sie kostenlos.
+
+Das Prinzip ist einfach: Freiburger Unternehmen buchen Werbeflächen auf Ihren Pizzakartons. Diese Werbung finanziert den Karton — für Sie fallen keine Kosten an. Kein Abo, keine versteckten Gebühren, keine Exklusivbindung. Sie bestellen weiter in Ihrer gewohnten Qualität und Menge, nur eben zum Preis von null.
+
+Was das für Ihren Betrieb bedeutet:
+
+- Sie sparen Ihre kompletten Kartonkosten — bei einem mittleren Betrieb sind das schnell mehrere hundert Euro im Monat.
+- Lebensmittelechte Kartons in gewohnter Qualität, professionell gedruckt.
+- Auf Ihrem Karton wirbt kein Gastronomie-Wettbewerber. Das ist vertraglich ausgeschlossen.
+- Ihr eigener Name und Ihre Nummer bekommen ebenfalls Platz auf dem Deckel.
+
+Warum Sie diesen Brief jetzt bekommen: Pizza Support startet nach dem Startschuss-Prinzip. Erst wenn 50 Freiburger Betriebe zugesagt haben, geht die erste Auflage in den Druck. Nur bei dieser Menge rechnet sich das Modell für die Werbepartner — und nur dann bleiben die Kartons für Sie dauerhaft kostenlos. Jeder zusätzliche Betrieb macht die Sache für alle Beteiligten besser. Deshalb sammeln wir gerade Zusagen in ganz Freiburg, in {{Stadtteil}} ebenso wie im Rest der Stadt.
+
+Sie gehen damit kein Risiko ein: Eine Zusage jetzt kostet Sie nichts und verpflichtet Sie zu nichts, solange der Startschuss nicht gefallen ist. Kommen die 50 Betriebe nicht zusammen, passiert schlicht nichts.
+
+Ihr nächster Schritt: Rufen Sie mich an. Fünf Minuten genügen, um zu klären, ob das für Ihren Betrieb passt und wie viele Kartons Sie im Monat brauchen.
+
+    Telefon: {{Absender_telefon}}
+
+Ich freue mich auf Ihren Anruf.
+
+Mit freundlichen Grüßen
+
+{{Absender_firma}}
+
+P.S.: Wenn Sie es lieber schriftlich haben: Alle Details, die Preisliste für Werbepartner und der aktuelle Stand der 50 Betriebe stehen auf {{Absender_web}}.
