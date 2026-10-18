@@ -1,0 +1,97 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import KurzGesagt from '../components/KurzGesagt.astro';
+import Toc from '../components/Toc.astro';
+import Faq from '../components/Faq.astro';
+import Sources from '../components/Sources.astro';
+import { site } from '../site';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('pages', (e) => e.id !== 'start');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const d = entry.data;
+const path = `/${entry.id}/`;
+const url = new URL(path, site.url).href;
+const crumbs = [
+  { name: 'Start', href: '/' },
+  { name: d.breadcrumb ?? d.h1, href: path },
+];
+const fmt = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' });
+const area = ['Köln', 'Leverkusen', 'Bergisch Gladbach', 'Bonn', 'Rhein-Erft-Kreis', 'Rhein-Sieg-Kreis'].map((n) => ({
+  '@type': 'AdministrativeArea',
+  name: n,
+}));
+const ld: object[] = [
+  {
+    '@type': d.schemaType,
+    '@id': `${url}#page`,
+    url,
+    name: d.h1,
+    headline: d.h1,
+    description: d.description,
+    inLanguage: 'de-DE',
+    datePublished: d.published.toISOString().slice(0, 10),
+    dateModified: d.updated.toISOString().slice(0, 10),
+    author: { '@id': `${site.url}/#org` },
+    publisher: { '@id': `${site.url}/#org` },
+    isPartOf: { '@id': `${site.url}/#website` },
+    about: { '@type': 'Thing', name: 'Systemische Beratung' },
+    areaServed: area,
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: c.name,
+      item: new URL(c.href, site.url).href,
+    })),
+  },
+];
+if (d.faq.length) {
+  ld.push({
+    '@type': 'FAQPage',
+    mainEntity: d.faq.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  });
+}
+const legal = entry.id === 'impressum' || entry.id === 'datenschutz';
+---
+<BaseLayout title={d.title} description={d.description} path={path} jsonLd={legal ? [] : ld} noindex={false}>
+  <div class="wrap">
+    <header class="page-head">
+      <Breadcrumbs items={crumbs} />
+      <h1>{d.h1}</h1>
+      {!legal && (
+        <p class="meta">
+          Stand: {fmt.format(d.updated)} · Redaktion: {site.editor} · Letzte inhaltliche Prüfung: {fmt.format(d.updated)}
+        </p>
+      )}
+    </header>
+    {!legal && <KurzGesagt text={d.kurz} />}
+    {!legal && <Toc headings={headings} />}
+    <article class="content">
+      <Content />
+    </article>
+    <Faq items={d.faq} />
+    {d.related.length > 0 && (
+      <nav class="box" aria-labelledby="weiter-titel">
+        <p class="box-title" id="weiter-titel">Weiterlesen</p>
+        <ul>
+          <li><a href="/">Zur Startseite: Systemische Beratung in Köln im Überblick</a></li>
+          {d.related.map((r) => <li><a href={r.href}>{r.label}</a></li>)}
+        </ul>
+      </nav>
+    )}
+    <Sources items={d.sources} />
+  </div>
+</BaseLayout>

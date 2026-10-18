@@ -1,0 +1,12 @@
+---
+const { headings } = Astro.props as { headings: { depth: number; slug: string; text: string }[] };
+const items = headings.filter((h) => h.depth === 2);
+---
+{items.length >= 3 && (
+  <nav class="box toc" aria-labelledby="toc-titel">
+    <p class="box-title" id="toc-titel">Inhalt</p>
+    <ol>
+      {items.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+    </ol>
+  </nav>
+)}

@@ -1,0 +1,22 @@
+---
+import { crisis } from '../site';
+const { heading = 'h2' } = Astro.props;
+const Tag = heading;
+---
+<aside class="crisis" aria-labelledby="krise-titel">
+  <Tag id="krise-titel" class="crisis-title">In einer akuten Krise: Hilfe sofort</Tag>
+  <ul>
+    {crisis.map((c) => (
+      <li>
+        <a class="tel" href={`tel:${c.tel}`}>
+          <span class="what">{c.label}<small>{c.note}</small></span>
+          <span class="num">{c.num}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <p>
+    TelefonSeelsorge auch per Chat auf <a href="https://telefonseelsorge.de" rel="noopener">telefonseelsorge.de</a>.
+    Bei Gedanken, sich das Leben zu nehmen, oder bei akuter Gefahr rufen Sie sofort die 112 an.
+  </p>
+</aside>

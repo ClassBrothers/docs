@@ -1,0 +1,66 @@
+---
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import KurzGesagt from '../components/KurzGesagt.astro';
+import Toc from '../components/Toc.astro';
+import Faq from '../components/Faq.astro';
+import Sources from '../components/Sources.astro';
+import CrisisBox from '../components/CrisisBox.astro';
+import { site } from '../site';
+
+const entry = (await getEntry('pages', 'start'))!;
+const { Content, headings } = await render(entry);
+const d = entry.data;
+const url = `${site.url}/`;
+const fmt = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' });
+const cards = [
+  { href: '/systemische-beratung/', t: 'Was ist systemische Beratung?', s: 'Grundgedanken, Methoden und Herkunft in Alltagssprache.' },
+  { href: '/beratung-oder-therapie/', t: 'Beratung oder Therapie?', s: 'Wer was darf, was die Kasse zahlt, wie Sie entscheiden.' },
+  { href: '/kosten/', t: 'Was kostet es?', s: 'Selbstzahlung, kostenlose Angebote, Kassenleistung.' },
+  { href: '/hilfe-in-koeln/', t: 'Hilfe in Köln und Umgebung', s: 'Kostenlose und öffentliche Beratungsstellen nach Thema.' },
+  { href: '/systemische-einzelberatung-koeln/', t: 'Einzelberatung', s: 'Beruf, Entscheidungen, Lebensumbrüche.' },
+  { href: '/systemische-paarberatung-koeln/', t: 'Paarberatung', s: 'Konflikte, Distanz, Trennung.' },
+  { href: '/systemische-familienberatung-koeln/', t: 'Familienberatung', s: 'Pubertät, Patchwork, Pflege von Angehörigen.' },
+  { href: '/beraterin-finden/', t: 'Beraterin finden', s: 'Woran Sie Qualität erkennen, Fragen fürs Erstgespräch.' },
+];
+const ld: object[] = [
+  {
+    '@type': 'WebPage',
+    '@id': `${url}#page`,
+    url,
+    name: d.h1,
+    description: d.description,
+    inLanguage: 'de-DE',
+    datePublished: d.published.toISOString().slice(0, 10),
+    dateModified: d.updated.toISOString().slice(0, 10),
+    isPartOf: { '@id': `${site.url}/#website` },
+    about: { '@type': 'Thing', name: 'Systemische Beratung' },
+    areaServed: ['Köln', 'Leverkusen', 'Bergisch Gladbach', 'Bonn'].map((n) => ({ '@type': 'AdministrativeArea', name: n })),
+  },
+  {
+    '@type': 'FAQPage',
+    mainEntity: d.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+];
+---
+<BaseLayout title={d.title} description={d.description} path="/" jsonLd={ld} crisisInMain>
+  <div class="wrap">
+    <section class="hero">
+      <h1>{d.h1}</h1>
+      <p class="lead">Ein unabhängiges Informationsportal für Menschen in Köln und Umgebung, die wissen möchten, was systemische Beratung ist und wo sie Unterstützung finden.</p>
+      <p class="meta">Stand: {fmt.format(d.updated)} · Redaktion: {site.editor}</p>
+    </section>
+    <KurzGesagt text={d.kurz} />
+    <CrisisBox />
+    <Toc headings={headings} />
+    <article class="content">
+      <Content />
+    </article>
+    <h2>Alle Themen im Überblick</h2>
+    <div class="grid three">
+      {cards.map((c) => <a class="card" href={c.href}><strong>{c.t}</strong><span>{c.s}</span></a>)}
+    </div>
+    <Faq items={d.faq} />
+    <Sources items={d.sources} />
+  </div>
+</BaseLayout>
